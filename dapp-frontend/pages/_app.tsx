@@ -17,9 +17,9 @@ function getLibrary(provider: any) {
 
 const AppContent = ({ children }: any) => {
   return (
-    <div className="bg-[#000] h-screen scroll-smooth flex flex-col w-screen overflow-hidden">
+    <div className="bg-[#0c0c0c] min-h-screen scroll-smooth flex flex-col w-screen overflow-hidden">
       <Header />
-      <div className="overflow-auto flex-1 backdrop-opacity-10 backdrop-invert bg-[#05325B]/30">{children}</div>
+      <div className="overflow-auto flex-1 px-7 py-4">{children}</div>
       <Footer />
     </div>
   );

@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, createContext, useContext, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, createContext, useContext, useEffect, useCallback } from 'react';
+import { map, mapValues } from 'lodash';
 import { useWeb3React } from '@web3-react/core';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
@@ -21,33 +22,24 @@ type Web3ContextType = {
   connectTorus: () => void;
   connectOkxWallet: () => void;
   disconnectWallet: () => void;
+  switchChain: (chainId: string) => void;
 };
 
 const Web3Context = createContext<Web3ContextType>({} as Web3ContextType);
 
 const injectedConnector = new InjectedConnector({
-  supportedChainIds: [56, 137, 32520, 1024, 43114, 40, 86, 97, 311, 888, 66, 1]
+  supportedChainIds: map(Object.keys(chains), (key) => parseInt(key))
 });
 
 const okxwalletConnector = new OkxWalletConnector({
-  supportedChainIds: [56, 137, 32520, 1024, 43114, 40, 86, 97, 311, 888, 66, 1]
+  supportedChainIds: map(Object.keys(chains), (key) => parseInt(key))
 });
 
 const walletConnectConnector = new WalletConnectConnector({
   qrcode: true,
   bridge: 'https://bridge.walletconnect.org',
-  supportedChainIds: [56, 137, 32520, 1024, 43114, 40, 86, 97, 311, 888, 66, 1],
-  rpc: {
-    56: chains[56].rpcUrl,
-    32520: chains[32520].rpcUrl,
-    86: chains[86].rpcUrl,
-    311: chains[311].rpcUrl,
-    97: chains[97].rpcUrl,
-    888: chains[888].rpcUrl,
-    66: chains[66].rpcUrl,
-    1: chains[1].rpcUrl,
-    137: chains[137].rpcUrl
-  }
+  supportedChainIds: map(Object.keys(chains), (key) => parseInt(key)),
+  rpc: mapValues(chains, (item) => item.rpcUrl)
 });
 
 const torusConnector = new TorusConnector({
@@ -57,7 +49,8 @@ const torusConnector = new TorusConnector({
 export const Web3ContextProvider = ({ children }: any) => {
   const { library, account, activate, deactivate, active, chainId: web3ChainId, error, setError } = useWeb3React<Web3>();
   const [balance, setBalance] = useState<string>('0');
-  const chainId = useMemo(() => web3ChainId || 32520, [web3ChainId]);
+  const [chainId, setChainId] = useState<number>(32520);
+  const [ethereumProvider, setEthereumProvider] = useState<any>((window as any).ethereum);
 
   const fetchBalance = useCallback(() => {
     if (!!account) {
@@ -71,7 +64,7 @@ export const Web3ContextProvider = ({ children }: any) => {
   const connectInjected = useCallback(() => {
     activate(injectedConnector, setError, true)
       .then(() => {
-        console.log('Metamask connected!');
+        setEthereumProvider((window as any).ethereum);
       })
       .catch(setError);
   }, []);
@@ -79,7 +72,7 @@ export const Web3ContextProvider = ({ children }: any) => {
   const connectWalletConnect = useCallback(() => {
     activate(walletConnectConnector, setError, true)
       .then(() => {
-        console.log('Walletconnect connected!');
+        setEthereumProvider((window as any).ethereum);
       })
       .catch(setError);
   }, []);
@@ -95,7 +88,7 @@ export const Web3ContextProvider = ({ children }: any) => {
   const connectOkxWallet = useCallback(() => {
     activate(okxwalletConnector, setError, true)
       .then(() => {
-        console.log('Okx Connected!');
+        setEthereumProvider((window as any).okxwallet);
       })
       .catch(setError);
   }, []);
@@ -104,12 +97,50 @@ export const Web3ContextProvider = ({ children }: any) => {
     if (active) deactivate();
   }, [active]);
 
+  const switchChain = useCallback(
+    async (chain: string) => {
+      setChainId(parseInt(chain));
+      console.log(ethereumProvider);
+      console.log(chain);
+
+      if (active) {
+        try {
+          if (ethereumProvider)
+            await ethereumProvider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: chain }]
+            });
+        } catch (error: any) {
+          if (error.code === 4902 || error.code === -32603) {
+            const c = chains[parseInt(chain, 16) as unknown as keyof typeof chains];
+            await ethereumProvider.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainId: chain,
+                  chainName: c.name,
+                  rpcUrls: [c.rpcUrl],
+                  blockExplorerUrls: [c.explorer],
+                  nativeCurrency: {
+                    symbol: c.symbol,
+                    decimals: 18
+                  }
+                }
+              ]
+            });
+          }
+        }
+      }
+    },
+    [active, ethereumProvider]
+  );
+
   useEffect(() => {
     injectedConnector.isAuthorized().then((isAuth) => {
       if (isAuth) {
         activate(injectedConnector, setError, true)
           .then(() => {
-            console.log('Connected!');
+            setEthereumProvider((window as any).ethereum);
           })
           .catch(setError);
       }
@@ -134,6 +165,12 @@ export const Web3ContextProvider = ({ children }: any) => {
     }
   }, [active, account]);
 
+  useEffect(() => {
+    if (active && web3ChainId) {
+      setChainId(web3ChainId);
+    }
+  }, [web3ChainId, active]);
+
   return (
     <Web3Context.Provider
       value={{
@@ -147,7 +184,8 @@ export const Web3ContextProvider = ({ children }: any) => {
         connectOkxWallet,
         error,
         disconnectWallet,
-        chainId
+        chainId,
+        switchChain
       }}
     >
       {children}

@@ -8,14 +8,12 @@ import { RiMenu4Fill } from 'react-icons/ri';
 import { FiX, FiChevronDown, FiLogOut, FiCheck, FiLink } from 'react-icons/fi';
 import { BsCurrencyExchange } from 'react-icons/bs';
 import { SiLaunchpad } from 'react-icons/si';
-import { IoMdRefresh } from 'react-icons/io';
 import { formatEthAddress } from 'eth-address';
 import _ from 'lodash';
 import { hexValue } from '@ethersproject/bytes';
 import { useWeb3Context } from '../../contexts/web3';
 import ProviderSelectModal from '../ProviderSelectModal';
 import chains from '../../assets/chains.json';
-import { switchChain } from '../../utils';
 
 type ActiveLinkProps = LinkProps & {
   children: ReactElement;
@@ -57,10 +55,9 @@ const ActiveLink = ({ children, activeClassName, ...props }: ActiveLinkProps) =>
 };
 
 export default function Header() {
-  const { reload } = useRouter();
   const [showMobileSidebar, setShowMobileSidebar] = useState<boolean>(false);
   const [showProviderModal, setShowProviderModal] = useState<boolean>(false);
-  const { active, account, error: web3Error, disconnectWallet, chainId } = useWeb3Context();
+  const { active, account, error: web3Error, disconnectWallet, chainId, switchChain } = useWeb3Context();
   const selectedChain = useMemo(() => chains[(chainId as unknown as keyof typeof chains) || 97], [chainId]);
   return (
     <>
@@ -72,87 +69,89 @@ export default function Header() {
           </div>
         </div>
       )}
-      <div className="bg-[#000]/50 w-full font-Montserrat">
-        <div className="flex flex-row justify-between px-[38px] py-[16px] items-center">
-          <div className="flex justify-center cursor-pointer">
+      <div className="bg-[#0f0f10]/[.08] lg:border-b border-[#5e5e5e] w-full font-Syne">
+        <div className="flex flex-row justify-between px-[38px] py-[16px] items-center w-full">
+          <div className="flex justify-center items-center cursor-pointer">
             <Link href="/">
-              <Image src="/images/vefi.svg" alt="vefi_logo" width={30} height={30} />
+              <Image src="/images/vefi.svg" alt="vefi_logo" width={80} height={40} />
             </Link>
           </div>
-          <div className="md:flex flex-row justify-between hidden">
+          <div className="md:flex flex-row justify-center items-center hidden w-auto gap-3">
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800]" href="/dex">
-                <span className="text-white text-[21px] font-[400]">Trade</span>
+                <span className="text-white text-[1em] font-[400]">Trade</span>
               </ActiveLink>
             </div>
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800]" href="/launchpad">
-                <span className="text-white text-[21px] font-[400]">Launchpad</span>
+                <span className="text-white text-[1em] font-[400]">Launchpad</span>
               </ActiveLink>
             </div>
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800]" href="/staking">
-                <span className="text-white text-[21px] font-[400]">Staking Pools</span>
+                <span className="text-white text-[1em] font-[400]">Staking Pools</span>
               </ActiveLink>
             </div>
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800]" href="/multisig">
-                <span className="text-white text-[21px] font-[400]">Multi-Signature</span>
+                <span className="text-white text-[1em] font-[400]">Multi-Signature</span>
               </ActiveLink>
             </div>
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800]" href="/bridge">
-                <span className="text-white text-[21px] font-[400]">Bridge</span>
+                <span className="text-white text-[1em] font-[400]">Bridge</span>
               </ActiveLink>
             </div>
           </div>
           <div className="flex justify-center items-center gap-2">
-            {!active ? (
-              <button
-                onClick={() => setShowProviderModal(true)}
-                className="hidden md:flex justify-center items-center bg-[#1673b9]/30 py-[9px] px-[10px] rounded-[11px] text-[18px] text-white"
-              >
-                <FaWallet /> <span className="text-white text-[18px] ml-[2px]">Connect Wallet</span>
-              </button>
-            ) : (
-              <div className="flex justify-center items-center gap-2 flex-1">
-                <div className="dropdown dropdown-hover">
-                  <button
-                    tabIndex={0}
-                    className="hidden md:flex justify-center items-center bg-[#000]/40 py-[9px] px-[10px] rounded-[25px] text-[18px] text-white gap-2"
-                  >
-                    <div className="avatar">
-                      <div className="w-8 rounded-full">
-                        <img src={selectedChain.logoURI} alt={selectedChain.symbol} />
-                      </div>
+            <div className="flex justify-center items-center gap-2 flex-1">
+              <div className="dropdown dropdown-hover">
+                <button
+                  tabIndex={0}
+                  className="hidden md:flex justify-center items-center bg-transparent py-[9px] px-[10px] rounded-[25px] text-[1em] text-white gap-2"
+                >
+                  <div className="avatar">
+                    <div className="w-8 rounded-full">
+                      <img src={selectedChain.logoURI} alt={selectedChain.symbol} />
                     </div>
-                    <span className="text-white text-[18px] ml-[2px]">{selectedChain.name}</span> <FiChevronDown />
-                  </button>
-                  <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-[#000]/[0.5] w-80 rounded-box text-white">
-                    {_.map(Object.keys(chains), (key, index) => (
-                      <li key={index}>
-                        <a className="gap-2" onClick={() => switchChain(hexValue(parseInt(key)), chains)}>
-                          <div className="avatar">
-                            <div className="w-8 rounded-full">
-                              <img src={chains[key as keyof typeof chains].logoURI} alt={chains[key as keyof typeof chains].symbol} />
-                            </div>
+                  </div>
+                  {selectedChain.name} <FiChevronDown />
+                </button>
+                <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-[#000] w-80 rounded-box text-white">
+                  {_.map(Object.keys(chains), (key, index) => (
+                    <li key={index}>
+                      <a className="gap-2 text-[1em]" onClick={() => switchChain(hexValue(parseInt(key)))}>
+                        <div className="avatar">
+                          <div className="w-8 rounded-full">
+                            <img src={chains[key as keyof typeof chains].logoURI} alt={chains[key as keyof typeof chains].symbol} />
                           </div>
-                          {chains[key as keyof typeof chains].name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="dropdown dropdown-hover">
-                  <button
-                    tabIndex={0}
-                    className="hidden md:flex justify-center items-center bg-[#1673b9]/30 py-[9px] px-[10px] rounded-[25px] text-[18px] text-white gap-2"
-                  >
-                    <div className="h-[30px] w-[30px] rounded-[25px] flex justify-center items-center border border-white">
-                      <FaWallet />
-                    </div>{' '}
-                    <span className="text-white text-[18px] ml-[2px]">{formatEthAddress(account as string, 4)}</span> <FiChevronDown />
-                  </button>
+                        </div>
+                        {chains[key as keyof typeof chains].name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="dropdown dropdown-hover">
+                <button
+                  tabIndex={0}
+                  onClick={() => !active && setShowProviderModal(true)}
+                  className="hidden md:flex justify-center items-center bg-[#105dcf] py-[9px] px-[10px] text-[1em] text-white gap-2 rounded-[8px]"
+                >
+                  {active ? (
+                    <>
+                      <div className="h-[30px] w-[30px] rounded-[25px] flex justify-center items-center border border-white">
+                        <FaWallet />
+                      </div>{' '}
+                      {formatEthAddress(account as string, 4)} <FiChevronDown />
+                    </>
+                  ) : (
+                    <div className="flex justify-center items-center gap-2">
+                      <FaWallet /> Connect Wallet
+                    </div>
+                  )}
+                </button>
+                {active && (
                   <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-[#000]/[0.6] rounded-box w-52 text-white">
                     <li>
                       <a onClick={disconnectWallet} className="btn btn-ghost gap-2">
@@ -161,20 +160,15 @@ export default function Header() {
                       </a>
                     </li>
                   </ul>
-                </div>
+                )}
               </div>
-            )}
+            </div>
             <button
-              className="md:hidden flex justify-center items-center bg-[#1673b9] py-[9px] px-[10px] rounded-[5px] text-[18px] text-white"
+              className="md:hidden flex justify-center items-center bg-transparent py-[9px] px-[10px] rounded-[5px] text-[1.6em] text-white"
               onClick={() => setShowMobileSidebar((val) => !val)}
             >
               {!showMobileSidebar ? <RiMenu4Fill /> : <FiX />}
             </button>
-            {active && (
-              <button onClick={reload} className="btn btn-ghost btn-square text-white text-[30px]">
-                <IoMdRefresh />
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -251,7 +245,7 @@ export default function Header() {
           <ul className="menu p-2 shadow bg-[#000]/[0.6] rounded-box w-full text-white">
             {_.map(Object.keys(chains), (key, index) => (
               <li key={index}>
-                <label htmlFor="chain-modal" className="gap-2" onClick={() => switchChain(hexValue(parseInt(key)), chains)}>
+                <label htmlFor="chain-modal" className="gap-2" onClick={() => switchChain(hexValue(parseInt(key)))}>
                   <div className="avatar">
                     <div className="w-8 rounded-full">
                       <img src={chains[key as keyof typeof chains].logoURI} alt={chains[key as keyof typeof chains].symbol} />
