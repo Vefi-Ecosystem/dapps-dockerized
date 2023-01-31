@@ -37,8 +37,8 @@ export default function Dex() {
       <Head>
         <title>Vefi DApps | DEX</title>
       </Head>
-      <div className="flex justify-center items-center my-16 w-full">
-        <div className="flex justify-center items-center my-[3px] rounded-[18px] bg-white py-[2px] px-[4px]">
+      <div className="flex justify-center items-center py-12 w-full">
+        <div className="flex justify-center items-center rounded-[30px] bg-[#fff]/[.11] py-1 px-1">
           <ToggleButton isActive={route === Route.SWAP} onClick={() => push(`/dex?tab=${Route.SWAP}`)}>
             <span>Swap</span>
           </ToggleButton>

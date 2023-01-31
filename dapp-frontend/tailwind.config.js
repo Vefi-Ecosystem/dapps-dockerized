@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        radialed: 'radial-gradient(72.27% 72.27% at 50% 26.17%, #1673B9 0%, #1673B9 0%, #164977 18.32%, #05325B 28.22%, #161525 100%)'
+        home_radialed: 'radial-gradient(54.64% 54.64% at 50% 54.64%, rgba(13, 13, 13, 0) 0%, #0D0D0D 100%)'
       }
     },
     fontFamily: {

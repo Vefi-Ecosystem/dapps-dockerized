@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import { DEXSettingsContextProvider } from '../contexts/dex/settings';
 import { Web3ContextProvider } from '../contexts/web3';
 import { APIContextProvider } from '../contexts/api';
+import { GQLProvider } from '../contexts/graphql';
 
 function getLibrary(provider: any) {
   return new Web3(provider);
@@ -19,7 +20,7 @@ const AppContent = ({ children }: any) => {
   return (
     <div className="bg-[#0c0c0c] min-h-screen scroll-smooth flex flex-col w-screen overflow-hidden">
       <Header />
-      <div className="overflow-auto flex-1 px-7 py-4">{children}</div>
+      <div className="overflow-auto flex-1 px-2 py-4">{children}</div>
       <Footer />
     </div>
   );
@@ -31,13 +32,15 @@ export default function App({ Component, pageProps }: AppProps) {
       <GoogleAnalytics gaMeasurementId={process.env.NEXT_PUBLIC_GA_KEY} trackPageViews />
       <Web3ReactProvider getLibrary={getLibrary}>
         <Web3ContextProvider>
-          <DEXSettingsContextProvider>
-            <APIContextProvider>
-              <AppContent>
-                <Component {...pageProps} />
-              </AppContent>
-            </APIContextProvider>
-          </DEXSettingsContextProvider>
+          <GQLProvider>
+            <DEXSettingsContextProvider>
+              <APIContextProvider>
+                <AppContent>
+                  <Component {...pageProps} />
+                </AppContent>
+              </APIContextProvider>
+            </DEXSettingsContextProvider>
+          </GQLProvider>
         </Web3ContextProvider>
       </Web3ReactProvider>
     </>

@@ -57,33 +57,36 @@ export default function TokensListModal({ onClose, isVisible, onTokenSelected, s
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="container top-0 bottom-0 left-0 right-0 w-[400px] mx-auto bg-[#161525]/[.7] mix-blend-normal rounded-[10px] backdrop-blur-[64px] text-white">
+              <div className="container top-0 bottom-0 left-0 right-0 w-[400px] mx-auto bg-[#2e2e2e] mix-blend-normal rounded-[10px] backdrop-blur-[64px] text-white">
                 <div className="flex flex-col justify-center items-center w-full">
-                  <div className="bg-[#161525]/[.5] p-[30px] w-full">
+                  <div className="bg-transparent p-[30px] w-full">
                     <div className="flex flex-row">
                       <div className="flex flex-row items-center justify-between w-full">
-                        <h2 className="text-2xl font-semibold">Select Token</h2>
-                        <button onClick={onClose} className="text-[#000] text-[30] p-[8px] flex justify-center rounded-[100%] bg-[#fff] font-[700]">
+                        <h2 className="text-2xl font-semibold font-Syne">Select Token</h2>
+                        <button
+                          onClick={onClose}
+                          className="text-[#eaebec]/[.49] text-[0.67em] border border-[#eaebec]/[.49] p-1 flex justify-center rounded-full font-[700]"
+                        >
                           <FiX />
                         </button>
                       </div>
                     </div>
                   </div>
                   <div className="flex flex-col justify-center items-center gap-2 w-full">
-                    <div className="flex justify-center items-center px-10 py-10 w-full">
-                      <div className="bg-[#000]/50 rounded-[20px] py-2 flex justify-center items-center gap-1 px-4 w-full">
+                    <div className="flex justify-center items-center px-3 py-10 w-full">
+                      <div className="bg-transparent rounded-[8px] py-2 flex justify-start items-center gap-1 border border-[#808080] px-2 w-full">
+                        <FiSearch className="text-[1em]" />
                         <input
                           type="text"
                           value={searchValue}
                           onChange={(e) => setSearchValue(e.target.value)}
-                          className="bg-transparent outline-0 font-poppins max-w-[200px] md:w-[500px]"
+                          className="bg-transparent outline-0 font-Syne flex-1 text-[#808080]"
                           placeholder="Search token by address or name"
                         />
-                        <FiSearch />
                       </div>
                     </div>
 
-                    <div className="flex flex-col justify-start items-start w-full overflow-auto max-h-[500px]">
+                    <div className="flex flex-col justify-start items-start gap-3 w-full overflow-auto max-h-[26rem] py-2 px-1">
                       {searchValue.replace(/\s/g, '').length > 0 &&
                       _.filter(
                         tokensListing,

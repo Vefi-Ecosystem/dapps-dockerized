@@ -9,7 +9,6 @@
     "format": "prettier --write **/**.{css,js,json,ts,tsx}"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.5",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/address": "^5.7.0",
     "@ethersproject/bignumber": "^5.7.0",
@@ -37,6 +36,7 @@
     "graphql": "^16.6.0",
     "graphql-request": "^5.1.0",
     "jsbi": "^4.3.0",
+    "lightweight-charts": "^3.8.0",
     "lodash": "^4.17.21",
     "millify": "^5.0.1",
     "moment": "^2.29.4",
@@ -57,6 +57,7 @@
     "react-loader-spinner": "^5.3.4",
     "react-moment": "^1.1.2",
     "react-toastify": "^9.0.8",
+    "recharts": "^2.3.2",
     "tailwindcss": "^3.1.8",
     "tiny-warning": "^1.0.3",
     "url-loader": "^4.1.1",

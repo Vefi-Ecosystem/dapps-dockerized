@@ -217,10 +217,9 @@ export const APIContextProvider = ({ children }: any) => {
 
   useEffect(() => {
     (async () => {
+      const listing = await fetchListing(chainId);
+      setTokensListing(listing);
       if (!!account && !!chainId) {
-        const listing = await fetchListing(chainId || 1);
-
-        setTokensListing(listing);
         fetchPools(1);
         fetchAccountPools(1);
         fetchStakesByAccount(1);

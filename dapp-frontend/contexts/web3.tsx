@@ -50,7 +50,7 @@ export const Web3ContextProvider = ({ children }: any) => {
   const { library, account, activate, deactivate, active, chainId: web3ChainId, error, setError } = useWeb3React<Web3>();
   const [balance, setBalance] = useState<string>('0');
   const [chainId, setChainId] = useState<number>(32520);
-  const [ethereumProvider, setEthereumProvider] = useState<any>((window as any).ethereum);
+  const [ethereumProvider, setEthereumProvider] = useState<any>(null);
 
   const fetchBalance = useCallback(() => {
     if (!!account) {
@@ -100,8 +100,6 @@ export const Web3ContextProvider = ({ children }: any) => {
   const switchChain = useCallback(
     async (chain: string) => {
       setChainId(parseInt(chain));
-      console.log(ethereumProvider);
-      console.log(chain);
 
       if (active) {
         try {
@@ -152,7 +150,7 @@ export const Web3ContextProvider = ({ children }: any) => {
       if (isAuth) {
         activate(okxwalletConnector, setError, true)
           .then(() => {
-            console.log('Connected!');
+            setEthereumProvider((window as any).okxwallet);
           })
           .catch(setError);
       }

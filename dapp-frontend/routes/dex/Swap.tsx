@@ -1,8 +1,10 @@
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useState } from 'react';
+import { TailSpin } from 'react-loader-spinner';
+import { AiOutlineSwap } from 'react-icons/ai';
 import { FiSettings, FiChevronDown } from 'react-icons/fi';
 import { IoMdRefreshCircle } from 'react-icons/io';
-import { MdOutlineSwapHoriz, MdArrowDownward } from 'react-icons/md';
+import { MdArrowDownward } from 'react-icons/md';
 import { ToastContainer, toast } from 'react-toastify';
 import { AddressZero } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
@@ -26,6 +28,7 @@ import chains from '../../assets/chains.json';
 import { useDEXSettingsContext } from '../../contexts/dex/settings';
 import successFx from '../../assets/sounds/success_sound.mp3';
 import errorFx from '../../assets/sounds/error_sound.mp3';
+import TradeCard from '../../components/Dex/Card';
 
 enum ChartPeriod {
   DAY,
@@ -250,145 +253,117 @@ export default function Swap() {
 
   return (
     <>
-      <div className="flex justify-center w-full items-center">
-        <div className="bg-[#000]/[.75] rounded-[15px] shadow-lg flex justify-center items-center w-full md:w-1/3 md:max-h-[600px] font-Montserrat">
-          <div className="flex flex-col justify-evenly items-center w-full h-full">
-            <div className="flex justify-between w-full bg-[#161525] rounded-t-[15px] py-6 px-3">
-              <span className="font-MontserratAlt text-[20px] text-white font-[600]">Swap</span>
-              <div className="flex justify-center gap-3 items-center">
-                <button onClick={reload} className="bg-transparent text-white text-[30px] cursor-pointer">
-                  <IoMdRefreshCircle />
-                </button>
-                <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-white text-[30px]">
-                  <FiSettings />
-                </button>
-              </div>
-            </div>
-            <div className="flex flex-col justify-center w-full mt-10 gap-2 px-[9px]">
-              <div className="bg-[#161525]/[.75] rounded-[12px] flex flex-col w-full px-[23px] py-[9px] justify-evenly gap-2">
-                <div className="flex justify-between w-full">
-                  <span className="text-white">From</span>
-                  <span className="text-white"> Balance: {balance1}</span>
+      <div className="flex justify-center w-full items-center flex-col lg:flex-row">
+        <div className="w-full lg:w-1/3">
+          <TradeCard>
+            <div className="flex flex-col justify-evenly items-center w-full h-full">
+              <div className="flex justify-between w-full py-6 px-3">
+                <div className="flex flex-col justify-center items-start">
+                  <span className="font-Syne text-[1.8em] text-white font-[700]">Swap</span>
+                  <p className="font-[400] font-Poppins text-[0.9em] text-[#9d9d9d]">Trade tokens in an instant</p>
                 </div>
-                <div className="flex justify-between w-full gap-1">
-                  <div className="flex justify-between items-center gap-1">
+                <div className="flex justify-center gap-3 items-center">
+                  <button onClick={reload} className="bg-transparent text-[#a6b2ec] text-[1.8em] cursor-pointer">
+                    <IoMdRefreshCircle />
+                  </button>
+                  <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-[#a6b2ec] text-[1.8em]">
+                    <FiSettings />
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-col justify-center w-full gap-2 px-2">
+                <div className="flex flex-col w-full px-2 py-2 justify-evenly gap-2">
+                  <div className="flex justify-between w-full font-Syne">
+                    <span className="text-white">From</span>
+                    <span className="text-[#c8bfbf]"> Balance: {balance1}</span>
+                  </div>
+                  <div className="flex justify-between w-full gap-1 items-center rounded-[8px] bg-[#fff]/[.07]">
                     <div
-                      className="flex justify-start items-center border-r border-white p-4 cursor-pointer gap-1 w-[150px]"
+                      className="flex justify-evenly items-center p-4 cursor-pointer gap-2 w-auto"
                       onClick={() => setIsFirstTokensListModalVisible(true)}
                     >
-                      <img src={firstSelectedToken.logoURI} alt={firstSelectedToken.name} className="rounded-[50px] w-[30px] h-[30px]" />
-                      <span className="text-white uppercase font-[700] text-[16px]">{firstSelectedToken.symbol}</span>
+                      <div className="avatar">
+                        <div className="w-8 rounded-full">
+                          <img src={firstSelectedToken.logoURI} alt={firstSelectedToken.name} />
+                        </div>
+                      </div>
+                      <span className="text-white uppercase font-[700] text-[1em] font-Syne">{firstSelectedToken.symbol}</span>
                       <FiChevronDown className="text-white" />
                     </div>
-                    <div className="flex justify-center items-center gap-1 flex-1">
-                      <button
-                        onClick={() => setVal1(parseFloat(balance1))}
-                        className="p-[2px] bg-[#2775ca] opacity-[.19] text-[#c6c3c3] text-[10px] font-[600]"
-                      >
-                        Max
-                      </button>
-                      <button
-                        onClick={() => setVal1(_.multiply(0.5, parseFloat(balance1)))}
-                        className="p-[2px] bg-[#2775ca] opacity-[.19] text-[#c6c3c3] text-[10px] font-[600]"
-                      >
-                        Half
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex justify-end w-[200px]">
+
                     <input
                       type="number"
-                      className="p-[12px] bg-transparent text-white border-0 w-full outline-0 appearance-none font-[600] text-[18px]"
                       value={val1}
+                      className="p-3 bg-transparent text-white w-1/2 border-0 outline-0 appearance-none font-[600] text-[1em] font-Poppins text-right"
                       onChange={(e) => setVal1(e.target.valueAsNumber || 0.0)}
                     />
                   </div>
                 </div>
-              </div>
-              <div className="flex justify-center items-center">
-                <button onClick={switchSelectedTokens} className="bg-transparent text-[#ffffff] text-[23px] rounded-full border border-[#fff]/75">
-                  <MdArrowDownward />
-                </button>
-              </div>
-              <div className="bg-[#161525]/[.75] rounded-[12px] flex flex-col w-full px-[23px] py-[9px] justify-evenly gap-2">
-                <div className="flex justify-between w-full">
-                  <span className="text-white">To</span>
-                  <span className="text-white"> Balance: {balance2}</span>
+                <div className="flex justify-center items-center">
+                  <button onClick={switchSelectedTokens} className="bg-transparent text-[#a6b2ec] text-[1em] rounded-full border border-[#a6b2ec]">
+                    <MdArrowDownward />
+                  </button>
                 </div>
-                <div className="flex justify-between w-full gap-1">
-                  <div className="flex justify-center items-center gap-1">
+                <div className="flex flex-col w-full px-2 py-2 justify-evenly gap-2">
+                  <div className="flex justify-between w-full font-Syne">
+                    <span className="text-white">To</span>
+                    <span className="text-[#c8bfbf]"> Balance: {balance2}</span>
+                  </div>
+                  <div className="flex justify-between w-full gap-1 items-center rounded-[8px] bg-[#fff]/[.07]">
                     <div
+                      className="flex justify-evenly items-center p-4 cursor-pointer gap-2 w-auto"
                       onClick={() => setIsSecondTokensListModalVisible(true)}
-                      className="flex justify-start items-center border-r border-white p-4 cursor-pointer gap-1 w-[150px]"
                     >
-                      <img src={secondSelectedToken.logoURI} alt={secondSelectedToken.name} className="rounded-[50px] w-[30px] h-[30px]" />
-                      <span className="text-white uppercase font-[700] text-[16px]">{secondSelectedToken.symbol}</span>
+                      <div className="avatar">
+                        <div className="w-8 rounded-full">
+                          <img src={secondSelectedToken.logoURI} alt={secondSelectedToken.name} />
+                        </div>
+                      </div>
+                      <span className="text-white uppercase font-[700] text-[1em] font-Syne">{secondSelectedToken.symbol}</span>
                       <FiChevronDown className="text-white" />
                     </div>
-                    <div className="flex justify-center items-center flex-1 gap-1">
-                      <button
-                        onClick={() => setVal2(parseFloat(balance2))}
-                        className="p-[2px] bg-[#2775ca] opacity-[.19] text-[#c6c3c3] text-[10px] font-[600]"
-                      >
-                        Max
-                      </button>
-                      <button
-                        onClick={() => setVal2(_.multiply(0.5, parseFloat(balance2)))}
-                        className="p-[2px] bg-[#2775ca] opacity-[.19] text-[#c6c3c3] text-[10px] font-[600]"
-                      >
-                        Half
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex justify-end w-[200px]">
+
                     <input
                       type="number"
-                      className="p-[12px] bg-transparent text-white border-0 w-full outline-0 appearance-none font-[600] text-[18px]"
                       value={val2}
+                      className="p-3 bg-transparent text-white w-1/2 border-0 outline-0 appearance-none font-[600] text-[1em] font-Poppins text-right"
                       onChange={(e) => setVal2(e.target.valueAsNumber || 0.0)}
                     />
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="flex justify-center w-full items-center my-2 px-2 py-2">
-              {!pairError ? (
-                <div className="flex justify-center w-full items-center flex-col gap-2 px-3 py-2">
-                  <div className="flex justify-between w-full items-center font-poppins gap-3">
-                    <span className="text-white font-[300]">1 {secondSelectedToken.symbol}</span>
-                    <MdOutlineSwapHoriz className="text-white font-[400] text-[30px]" />
-                    <span className="text-white font-[300]">
-                      {token1Price} {firstSelectedToken.symbol}
-                    </span>
+              <div className="flex justify-center w-full items-center my-2 px-2 py-2">
+                {!pairError ? (
+                  <div className="flex justify-start w-full items-start flex-col gap-2 px-3 py-2 font-Poppins">
+                    <span className="text-[#d0d0d0] text-[0.75em] font-[400]">Slippage Tolerance: {slippageTolerance}%</span>
+                    <div className="flex justify-between w-full items-center font-poppins gap-3">
+                      <span className="text-white font-[300]">
+                        {inputAmount} {firstSelectedToken.symbol}
+                      </span>
+                      <AiOutlineSwap className="text-[#a6b2ec] font-[400] text-[1.9em]" />
+                      <span className="text-white font-[300]">
+                        {outputAmount} {secondSelectedToken.symbol}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between w-full items-center font-poppins gap-3">
-                    <span className="text-white font-[300]">
-                      You pay in {inputAmount} {firstSelectedToken.symbol}
-                    </span>
-                    {/* <MdOutlineSwapHoriz className="text-white font-[400] text-[30px]" /> */}
-                    <span className="text-white font-[300]">
-                      You get {outputAmount} {secondSelectedToken.symbol}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <span className="text-red-400 font-Montserrat text-[15px]">{pairError.message}</span>
-              )}
+                ) : (
+                  <span className="text-red-400 font-Poppins text-[15px]">An error occured</span>
+                )}
+              </div>
+              <div className="flex justify-center gap-2 items-center w-full flex-col px-2 py-4">
+                <button
+                  onClick={swapTokens}
+                  disabled={!!pairError || isSwapLoading || val1 <= 0 || val1 > parseFloat(balance1) || !active}
+                  className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
+                >
+                  <span className="font-Syne">
+                    {!active ? 'Wallet not connected' : val1 > parseFloat(balance1) ? `Insufficient ${firstSelectedToken.symbol} balance` : 'Swap'}
+                  </span>
+                  <TailSpin color="#dcdcdc" visible={isSwapLoading} width={20} height={20} />
+                </button>
+              </div>
             </div>
-            <div className="flex justify-center gap-2 items-center w-full flex-col px-2 py-4">
-              <button
-                onClick={swapTokens}
-                disabled={!!pairError || isSwapLoading || val1 <= 0 || val1 > parseFloat(balance1) || !active}
-                className={`flex justify-center items-center bg-[#1673b9]/50 btn py-[20px] px-[10px] text-[18px] text-white w-full ${
-                  isSwapLoading ? 'loading' : ''
-                }`}
-              >
-                <span className="font-MontserratAlt">
-                  {!active ? 'Wallet not connected' : val1 > parseFloat(balance1) ? `Insufficient ${firstSelectedToken.symbol} balance` : 'Swap'}
-                </span>
-              </button>
-            </div>
-          </div>
+          </TradeCard>
         </div>
         <ToastContainer position="top-right" theme="dark" autoClose={5000} />
         <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />

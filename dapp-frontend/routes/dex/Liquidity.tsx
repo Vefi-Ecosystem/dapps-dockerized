@@ -26,6 +26,7 @@ import routers from '../../assets/routers.json';
 import { addToMetamask } from '../../utils';
 import successFx from '../../assets/sounds/success_sound.mp3';
 import errorFx from '../../assets/sounds/error_sound.mp3';
+import TradeCard from '../../components/Dex/Card';
 
 enum Route {
   ADD_LIQUIDITY = 'add_liquidity',
@@ -37,56 +38,57 @@ const LPRoute = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
   const { liquidityPoolsForUser, importedPools } = useAPIContext();
   const { chainId } = useWeb3Context();
-  const { reload, push } = useRouter();
+  const { push } = useRouter();
   return (
-    <div className="bg-[#000]/[.75] rounded-[15px] shadow-lg flex justify-center items-center w-full md:w-1/3 font-Montserrat">
-      <div className="flex flex-col justify-evenly items-center w-full">
-        <div className="flex justify-between w-full bg-[#161525] rounded-t-[15px] py-6 px-3">
-          <div className="flex flex-col justify-start items-start w-8/8">
-            <span className="font-[700] text-[25px] text-white">Your Liquidity</span>
-            <span className="font-[700] text-[13px] text-white">Remove liquidity to get tokens back</span>
-          </div>
-          <div className="flex justify-evenly w-1/4">
-            <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-white text-[30px]">
-              <FiSettings />
-            </button>
-            <button onClick={reload} className="bg-transparent text-white text-[30px]">
-              <IoMdRefreshCircle />
-            </button>
-          </div>
-        </div>
-        <div className="px-2 py-3 flex flex-col justify-center items-center gap-3 w-full overflow-auto">
-          <div className="bg-[#0c0b16] rounded-[12px] flex justify-center items-center py-[9px] px-[26px] w-full overflow-auto">
-            <div className="flex justify-center items-center w-full flex-col gap-1 px-1 py-1 overflow-auto">
-              {liquidityPoolsForUser.items.length === 0 && importedPools[(chainId as number) || 97]?.length === 0 ? (
-                <span className="text-white">No liquidity found</span>
-              ) : (
-                <ul className="menu w-full bg-[#000]/70 p-2 rounded-box">
-                  {_.map(liquidityPoolsForUser.items.concat(importedPools[(chainId as number) || 97]), (lp, index) => (
-                    <UserLPItem pair={lp} key={index} />
-                  ))}
-                </ul>
-              )}
-              <span className="text-white">Don&apos;t see a pool you&apos;ve joined?</span>
-              <div className="mt-[36px] w-full">
-                <button
-                  onClick={() => push(`/dex?tab=liquidity&child_tab=${Route.FIND_OTHER_LP_TOKENS}`)}
-                  className="border-[#1673b9] border-[2px] rounded-[19px] w-full py-[13px] px-[17px] text-[#1673b9] text-[18px] font-[600] flex justify-center"
-                >
-                  <span className="font-MontserratAlt">Find other LP tokens</span>
+    <div className="flex flex-col lg:flex-row justify-center items-center w-full">
+      <div className="w-full lg:w-1/3">
+        <TradeCard>
+          <div className="flex flex-col justify-evenly items-center w-full">
+            <div className="flex justify-between w-full py-6 px-3">
+              <div className="flex flex-col justify-start items-start w-8/8">
+                <span className="font-Syne text-[1.8em] text-white font-[700]">Your Liquidity</span>
+                <p className="font-[400] font-Poppins text-[0.9em] text-[#9d9d9d]">Remove liquidity to get tokens back</p>
+              </div>
+              <div className="flex justify-evenly w-1/4">
+                <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-[#a6b2ec] text-[1.8em]">
+                  <FiSettings />
                 </button>
               </div>
             </div>
+            <div className="px-2 py-3 flex flex-col justify-center items-center gap-3 w-full overflow-auto">
+              <div className="bg-[#0c0b16] rounded-[12px] flex justify-center items-center py-[9px] px-[26px] w-full overflow-auto">
+                <div className="flex justify-center items-center w-full flex-col gap-1 px-1 py-1 overflow-auto">
+                  {liquidityPoolsForUser.items.length === 0 && importedPools[(chainId as number) || 97]?.length === 0 ? (
+                    <span className="text-white">No liquidity found</span>
+                  ) : (
+                    <ul className="menu w-full bg-[#000]/70 p-2 rounded-box">
+                      {_.map(liquidityPoolsForUser.items.concat(importedPools[(chainId as number) || 97]), (lp, index) => (
+                        <UserLPItem pair={lp} key={index} />
+                      ))}
+                    </ul>
+                  )}
+                  <span className="text-white">Don&apos;t see a pool you&apos;ve joined?</span>
+                  <div className="mt-[36px] w-full">
+                    <button
+                      onClick={() => push(`/dex?tab=liquidity&child_tab=${Route.FIND_OTHER_LP_TOKENS}`)}
+                      className="border-[#1673b9] border-[2px] rounded-[19px] w-full py-[13px] px-[17px] text-[#1673b9] text-[18px] font-[600] flex justify-center"
+                    >
+                      <span className="font-MontserratAlt">Find other LP tokens</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => push(`/dex?tab=liquidity&child_tab=${Route.ADD_LIQUIDITY}`)}
+                className="flex justify-center items-center bg-[#1673b9]/50 py-[14px] px-[62px] rounded-[19px] text-[18px] text-white w-full"
+              >
+                <FiPlus /> <span className="ml-[16px] font-MontserratAlt">Add Liquidity</span>
+              </button>
+            </div>
           </div>
-          <button
-            onClick={() => push(`/dex?tab=liquidity&child_tab=${Route.ADD_LIQUIDITY}`)}
-            className="flex justify-center items-center bg-[#1673b9]/50 py-[14px] px-[62px] rounded-[19px] text-[18px] text-white w-full"
-          >
-            <FiPlus /> <span className="ml-[16px] font-MontserratAlt">Add Liquidity</span>
-          </button>
-        </div>
+          <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
+        </TradeCard>
       </div>
-      <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
     </div>
   );
 };
