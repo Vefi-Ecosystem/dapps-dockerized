@@ -38,7 +38,7 @@ enum ChartPeriod {
 }
 
 export default function Swap() {
-  const { reload } = useRouter();
+  const { reload, query } = useRouter();
   const [val1, setVal1] = useState<number>(0.0);
   const [val2, setVal2] = useState<number>(0.0);
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>(ChartPeriod.DAY);
@@ -238,10 +238,23 @@ export default function Swap() {
 
   useEffect(() => {
     if (tokensListing.length >= 2) {
-      setFirstSelectedToken(tokensListing[0]);
-      setSecondSelectedToken(tokensListing[1]);
+      if (query.inputToken)
+        if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.inputToken as string).toLowerCase())) {
+          setFirstSelectedToken(
+            _.find(tokensListing, (model) => model.address.toLowerCase() === (query.inputToken as string).toLowerCase()) as ListingModel
+          );
+        } else setFirstSelectedToken(tokensListing[0]);
+      else setFirstSelectedToken(tokensListing[0]);
+
+      if (query.outputToken)
+        if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.outputToken as string).toLowerCase())) {
+          setSecondSelectedToken(
+            _.find(tokensListing, (model) => model.address.toLowerCase() === (query.outputToken as string).toLowerCase()) as ListingModel
+          );
+        } else setSecondSelectedToken(tokensListing[1]);
+      else setSecondSelectedToken(tokensListing[1]);
     }
-  }, [tokensListing]);
+  }, [query.inputToken, query.outputToken, tokensListing]);
 
   useEffect(() => {
     setVal2(outputAmount);

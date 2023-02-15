@@ -99,15 +99,17 @@ export const Web3ContextProvider = ({ children }: any) => {
 
   const switchChain = useCallback(
     async (chain: string) => {
-      setChainId(parseInt(chain));
-
       if (active) {
         try {
-          if (ethereumProvider)
+          if (ethereumProvider) {
             await ethereumProvider.request({
               method: 'wallet_switchEthereumChain',
               params: [{ chainId: chain }]
             });
+            setChainId(parseInt(chain));
+          } else {
+            setChainId(parseInt(chain));
+          }
         } catch (error: any) {
           if (error.code === 4902 || error.code === -32603) {
             const c = chains[parseInt(chain, 16) as unknown as keyof typeof chains];
@@ -128,6 +130,8 @@ export const Web3ContextProvider = ({ children }: any) => {
             });
           }
         }
+      } else {
+        setChainId(parseInt(chain));
       }
     },
     [active, ethereumProvider]

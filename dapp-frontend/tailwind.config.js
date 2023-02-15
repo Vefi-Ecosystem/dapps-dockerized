@@ -9,7 +9,8 @@ module.exports = {
     },
     fontFamily: {
       Syne: ['Syne', 'sans-serif'],
-      Poppins: ['Poppins', 'sans-serif']
+      Poppins: ['Poppins', 'sans-serif'],
+      Inter: ['Inter', 'sans-serif']
     }
   },
   plugins: [require('daisyui')]
