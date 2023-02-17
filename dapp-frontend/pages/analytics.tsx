@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import { Overview, SingleTokenView } from '../routes/analytics';
 
 enum Routes {
@@ -30,5 +31,12 @@ export default function Analytics() {
   const { query } = useRouter();
   const route = useMemo(() => (query.view as Routes) || Routes.OVERVIEW, [query.view]);
   const RenderedView = useAnalyticsRoutes(route);
-  return <RenderedView />;
+  return (
+    <>
+      <Head>
+        <title>Vefi DApps | Analytics</title>
+      </Head>
+      <RenderedView />
+    </>
+  );
 }

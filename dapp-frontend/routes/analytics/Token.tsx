@@ -1,12 +1,15 @@
 import { useMemo, useState, MouseEvent, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FiChevronRight, FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiArrowDown, FiArrowUp, FiChevronRight, FiCopy, FiExternalLink, FiSearch } from 'react-icons/fi';
 import { AddressZero } from '@ethersproject/constants';
+import { formatEthAddress } from 'eth-address';
 import millify from 'millify';
 import { TailSpin } from 'react-loader-spinner';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import Moment from 'react-moment';
 import { ResponsiveContainer } from 'recharts';
-import { map, multiply } from 'lodash';
+import { map, multiply, truncate } from 'lodash';
 import { useAPIContext } from '../../contexts/api';
 import { useSingleTokenChartData, useSingleTokenQuery } from '../../hooks/analytics';
 import SquareToggleButton from '../../components/Button/SquareToggleButton';
@@ -272,6 +275,564 @@ const PairsList = ({ token }: { token: string }) => {
   );
 };
 
+const TransactionsList = ({ token }: { token: string }) => {
+  const { query, push, asPath } = useRouter();
+  const transactionView = useMemo(() => (query.transactionView as TransactionView) || TransactionView.ALL, [query.transactionView]);
+  const { isLoading, data, error } = useSingleTokenQuery(token);
+  const [allTransactionsPage, setAllTransactionsPage] = useState<number>(1);
+  const [allMintsPage, setAllMintsPage] = useState<number>(1);
+  const [allSwapsPage, setAllSwapsPage] = useState<number>(1);
+  const [allBurnsPage, setAllBurnsPage] = useState<number>(1);
+  const [allTransactionsOrder, setAllTransactionsOrder] = useState<'asc' | 'desc'>('desc');
+  const [allMintsOrder, setAllMintsOrder] = useState<'asc' | 'desc'>('desc');
+  const [allSwapsOrder, setAllSwapsOrder] = useState<'asc' | 'desc'>('desc');
+  const [allBurnsOrder, setAllBurnsOrder] = useState<'asc' | 'desc'>('desc');
+
+  const AllTransactions = () => (
+    <div className="flex flex-col justify-center w-full items-center gap-2">
+      {error ? (
+        <span className="font-Poppins text-red-500 text-[0.87em]">{error.message}</span>
+      ) : (
+        <Table>
+          <THead>
+            <TRow>
+              <TCell className="text-center py-2">
+                <span className="capitalize">action</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <span className="capitalize">value (USD)</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <span className="capitalize">account</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">tx ID</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <div className="flex justify-center items-center gap-1">
+                  <span className="capitalize">time</span>
+                  <button
+                    className="px-1 py-1 bg-transparent text-[#6093df]"
+                    onClick={() => setAllTransactionsOrder(allTransactionsOrder === 'asc' ? 'desc' : 'asc')}
+                  >
+                    {allTransactionsOrder === 'desc' ? <FiArrowUp /> : <FiArrowDown />}
+                  </button>
+                </div>
+              </TCell>
+            </TRow>
+          </THead>
+
+          <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
+          {map(data.pairBase.concat(data.pairQuote), (item, index) => (
+            <TBody key={index}>
+              {map(
+                item.mints
+                  .slice((allTransactionsPage - 1) * 10, allTransactionsPage * 10)
+                  .sort((a: any, b: any) =>
+                    allTransactionsOrder === 'asc' ? parseInt(a.timestamp) - parseInt(b.timestamp) : parseInt(b.timestamp) - parseInt(a.timestamp)
+                  ),
+                (mint, i) => (
+                  <TRow key={i}>
+                    <TCell className="text-center py-2">
+                      <span className="bg-[#03c25b]/[.15] text-[#23e33e] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">add</span>
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      ${millify(parseFloat(mint.amountUSD))}
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(mint.amount0))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.token0.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(mint.amount1))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.token1.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                      {mint.to && formatEthAddress(mint.to, 6)}
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
+                      {mint.transaction && truncate(mint.transaction.id, { length: 9 })}
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                      <Moment date={multiply(parseInt(mint.timestamp), 1000)} fromNow ago />
+                    </TCell>
+                  </TRow>
+                )
+              )}
+              {map(
+                item.swaps
+                  .slice((allTransactionsPage - 1) * 10, allTransactionsPage * 10)
+                  .sort((a: any, b: any) =>
+                    allTransactionsOrder === 'asc' ? parseInt(a.timestamp) - parseInt(b.timestamp) : parseInt(b.timestamp) - parseInt(a.timestamp)
+                  ),
+                (swap, i) => (
+                  <TRow key={i}>
+                    <TCell className="text-center py-2">
+                      <span className="bg-[#3878d7]/[.10] text-[#3878d7] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">swap</span>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      ${millify(parseFloat(swap.amountUSD))}
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(swap.amount0In))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.token0.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(swap.amount1Out))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.token1.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                      {swap.to && formatEthAddress(swap.to, 6)}
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
+                      {swap.transaction && truncate(swap.transaction.id, { length: 9 })}
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                      <Moment date={multiply(parseInt(swap.timestamp), 1000)} fromNow ago />
+                    </TCell>
+                  </TRow>
+                )
+              )}
+              {map(
+                item.burns
+                  .slice((allTransactionsPage - 1) * 10, allTransactionsPage * 10)
+                  .sort((a: any, b: any) =>
+                    allTransactionsOrder === 'asc' ? parseInt(a.timestamp) - parseInt(b.timestamp) : parseInt(b.timestamp) - parseInt(a.timestamp)
+                  ),
+                (burn, i) => (
+                  <TRow key={i}>
+                    <TCell className="text-center py-2">
+                      <span className="bg-[#f63859]/[.1] text-[#f63859] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">remove</span>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      ${millify(parseFloat(burn.amountUSD))}
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(burn.amount0))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.token0.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(burn.amount1))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.token1.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                      {burn.to && formatEthAddress(burn.to, 6)}
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
+                      {burn.transaction && truncate(burn.transaction.id, { length: 9 })}
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                      <Moment date={multiply(parseInt(burn.timestamp), 1000)} fromNow ago />
+                    </TCell>
+                  </TRow>
+                )
+              )}
+            </TBody>
+          ))}
+        </Table>
+      )}
+
+      <Pagination currentPage={allTransactionsPage} itemsPerPage={10} onPageChange={setAllTransactionsPage} dataLength={data.txCount} />
+    </div>
+  );
+
+  const Mints = () => (
+    <div className="flex flex-col justify-center w-full items-center gap-2">
+      {error ? (
+        <span className="font-Poppins text-red-500 text-[0.87em]">{error.message}</span>
+      ) : (
+        <Table>
+          <THead>
+            <TRow>
+              <TCell className="text-center py-2">
+                <span className="capitalize">action</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <span className="capitalize">value (USD)</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <span className="capitalize">account</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">tx ID</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <div className="flex justify-center items-center gap-1">
+                  <span className="capitalize">time</span>
+                  <button
+                    className="px-1 py-1 bg-transparent text-[#6093df]"
+                    onClick={() => setAllMintsOrder(allMintsOrder === 'asc' ? 'desc' : 'asc')}
+                  >
+                    {allMintsOrder === 'desc' ? <FiArrowUp /> : <FiArrowDown />}
+                  </button>
+                </div>
+              </TCell>
+            </TRow>
+          </THead>
+
+          <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
+          <TBody>
+            {map(
+              [...data.pairBase.concat(data.pairQuote)]
+                .map((pair) => pair.mints)
+                .flat()
+                .slice((allMintsPage - 1) * 10, allMintsPage * 10),
+              (item, index) => (
+                <TRow key={index}>
+                  <TCell className="text-center py-2">
+                    <span className="bg-[#03c25b]/[.15] text-[#23e33e] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">add</span>
+                  </TCell>
+                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                    ${millify(parseFloat(item.amountUSD))}
+                  </TCell>
+                  <TCell className="text-center py-2 font-[400]">
+                    <div className="flex justify-center items-center flex-col gap-1">
+                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0))}</span>
+                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
+                    </div>
+                  </TCell>
+                  <TCell className="text-center py-2 font-[400]">
+                    <div className="flex justify-center items-center flex-col gap-1">
+                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1))}</span>
+                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
+                    </div>
+                  </TCell>
+                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                    {item.to && formatEthAddress(item.to, 6)}
+                  </TCell>
+                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
+                    {item.transaction && truncate(item.transaction.id, { length: 9 })}
+                  </TCell>
+                  <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                    <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
+                  </TCell>
+                </TRow>
+              )
+            )}
+          </TBody>
+        </Table>
+      )}
+      <Pagination
+        currentPage={allMintsPage}
+        itemsPerPage={10}
+        onPageChange={setAllMintsPage}
+        dataLength={[...data.pairBase.concat(data.pairQuote)].map((pair) => pair.mints).flat().length}
+      />
+    </div>
+  );
+
+  const Burns = () => (
+    <div className="flex flex-col justify-center w-full items-center gap-2">
+      {error ? (
+        <span className="font-Poppins text-red-500 text-[0.87em]">{error.message}</span>
+      ) : (
+        <Table>
+          <THead>
+            <TRow>
+              <TCell className="text-center py-2">
+                <span className="capitalize">action</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <span className="capitalize">value (USD)</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <span className="capitalize">account</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">tx ID</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <div className="flex justify-center items-center gap-1">
+                  <span className="capitalize">time</span>
+                  <button
+                    className="px-1 py-1 bg-transparent text-[#6093df]"
+                    onClick={() => setAllBurnsOrder(allBurnsOrder === 'asc' ? 'desc' : 'asc')}
+                  >
+                    {allBurnsOrder === 'desc' ? <FiArrowUp /> : <FiArrowDown />}
+                  </button>
+                </div>
+              </TCell>
+            </TRow>
+          </THead>
+
+          <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
+          <TBody>
+            {map(
+              [...data.pairBase.concat(data.pairQuote)]
+                .map((pair) => pair.burns)
+                .flat()
+                .slice((allBurnsPage - 1) * 10, allBurnsPage * 10),
+              (item, index) => (
+                <TRow key={index}>
+                  <TCell className="text-center py-2">
+                    <span className="bg-[#f63859]/[.1] text-[#f63859] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">remove</span>
+                  </TCell>
+                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                    ${millify(parseFloat(item.amountUSD))}
+                  </TCell>
+                  <TCell className="text-center py-2 font-[400]">
+                    <div className="flex justify-center items-center flex-col gap-1">
+                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0))}</span>
+                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
+                    </div>
+                  </TCell>
+                  <TCell className="text-center py-2 font-[400]">
+                    <div className="flex justify-center items-center flex-col gap-1">
+                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1))}</span>
+                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
+                    </div>
+                  </TCell>
+                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                    {item.to && formatEthAddress(item.to, 6)}
+                  </TCell>
+                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
+                    {item.transaction && truncate(item.transaction.id, { length: 9 })}
+                  </TCell>
+                  <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                    <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
+                  </TCell>
+                </TRow>
+              )
+            )}
+          </TBody>
+        </Table>
+      )}
+      <Pagination
+        currentPage={allBurnsPage}
+        itemsPerPage={10}
+        onPageChange={setAllBurnsPage}
+        dataLength={[...data.pairBase.concat(data.pairQuote)].map((pair) => pair.burns).flat().length}
+      />
+    </div>
+  );
+
+  const Swaps = () => (
+    <div className="flex flex-col justify-center w-full items-center gap-2">
+      {error ? (
+        <span className="font-Poppins text-red-500 text-[0.87em]">{error.message}</span>
+      ) : (
+        <Table>
+          <THead>
+            <TRow>
+              <TCell className="text-center py-2">
+                <span className="capitalize">action</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <span className="capitalize">value (USD)</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount (in)</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount (out)</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount (in)</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">token amount (out)</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <span className="capitalize">account</span>
+              </TCell>
+              <TCell className="text-center py-2">
+                <span className="capitalize">tx ID</span>
+              </TCell>
+              <TCell className="text-center py-2 hidden lg:table-cell">
+                <div className="flex justify-center items-center gap-1">
+                  <span className="capitalize">time</span>
+                  <button
+                    className="px-1 py-1 bg-transparent text-[#6093df]"
+                    onClick={() => setAllSwapsOrder(allSwapsOrder === 'asc' ? 'desc' : 'asc')}
+                  >
+                    {allSwapsOrder === 'desc' ? <FiArrowUp /> : <FiArrowDown />}
+                  </button>
+                </div>
+              </TCell>
+            </TRow>
+          </THead>
+
+          <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
+          <TBody>
+            {map(
+              [...data.pairBase.concat(data.pairQuote)]
+                .map((pair) => pair.swaps)
+                .flat()
+                .slice((allSwapsPage - 1) * 10, allSwapsPage * 10),
+              (item, index) => (
+                <TRow key={index}>
+                  <TCell className="text-center py-2">
+                    <span className="bg-[#3878d7]/[.10] text-[#3878d7] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">swap</span>
+                  </TCell>
+                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                    ${millify(parseFloat(item.amountUSD))}
+                  </TCell>
+                  <TCell className="text-center py-2 font-[400]">
+                    <div className="flex justify-center items-center flex-col gap-1">
+                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0In))}</span>
+                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
+                    </div>
+                  </TCell>
+                  <TCell className="text-center py-2 font-[400]">
+                    <div className="flex justify-center items-center flex-col gap-1">
+                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0Out))}</span>
+                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
+                    </div>
+                  </TCell>
+                  <TCell className="text-center py-2 font-[400]">
+                    <div className="flex justify-center items-center flex-col gap-1">
+                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1In))}</span>
+                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
+                    </div>
+                  </TCell>
+                  <TCell className="text-center py-2 font-[400]">
+                    <div className="flex justify-center items-center flex-col gap-1">
+                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1Out))}</span>
+                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
+                    </div>
+                  </TCell>
+                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                    {item.to && formatEthAddress(item.to, 6)}
+                  </TCell>
+                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
+                    {item.transaction && truncate(item.transaction.id, { length: 9 })}
+                  </TCell>
+                  <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                    <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
+                  </TCell>
+                </TRow>
+              )
+            )}
+          </TBody>
+        </Table>
+      )}
+      <Pagination
+        currentPage={allSwapsPage}
+        itemsPerPage={10}
+        onPageChange={setAllSwapsPage}
+        dataLength={[...data.pairBase.concat(data.pairQuote)].map((pair) => pair.burns).flat().length}
+      />
+    </div>
+  );
+
+  const RenderedChild = () => {
+    switch (transactionView) {
+      case TransactionView.ALL:
+        return <AllTransactions />;
+      case TransactionView.ADDS:
+        return <Mints />;
+      case TransactionView.REMOVES:
+        return <Burns />;
+      case TransactionView.SWAPS:
+        return <Swaps />;
+      default:
+        return <AllTransactions />;
+    }
+  };
+
+  return (
+    <>
+      {data && (
+        <div className="w-full px-3 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
+          <div className="w-full flex justify-between items-center px-2 py-2 gap-2">
+            <div className="flex justify-start items-center gap-0 w-auto bg-[#fff]/[.07] border border-[#555555] rounded-[6px] px-0 py-0">
+              <FilterBtn
+                isActive={transactionView === TransactionView.ALL}
+                onClick={() =>
+                  push(
+                    `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
+                      TransactionView.ALL
+                    }`
+                  )
+                }
+              >
+                <span>View All</span>
+              </FilterBtn>
+              <FilterBtn
+                isActive={transactionView === TransactionView.SWAPS}
+                onClick={() =>
+                  push(
+                    `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
+                      TransactionView.SWAPS
+                    }`
+                  )
+                }
+              >
+                <span>Swaps</span>
+              </FilterBtn>
+              <FilterBtn
+                isActive={transactionView === TransactionView.ADDS}
+                onClick={() =>
+                  push(
+                    `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
+                      TransactionView.ADDS
+                    }`
+                  )
+                }
+              >
+                <span>Adds</span>
+              </FilterBtn>
+              <FilterBtn
+                isActive={transactionView === TransactionView.REMOVES}
+                onClick={() =>
+                  push(
+                    `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
+                      TransactionView.REMOVES
+                    }`
+                  )
+                }
+              >
+                <span>Removes</span>
+              </FilterBtn>
+            </div>
+            <div className="bg-[#fff]/[.13] rounded-[8px] py-1 flex justify-start items-center gap-1 border border-[#5d5d5d] px-2">
+              <FiSearch className="text-[1em] text-[#fff]" />
+              <input
+                type="text"
+                // value={searchValue}
+                // onChange={(e) => setSearchValue(e.target.value)}
+                className="bg-transparent outline-0 font-Syne flex-1 text-[#fff]"
+                placeholder="Search"
+              />
+            </div>
+          </div>
+          <RenderedChild />
+        </div>
+      )}
+    </>
+  );
+};
+
 const useTokenViewRoutes = (tab: Tabs, token: string, period: number = 0) => {
   // eslint-disable-next-line react/display-name
   const [component, setComponent] = useState(() => () => OverviewChart({ period, token }));
@@ -284,6 +845,9 @@ const useTokenViewRoutes = (tab: Tabs, token: string, period: number = 0) => {
           break;
         case Tabs.PAIRS:
           setComponent(() => () => PairsList({ token }));
+          break;
+        case Tabs.TXNS:
+          setComponent(() => () => TransactionsList({ token }));
           break;
         default:
           // eslint-disable-next-line react/display-name
@@ -301,6 +865,8 @@ export default function SingleTokenView() {
   const { tokensListingAsDictionary } = useAPIContext();
   const [chartPeriod, setChartPeriod] = useState(ChartPeriod.H24);
   const { data, isLoading } = useSingleTokenQuery(query.token as string);
+  const { chainId } = useWeb3Context();
+  const chain = useMemo(() => chains[chainId as unknown as keyof typeof chains], [chainId]);
   const RenderedChild = useTokenViewRoutes(tab, query.token as string, chartPeriod);
   return (
     <div className="flex container mx-auto flex-col justify-center items-start gap-8 px-8 lg:px-10">
@@ -328,8 +894,12 @@ export default function SingleTokenView() {
                 <div className="flex justify-center items-center gap-2">
                   <span className="capitalize font-Syne text-[#fff] font-[700] text-[0.6em] lg:text-[1.2em]">{data.name}</span>
                   <span className="uppercase font-Syne text-[#868686] font-[700] text-[0.58em] lg:text-[1.12em]">({data.symbol})</span>
-                  <FiExternalLink className="text-[#a6b2ec] text-[0.58em] lg:text-[1.12em]" />
-                  <FiCopy className="text-[#a6b2ec] text-[0.58em] lg:text-[1.12em]" />
+                  <a href={chain.explorer + `/token/${query.token as string}`} target="_blank" rel="noreferrer">
+                    <FiExternalLink className="text-[#a6b2ec] text-[0.58em] lg:text-[1.12em]" />
+                  </a>
+                  <CopyToClipboard text={query.token as string}>
+                    <FiCopy className="text-[#a6b2ec] text-[0.58em] lg:text-[1.12em] cursor-pointer" />
+                  </CopyToClipboard>
                 </div>
                 <span className="capitalize font-Poppins text-[#fff] font-[400] text-[0.58em] lg:text-[1.12em]">
                   ${millify(parseFloat(data.derivedUSD))}

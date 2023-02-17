@@ -802,6 +802,7 @@ const TransactionsList = () => {
         return <AllTransactions />;
     }
   };
+
   return (
     <div className="w-full px-3 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
       <div className="w-full flex justify-between items-center px-2 py-2 gap-2">

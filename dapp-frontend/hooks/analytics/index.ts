@@ -80,6 +80,77 @@ const SINGLE_TOKEN_QUERY = gql`
         id
         volumeUSD
         reserveETH
+        mints {
+          id
+          timestamp
+          to
+          amountUSD
+          amount0
+          amount1
+          transaction {
+            id
+          }
+          pair {
+            token0 {
+              id
+              name
+              symbol
+            }
+            token1 {
+              id
+              name
+              symbol
+            }
+          }
+        }
+        burns {
+          id
+          timestamp
+          to
+          amountUSD
+          amount0
+          amount1
+          transaction {
+            id
+          }
+          pair {
+            token0 {
+              id
+              name
+              symbol
+            }
+            token1 {
+              id
+              name
+              symbol
+            }
+          }
+        }
+        swaps {
+          id
+          to
+          timestamp
+          amountUSD
+          amount0In
+          amount0Out
+          amount1In
+          amount1Out
+          transaction {
+            id
+          }
+          pair {
+            token0 {
+              id
+              name
+              symbol
+            }
+            token1 {
+              id
+              name
+              symbol
+            }
+          }
+        }
         token0 {
           id
           name
@@ -97,6 +168,77 @@ const SINGLE_TOKEN_QUERY = gql`
         id
         volumeUSD
         reserveETH
+        mints {
+          id
+          timestamp
+          to
+          amountUSD
+          amount0
+          amount1
+          transaction {
+            id
+          }
+          pair {
+            token0 {
+              id
+              name
+              symbol
+            }
+            token1 {
+              id
+              name
+              symbol
+            }
+          }
+        }
+        burns {
+          id
+          timestamp
+          to
+          amountUSD
+          amount0
+          amount1
+          transaction {
+            id
+          }
+          pair {
+            token0 {
+              id
+              name
+              symbol
+            }
+            token1 {
+              id
+              name
+              symbol
+            }
+          }
+        }
+        swaps {
+          id
+          to
+          timestamp
+          amountUSD
+          amount0In
+          amount0Out
+          amount1In
+          amount1Out
+          transaction {
+            id
+          }
+          pair {
+            token0 {
+              id
+              name
+              symbol
+            }
+            token1 {
+              id
+              name
+              symbol
+            }
+          }
+        }
         token0 {
           id
           name
