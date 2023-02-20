@@ -66,6 +66,113 @@ const TOKENS_QUERY = gql`
   }
 `;
 
+const SINGLE_PAIR_QUERY = gql`
+  query GetSinglePair($id: ID!) {
+    pair(id: $id) {
+      id
+      token0Price
+      token1Price
+      volumeToken0
+      volumeToken1
+      volumeUSD
+      txCount
+      token0 {
+        id
+        name
+        symbol
+      }
+      token1 {
+        id
+        name
+        symbol
+      }
+      mints {
+        id
+        timestamp
+        to
+        amountUSD
+        amount0
+        amount1
+        transaction {
+          id
+        }
+        pair {
+          token0 {
+            id
+            name
+            symbol
+          }
+          token1 {
+            id
+            name
+            symbol
+          }
+        }
+      }
+      burns {
+        id
+        timestamp
+        to
+        amountUSD
+        amount0
+        amount1
+        transaction {
+          id
+        }
+        pair {
+          token0 {
+            id
+            name
+            symbol
+          }
+          token1 {
+            id
+            name
+            symbol
+          }
+        }
+      }
+      swaps {
+        id
+        to
+        timestamp
+        amountUSD
+        amount0In
+        amount0Out
+        amount1In
+        amount1Out
+        transaction {
+          id
+        }
+        pair {
+          token0 {
+            id
+            name
+            symbol
+          }
+          token1 {
+            id
+            name
+            symbol
+          }
+        }
+      }
+      token0 {
+        id
+        name
+        symbol
+        tradeVolume
+      }
+      token1 {
+        id
+        name
+        symbol
+        tradeVolume
+      }
+    }
+  }
+`;
+
 const SINGLE_TOKEN_QUERY = gql`
   query GetSingleToken($id: ID!) {
     token(id: $id) {
@@ -268,6 +375,18 @@ const SINGLE_TOKEN_CHART_DATA_QUERY = gql`
   }
 `;
 
+const SINGLE_PAIR_CHART_DATA_QUERY = gql`
+  query GetPairDayData($date: Int!, $id: String!) {
+    pairDayDatas(where: { date_gte: $date, pairAddress: $id }) {
+      dailyTxns
+      date
+      dailyVolumeUSD
+      dailyVolumeToken0
+      dailyVolumeToken1
+    }
+  }
+`;
+
 const TOP_TOKENS_QUERY = gql`
   query GetTopTokens($skip: Int!, $orderDir: String!) {
     tokens(orderBy: tradeVolumeUSD, orderDirection: $orderDir, first: 10, skip: $skip) {
@@ -290,6 +409,7 @@ const TOP_TOKENS_QUERY = gql`
 const TOP_PAIRS_QUERY = gql`
   query GetTopPairs($skip: Int!) {
     pairs(orderBy: volumeUSD, orderDirection: desc, first: 10, skip: $skip) {
+      id
       volumeUSD
       reserveETH
       token0 {
@@ -694,6 +814,32 @@ export const useSingleTokenChartData = (gap: number, token: string) => {
   return { isLoading, data, error };
 };
 
+export const useSinglePairChartData = (gap: number, id: string) => {
+  const { dexGQLClient } = useGQLContext();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [data, setData] = useState<Array<any>>([]);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setIsLoading(true);
+        const req = await dexGQLClient.request(SINGLE_PAIR_CHART_DATA_QUERY, {
+          date: Math.floor(Date.now() / 1000) - gap,
+          id: id.toLowerCase()
+        });
+        setData(req.pairDayDatas);
+        setIsLoading(false);
+      } catch (error: any) {
+        setError(new Error('Could not fetch'));
+        setIsLoading(false);
+      }
+    })();
+  }, [dexGQLClient, gap, id]);
+
+  return { isLoading, data, error };
+};
+
 export const useAllTransactions = (page: number, order: 'desc' | 'asc' = 'desc') => {
   const { dexGQLClient } = useGQLContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -800,6 +946,38 @@ export const useSingleTokenQuery = (id: string) => {
             tradeVolumeUSD: parseFloat(req.token.tradeVolumeUSD),
             derivedUSD: parseFloat(req.token.derivedUSD),
             totalLiquidity: parseFloat(req.token.totalLiquidity)
+          });
+          setIsLoading(false);
+        } catch (error: any) {
+          setError(new Error('Could not fetch'));
+          setIsLoading(false);
+        }
+      })();
+    }
+  }, [dexGQLClient, id]);
+  return { isLoading, data, error };
+};
+
+export const useSinglePairQuery = (id: string) => {
+  const { dexGQLClient } = useGQLContext();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [data, setData] = useState<any>(null);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    if (id) {
+      (async () => {
+        try {
+          setIsLoading(true);
+          const req = await dexGQLClient.request(SINGLE_PAIR_QUERY, { id: id.toLowerCase() });
+          setData({
+            ...req.pair,
+            txCount: parseInt(req.pair.txCount),
+            token0Price: parseFloat(req.pair.token0Price),
+            token1Price: parseFloat(req.pair.token1Price),
+            volumeToken0: parseFloat(req.pair.volumeToken0),
+            volumeToken1: parseFloat(req.pair.volumeToken1),
+            volumeUSD: parseFloat(req.pair.volumeUSD)
           });
           setIsLoading(false);
         } catch (error: any) {

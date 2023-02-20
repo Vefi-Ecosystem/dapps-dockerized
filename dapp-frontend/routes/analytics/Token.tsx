@@ -180,95 +180,99 @@ const PairsList = ({ token }: { token: string }) => {
   return (
     <>
       {data && (
-        <div className="w-full px-3 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
-          <Table>
-            <THead>
-              <TRow>
-                <TCell className="text-left py-2">
-                  <span className="capitalize">pair</span>
-                </TCell>
-                <TCell className="text-center py-2">
-                  <span className="capitalize">volume</span>
-                </TCell>
-                <TCell className="text-center py-2 hidden lg:table-cell">
-                  <span className="capitalize">reserve {chain.symbol}</span>
-                </TCell>
-                <TCell className="text-center py-2 hidden lg:table-cell">
-                  <span className="capitalize">token trade volume</span>
-                </TCell>
-                <TCell className="text-center py-2 hidden lg:table-cell">
-                  <span className="capitalize">token trade volume</span>
-                </TCell>
-                <TCell className="text-center py-2">
-                  <span className="capitalize">action</span>
-                </TCell>
-              </TRow>
-            </THead>
-            <TBody>
-              <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
-              {error ? (
-                <span className="font-Poppins text-red-500 text-[0.87em]">{error.message}</span>
-              ) : (
-                <>
-                  {map(data.pairBase.concat(data.pairQuote).slice((page - 1) * 10, page * 10), (item, index) => (
-                    <TRow key={index}>
-                      <TCell className="text-center py-4">
-                        <div className="flex justify-start items-center gap-2 w-full">
-                          <div className="flex justify-center items-center gap-1">
-                            <div className="avatar">
-                              <div className="w-6 rounded-full border border-[#353535]">
-                                <img
-                                  src={
-                                    tokensListingAsDictionary[item.token0.id]
-                                      ? tokensListingAsDictionary[item.token0.id].logoURI
-                                      : '/images/placeholder_image.svg'
-                                  }
-                                  alt={item.token0.symbol}
-                                />
+        <div className="w-full px-0 py-4 border border-[#5d5d5d] rounded-[8px] overflow-auto hidden-scrollbar">
+          <div className="w-full px-0 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
+            <Table>
+              <THead>
+                <TRow>
+                  <TCell className="text-left px-2 py-2">
+                    <span className="capitalize">pair</span>
+                  </TCell>
+                  <TCell className="text-center py-2">
+                    <span className="capitalize">volume</span>
+                  </TCell>
+                  <TCell className="text-center py-2 hidden lg:table-cell">
+                    <span className="capitalize">reserve {chain.symbol}</span>
+                  </TCell>
+                  <TCell className="text-center py-2 hidden lg:table-cell">
+                    <span className="capitalize">token trade volume</span>
+                  </TCell>
+                  <TCell className="text-center py-2 hidden lg:table-cell">
+                    <span className="capitalize">token trade volume</span>
+                  </TCell>
+                  <TCell className="text-center py-2">
+                    <span className="capitalize">action</span>
+                  </TCell>
+                </TRow>
+              </THead>
+              <TBody>
+                <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
+                {error ? (
+                  <span className="font-Poppins text-red-500 text-[0.87em]">{error.message}</span>
+                ) : (
+                  <>
+                    {map(data.pairBase.concat(data.pairQuote).slice((page - 1) * 10, page * 10), (item, index) => (
+                      <TRow key={index}>
+                        <TCell className="text-center py-4 px-2">
+                          <div className="flex justify-start items-center gap-2 w-full">
+                            <div className="flex justify-center items-center gap-1">
+                              <div className="avatar">
+                                <div className="w-6 rounded-full border border-[#353535]">
+                                  <img
+                                    src={
+                                      tokensListingAsDictionary[item.token0.id]
+                                        ? tokensListingAsDictionary[item.token0.id].logoURI
+                                        : '/images/placeholder_image.svg'
+                                    }
+                                    alt={item.token0.symbol}
+                                  />
+                                </div>
+                              </div>
+                              <div className="avatar">
+                                <div className="w-6 rounded-full border border-[#353535]">
+                                  <img
+                                    src={
+                                      tokensListingAsDictionary[item.token1.id]
+                                        ? tokensListingAsDictionary[item.token1.id].logoURI
+                                        : '/images/placeholder_image.svg'
+                                    }
+                                    alt={item.token1.symbol}
+                                  />
+                                </div>
                               </div>
                             </div>
-                            <div className="avatar">
-                              <div className="w-6 rounded-full border border-[#353535]">
-                                <img
-                                  src={
-                                    tokensListingAsDictionary[item.token1.id]
-                                      ? tokensListingAsDictionary[item.token1.id].logoURI
-                                      : '/images/placeholder_image.svg'
-                                  }
-                                  alt={item.token1.symbol}
-                                />
-                              </div>
-                            </div>
+                            <span className="font-Syne text-[#fff] text-[700] text-[0.5em] lg:text-[0.85em] uppercase">
+                              {item.token0.symbol}/{item.token1.symbol}
+                            </span>
                           </div>
-                          <span className="font-Syne text-[#fff] text-[700] text-[0.5em] lg:text-[0.85em] uppercase">
-                            {item.token0.symbol}/{item.token1.symbol}
-                          </span>
-                        </div>
-                      </TCell>
-                      <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
-                        ${millify(parseFloat(item.volumeUSD))}
-                      </TCell>
-                      <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                        {millify(parseFloat(item.reserveETH))}
-                      </TCell>
-                      <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                        {millify(parseFloat(item.token0.tradeVolume))} {item.token0.symbol}
-                      </TCell>
-                      <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                        {millify(parseFloat(item.token1.tradeVolume))} {item.token1.symbol}
-                      </TCell>
-                      <TCell className="text-center">
-                        <Link href={`/dex?tab=swap&inputToken=${item.token0.id}&outputToken=${item.token1.id}`}>
-                          <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">trade</span>
-                        </Link>
-                      </TCell>
-                    </TRow>
-                  ))}
-                </>
-              )}
-            </TBody>
-          </Table>
-          <Pagination currentPage={page} itemsPerPage={10} onPageChange={setPage} dataLength={data.pairBase.concat(data.pairQuote).length} />
+                        </TCell>
+                        <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                          ${millify(parseFloat(item.volumeUSD))}
+                        </TCell>
+                        <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                          {millify(parseFloat(item.reserveETH))}
+                        </TCell>
+                        <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                          {millify(parseFloat(item.token0.tradeVolume))} {item.token0.symbol}
+                        </TCell>
+                        <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                          {millify(parseFloat(item.token1.tradeVolume))} {item.token1.symbol}
+                        </TCell>
+                        <TCell className="text-center">
+                          <Link href={`/dex?tab=swap&inputToken=${item.token0.id}&outputToken=${item.token1.id}`}>
+                            <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">trade</span>
+                          </Link>
+                        </TCell>
+                      </TRow>
+                    ))}
+                  </>
+                )}
+              </TBody>
+            </Table>
+            <div className="px-2 py-2 w-full">
+              <Pagination currentPage={page} itemsPerPage={10} onPageChange={setPage} dataLength={data.pairBase.concat(data.pairQuote).length} />
+            </div>
+          </div>
         </div>
       )}
     </>
@@ -450,7 +454,9 @@ const TransactionsList = ({ token }: { token: string }) => {
         </Table>
       )}
 
-      <Pagination currentPage={allTransactionsPage} itemsPerPage={10} onPageChange={setAllTransactionsPage} dataLength={data.txCount} />
+      <div className="px-2 py-2 w-full">
+        <Pagination currentPage={allTransactionsPage} itemsPerPage={10} onPageChange={setAllTransactionsPage} dataLength={data.txCount} />
+      </div>
     </div>
   );
 
@@ -536,12 +542,14 @@ const TransactionsList = ({ token }: { token: string }) => {
           </TBody>
         </Table>
       )}
-      <Pagination
-        currentPage={allMintsPage}
-        itemsPerPage={10}
-        onPageChange={setAllMintsPage}
-        dataLength={[...data.pairBase.concat(data.pairQuote)].map((pair) => pair.mints).flat().length}
-      />
+      <div className="px-2 py-2 w-full">
+        <Pagination
+          currentPage={allMintsPage}
+          itemsPerPage={10}
+          onPageChange={setAllMintsPage}
+          dataLength={[...data.pairBase.concat(data.pairQuote)].map((pair) => pair.mints).flat().length}
+        />
+      </div>
     </div>
   );
 
@@ -627,12 +635,14 @@ const TransactionsList = ({ token }: { token: string }) => {
           </TBody>
         </Table>
       )}
-      <Pagination
-        currentPage={allBurnsPage}
-        itemsPerPage={10}
-        onPageChange={setAllBurnsPage}
-        dataLength={[...data.pairBase.concat(data.pairQuote)].map((pair) => pair.burns).flat().length}
-      />
+      <div className="px-2 py-2 w-full">
+        <Pagination
+          currentPage={allBurnsPage}
+          itemsPerPage={10}
+          onPageChange={setAllBurnsPage}
+          dataLength={[...data.pairBase.concat(data.pairQuote)].map((pair) => pair.burns).flat().length}
+        />
+      </div>
     </div>
   );
 
@@ -736,12 +746,14 @@ const TransactionsList = ({ token }: { token: string }) => {
           </TBody>
         </Table>
       )}
-      <Pagination
-        currentPage={allSwapsPage}
-        itemsPerPage={10}
-        onPageChange={setAllSwapsPage}
-        dataLength={[...data.pairBase.concat(data.pairQuote)].map((pair) => pair.burns).flat().length}
-      />
+      <div className="px-2 py-2 w-full">
+        <Pagination
+          currentPage={allSwapsPage}
+          itemsPerPage={10}
+          onPageChange={setAllSwapsPage}
+          dataLength={[...data.pairBase.concat(data.pairQuote)].map((pair) => pair.burns).flat().length}
+        />
+      </div>
     </div>
   );
 
@@ -763,70 +775,72 @@ const TransactionsList = ({ token }: { token: string }) => {
   return (
     <>
       {data && (
-        <div className="w-full px-3 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
-          <div className="w-full flex justify-between items-center px-2 py-2 gap-2">
-            <div className="flex justify-start items-center gap-0 w-auto bg-[#fff]/[.07] border border-[#555555] rounded-[6px] px-0 py-0">
-              <FilterBtn
-                isActive={transactionView === TransactionView.ALL}
-                onClick={() =>
-                  push(
-                    `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
-                      TransactionView.ALL
-                    }`
-                  )
-                }
-              >
-                <span>View All</span>
-              </FilterBtn>
-              <FilterBtn
-                isActive={transactionView === TransactionView.SWAPS}
-                onClick={() =>
-                  push(
-                    `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
-                      TransactionView.SWAPS
-                    }`
-                  )
-                }
-              >
-                <span>Swaps</span>
-              </FilterBtn>
-              <FilterBtn
-                isActive={transactionView === TransactionView.ADDS}
-                onClick={() =>
-                  push(
-                    `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
-                      TransactionView.ADDS
-                    }`
-                  )
-                }
-              >
-                <span>Adds</span>
-              </FilterBtn>
-              <FilterBtn
-                isActive={transactionView === TransactionView.REMOVES}
-                onClick={() =>
-                  push(
-                    `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
-                      TransactionView.REMOVES
-                    }`
-                  )
-                }
-              >
-                <span>Removes</span>
-              </FilterBtn>
+        <div className="w-full px-0 py-4 border border-[#5d5d5d] rounded-[8px] overflow-auto hidden-scrollbar">
+          <div className="w-full px-0 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
+            <div className="w-full flex justify-between items-center px-2 py-2 gap-2">
+              <div className="flex justify-start items-center gap-0 w-auto bg-[#fff]/[.07] border border-[#555555] rounded-[6px] px-0 py-0">
+                <FilterBtn
+                  isActive={transactionView === TransactionView.ALL}
+                  onClick={() =>
+                    push(
+                      `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
+                        TransactionView.ALL
+                      }`
+                    )
+                  }
+                >
+                  <span>View All</span>
+                </FilterBtn>
+                <FilterBtn
+                  isActive={transactionView === TransactionView.SWAPS}
+                  onClick={() =>
+                    push(
+                      `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
+                        TransactionView.SWAPS
+                      }`
+                    )
+                  }
+                >
+                  <span>Swaps</span>
+                </FilterBtn>
+                <FilterBtn
+                  isActive={transactionView === TransactionView.ADDS}
+                  onClick={() =>
+                    push(
+                      `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
+                        TransactionView.ADDS
+                      }`
+                    )
+                  }
+                >
+                  <span>Adds</span>
+                </FilterBtn>
+                <FilterBtn
+                  isActive={transactionView === TransactionView.REMOVES}
+                  onClick={() =>
+                    push(
+                      `${new URL(asPath, window.location.href).pathname}?view=singleToken&token=${token}&tab=${Tabs.TXNS}&transactionView=${
+                        TransactionView.REMOVES
+                      }`
+                    )
+                  }
+                >
+                  <span>Removes</span>
+                </FilterBtn>
+              </div>
+              <div className="bg-[#fff]/[.13] rounded-[8px] py-1 flex justify-start items-center gap-1 border border-[#5d5d5d] px-2">
+                <FiSearch className="text-[1em] text-[#fff]" />
+                <input
+                  type="text"
+                  // value={searchValue}
+                  // onChange={(e) => setSearchValue(e.target.value)}
+                  className="bg-transparent outline-0 font-Syne flex-1 text-[#fff]"
+                  placeholder="Search"
+                />
+              </div>
             </div>
-            <div className="bg-[#fff]/[.13] rounded-[8px] py-1 flex justify-start items-center gap-1 border border-[#5d5d5d] px-2">
-              <FiSearch className="text-[1em] text-[#fff]" />
-              <input
-                type="text"
-                // value={searchValue}
-                // onChange={(e) => setSearchValue(e.target.value)}
-                className="bg-transparent outline-0 font-Syne flex-1 text-[#fff]"
-                placeholder="Search"
-              />
-            </div>
+            <RenderedChild />
           </div>
-          <RenderedChild />
         </div>
       )}
     </>
