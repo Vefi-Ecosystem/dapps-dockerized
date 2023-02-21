@@ -10,7 +10,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Web3Provider } from '@ethersproject/providers';
 import { parseUnits } from '@ethersproject/units';
-import _ from 'lodash';
+import _, { multiply } from 'lodash';
 import assert from 'assert';
 import { WETH, Fetcher, Trade, TokenAmount, Router, Percent, ETHER, CurrencyAmount } from 'quasar-sdk-core';
 import JSBI from 'jsbi';
@@ -22,7 +22,7 @@ import TokensListModal from '../../components/Dex/TokensListModal';
 import { ListingModel } from '../../api/models/dex';
 import { useAPIContext } from '../../contexts/api';
 import { useWeb3Context } from '../../contexts/web3';
-import { computePair, getToken1Price, fetchTokenBalanceForConnectedWallet, getInputAmount, getOutputAmount } from '../../hooks/dex';
+import { computePair, fetchTokenBalanceForConnectedWallet, getInputAmount, getOutputAmount } from '../../hooks/dex';
 import routers from '../../assets/routers.json';
 import chains from '../../assets/chains.json';
 import { useDEXSettingsContext } from '../../contexts/dex/settings';
@@ -30,18 +30,10 @@ import successFx from '../../assets/sounds/success_sound.mp3';
 import errorFx from '../../assets/sounds/error_sound.mp3';
 import TradeCard from '../../components/Dex/Card';
 
-enum ChartPeriod {
-  DAY,
-  WEEK,
-  MONTH,
-  YEAR
-}
-
 export default function Swap() {
   const { reload, query } = useRouter();
   const [val1, setVal1] = useState<number>(0.0);
   const [val2, setVal2] = useState<number>(0.0);
-  const [chartPeriod, setChartPeriod] = useState<ChartPeriod>(ChartPeriod.DAY);
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
   const [isFirstTokensListModalVisible, setIsFirstTokensListModalVisible] = useState<boolean>(false);
   const [isSecondTokensListModalVisible, setIsSecondTokensListModalVisible] = useState<boolean>(false);
@@ -54,7 +46,6 @@ export default function Swap() {
   const [secondSelectedToken, setSecondSelectedToken] = useState<ListingModel>({} as ListingModel);
 
   const { pair, error: pairError } = computePair(firstSelectedToken, secondSelectedToken, chainId || 97);
-  const token1Price = getToken1Price(firstSelectedToken, secondSelectedToken, chainId || 97);
 
   const balance1 = fetchTokenBalanceForConnectedWallet(firstSelectedToken.address, [isSwapLoading]);
   const balance2 = fetchTokenBalanceForConnectedWallet(secondSelectedToken.address, [isSwapLoading]);
@@ -310,6 +301,32 @@ export default function Swap() {
                       className="p-3 bg-transparent text-white w-1/2 border-0 outline-0 appearance-none font-[600] text-[1em] font-Poppins text-right"
                       onChange={(e) => setVal1(e.target.valueAsNumber || 0.0)}
                     />
+                  </div>
+                  <div className="flex justify-end items-center w-full gap-1">
+                    <button
+                      onClick={() => setVal1(multiply(1 / 4, parseFloat(balance1)))}
+                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                    >
+                      25%
+                    </button>
+                    <button
+                      onClick={() => setVal1(multiply(2 / 4, parseFloat(balance1)))}
+                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                    >
+                      50%
+                    </button>
+                    <button
+                      onClick={() => setVal1(multiply(3 / 4, parseFloat(balance1)))}
+                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                    >
+                      75%
+                    </button>
+                    <button
+                      onClick={() => setVal1(parseFloat(balance1))}
+                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                    >
+                      100%
+                    </button>
                   </div>
                 </div>
                 <div className="flex justify-center items-center">

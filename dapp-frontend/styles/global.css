@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer base {
+  .collapse-arrow {
+    @apply text-[#a6b2ec];
+  }
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
     appearance: none;

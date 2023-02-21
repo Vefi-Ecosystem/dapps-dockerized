@@ -1,60 +1,108 @@
-import React, { useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
-import { obtainLPDetailsFromPair } from '../../../hooks/dex';
-import { useWeb3Context } from '../../../contexts/web3';
-import { useAPIContext } from '../../../contexts/api';
+import React from 'react';
+import millify from 'millify';
+import { FiPlus, FiTrash2 } from 'react-icons/fi';
 import RemoveLiquidityModal from '../RemoveLiquidityModal';
+import { useAPIContext } from '../../../contexts/api';
 
 export default function UserLPItem({ pair }: any) {
-  const { chainId, account } = useWeb3Context();
   const { tokensListingAsDictionary } = useAPIContext();
-  const lpDetails = obtainLPDetailsFromPair(pair, chainId || 97, account as string);
-  const [removeLiquidityModalVisible, setRemoveLiquidityModalVisible] = useState<boolean>(false);
-
   return (
-    <li className="w-full">
-      <div className="flex justify-evenly items-center gap-2 w-full">
-        <div className="avatar-group -space-x-6">
-          <div className="avatar">
-            <div className="w-4 md:w-8">
-              <img
-                src={
-                  tokensListingAsDictionary[lpDetails.token0] ? tokensListingAsDictionary[lpDetails.token0].logoURI : '/images/placeholder_image.svg'
-                }
-                alt={lpDetails.token0}
-              />
+    <div tabIndex={0} className="w-full collapse collapse-arrow bg-[#fff]/[.11] rounded-[15px]">
+      <input type="checkbox" className="peer" />
+      <div className="collapse-title flex flex-col justify-center items-start font-Syne">
+        <div className="flex justify-start items-center gap-3">
+          <div className="flex justify-center items-center gap-1">
+            <div className="avatar">
+              <div className="w-7 rounded-full">
+                <img
+                  src={
+                    tokensListingAsDictionary[pair.pair.token0.id]
+                      ? tokensListingAsDictionary[pair.pair.token0.id].logoURI
+                      : '/images/placeholder_image.svg'
+                  }
+                  alt={pair.pair.token0.symbol}
+                />
+              </div>
+            </div>
+            <div className="avatar">
+              <div className="w-7 rounded-full">
+                <img
+                  src={
+                    tokensListingAsDictionary[pair.pair.token1.id]
+                      ? tokensListingAsDictionary[pair.pair.token1.id].logoURI
+                      : '/images/placeholder_image.svg'
+                  }
+                  alt={pair.pair.token1.symbol}
+                />
+              </div>
             </div>
           </div>
-          <div className="avatar">
-            <div className="w-4 md:w-8">
-              <img
-                src={
-                  tokensListingAsDictionary[lpDetails.token1] ? tokensListingAsDictionary[lpDetails.token1].logoURI : '/images/placeholder_image.svg'
-                }
-                alt={lpDetails.token1}
-              />
+          <span className="font-[700] uppercase text-[0.85em] text-[#fff]">
+            {pair.pair.token0.symbol}/{pair.pair.token1.symbol}
+          </span>
+        </div>
+        <span className="text-[#a2b6ec] text-[0.85em] font-[700]">{millify(pair.balance, { precision: 4 })}</span>
+      </div>
+      <div className="collapse-content px-3">
+        <div className="flex flex-col justify-between items-center gap-3 w-full">
+          <div className="border-y border-[#5d5d5d] py-5 flex flex-col justify-center items-center gap-2 w-full">
+            <div className="flex justify-between items-center gap-2 w-full">
+              <div className="flex justify-center items-center gap-1">
+                <div className="avatar">
+                  <div className="w-5 rounded-full">
+                    <img
+                      src={
+                        tokensListingAsDictionary[pair.pair.token0.id]
+                          ? tokensListingAsDictionary[pair.pair.token0.id].logoURI
+                          : '/images/placeholder_image.svg'
+                      }
+                      alt={pair.pair.token0.symbol}
+                    />
+                  </div>
+                </div>
+                <span className="font-[500] capitalize text-[0.85em] text-[#fff]">Pooled {pair.pair.token0.symbol}</span>
+              </div>
+              <span className="text-[#a2b6ec] text-[0.85em] font-Poppins font-[700]">
+                {millify(parseFloat(pair.pair.reserve0), { precision: 4 })}
+              </span>
             </div>
+            <div className="flex justify-between items-center gap-2 w-full">
+              <div className="flex justify-center items-center gap-1">
+                <div className="avatar">
+                  <div className="w-5 rounded-full">
+                    <img
+                      src={
+                        tokensListingAsDictionary[pair.pair.token1.id]
+                          ? tokensListingAsDictionary[pair.pair.token1.id].logoURI
+                          : '/images/placeholder_image.svg'
+                      }
+                      alt={pair.pair.token1.symbol}
+                    />
+                  </div>
+                </div>
+                <span className="font-[500] capitalize text-[0.85em] text-[#fff]">Pooled {pair.pair.token1.symbol}</span>
+              </div>
+              <span className="text-[#a2b6ec] text-[0.85em] font-Poppins font-[700]">
+                {millify(parseFloat(pair.pair.reserve1), { precision: 4 })}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col justify-center items-center w-full gap-5">
+            <button
+              onClick={() => {}}
+              className="flex justify-center items-center bg-[#e32345] py-4 px-2 rounded-[8px] gap-2 text-[0.89em] text-white w-full"
+            >
+              <FiTrash2 /> <span className="font-Syne capitalize">remove liquidity</span>
+            </button>
+            <button
+              onClick={() => {}}
+              className="border-[#a6b2ec] border rounded-[8px] w-full py-[13px] px-[17px] text-[#a6b2ec] text-[0.89em] font-[600] flex justify-center items-center gap-2"
+            >
+              <FiPlus /> <span className="font-Syne capitalize">add liquidity</span>
+            </button>
           </div>
         </div>
-        <span className="text-white font-poppins md:font-[16px] font-[12px]">
-          {lpDetails.token0Symbol}/{lpDetails.token1Symbol}
-        </span>
-        <span className="text-white font-poppins md:font-[16px] font-[12px]">{lpDetails.accountBalance.toPrecision(2)}</span>
-        <button onClick={() => setRemoveLiquidityModalVisible(true)} className="btn btn-square">
-          {' '}
-          <FiTrash2 className="text-white" />{' '}
-        </button>
-        <RemoveLiquidityModal
-          token1Symbol={lpDetails.token0Symbol}
-          token2Symbol={lpDetails.token1Symbol}
-          token1Address={lpDetails.token0}
-          token2Address={lpDetails.token1}
-          liquidity={lpDetails.accountBalance}
-          pair={pair}
-          isVisible={removeLiquidityModalVisible}
-          onClose={() => setRemoveLiquidityModalVisible(false)}
-        />
       </div>
-    </li>
+    </div>
   );
 }

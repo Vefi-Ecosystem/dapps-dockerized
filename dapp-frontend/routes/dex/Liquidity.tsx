@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import assert from 'assert';
 import _ from 'lodash';
-import { FiSettings, FiPlus, FiChevronDown } from 'react-icons/fi';
-import { IoMdRefreshCircle, IoIosUndo } from 'react-icons/io';
+import { FaWallet } from 'react-icons/fa';
+import { FiSettings, FiPlus, FiChevronDown, FiArrowLeftCircle } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
+import { TailSpin } from 'react-loader-spinner';
 import { Fetcher, Pair, WETH } from 'quasar-sdk-core';
 import { Contract } from '@ethersproject/contracts';
 import { AddressZero } from '@ethersproject/constants';
@@ -18,7 +20,7 @@ import { useAPIContext } from '../../contexts/api';
 import UserLPItem from '../../components/Dex/PoolsListItem';
 import { useWeb3Context } from '../../contexts/web3';
 import { ListingModel } from '../../api/models/dex';
-import { computePair, fetchTokenBalanceForConnectedWallet, quote } from '../../hooks/dex';
+import { computePair, fetchTokenBalanceForConnectedWallet, getLiquidityPositionsOfConnectedAccount, quote } from '../../hooks/dex';
 import SwapSettingsModal from '../../components/Dex/SwapSettingsModal';
 import TokensListModal from '../../components/Dex/TokensListModal';
 import { useDEXSettingsContext } from '../../contexts/dex/settings';
@@ -27,6 +29,7 @@ import { addToMetamask } from '../../utils';
 import successFx from '../../assets/sounds/success_sound.mp3';
 import errorFx from '../../assets/sounds/error_sound.mp3';
 import TradeCard from '../../components/Dex/Card';
+import ProviderSelectModal from '../../components/ProviderSelectModal';
 
 enum Route {
   ADD_LIQUIDITY = 'add_liquidity',
@@ -36,8 +39,9 @@ enum Route {
 
 const LPRoute = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
-  const { liquidityPoolsForUser, importedPools } = useAPIContext();
-  const { chainId } = useWeb3Context();
+  const [isProviderSelectModalVisible, setIsProviderSelectModalVisible] = useState<boolean>(false);
+  const { isLoading, positions } = getLiquidityPositionsOfConnectedAccount();
+  const { active } = useWeb3Context();
   const { push } = useRouter();
   return (
     <div className="flex flex-col lg:flex-row justify-center items-center w-full">
@@ -55,38 +59,52 @@ const LPRoute = () => {
                 </button>
               </div>
             </div>
-            <div className="px-2 py-3 flex flex-col justify-center items-center gap-3 w-full overflow-auto">
-              <div className="bg-[#0c0b16] rounded-[12px] flex justify-center items-center py-[9px] px-[26px] w-full overflow-auto">
-                <div className="flex justify-center items-center w-full flex-col gap-1 px-1 py-1 overflow-auto">
-                  {liquidityPoolsForUser.items.length === 0 && importedPools[(chainId as number) || 97]?.length === 0 ? (
-                    <span className="text-white">No liquidity found</span>
-                  ) : (
-                    <ul className="menu w-full bg-[#000]/70 p-2 rounded-box">
-                      {_.map(liquidityPoolsForUser.items.concat(importedPools[(chainId as number) || 97]), (lp, index) => (
-                        <UserLPItem pair={lp} key={index} />
-                      ))}
-                    </ul>
-                  )}
-                  <span className="text-white">Don&apos;t see a pool you&apos;ve joined?</span>
-                  <div className="mt-[36px] w-full">
-                    <button
-                      onClick={() => push(`/dex?tab=liquidity&child_tab=${Route.FIND_OTHER_LP_TOKENS}`)}
-                      className="border-[#1673b9] border-[2px] rounded-[19px] w-full py-[13px] px-[17px] text-[#1673b9] text-[18px] font-[600] flex justify-center"
-                    >
-                      <span className="font-MontserratAlt">Find other LP tokens</span>
-                    </button>
+            {active ? (
+              <div className="px-2 py-3 flex flex-col justify-center items-center gap-3 w-full overflow-auto">
+                <div className="flex justify-center items-center py-[9px] w-full overflow-auto">
+                  <div className="flex justify-center items-center w-full flex-col gap-1 px-1 py-1 overflow-auto">
+                    <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
+                    {positions.length === 0 ? (
+                      <div className="flex flex-col justify-center items-center gap-2">
+                        <Image src="/images/broken_piggy_bank.svg" width={200} height={200} alt="broken_piggy_bank" />
+                        <span className="text-[#aaaaaa] font-Poppins font-[400] capitalize">no liquidity found</span>
+                      </div>
+                    ) : (
+                      <div className="w-full px-2 py-2 flex flex-col justify-center items-center gap-3">
+                        {_.map(positions, (lp, index) => (
+                          <UserLPItem pair={lp} key={index} />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
+                <button
+                  onClick={() => push(`/dex?tab=liquidity&child_tab=${Route.FIND_OTHER_LP_TOKENS}`)}
+                  className="border-[#a6b2ec] border rounded-[8px] w-full py-[13px] px-[17px] text-[#a6b2ec] text-[0.89em] font-[600] flex justify-center"
+                >
+                  <span className="font-Syne capitalize">find other LP tokens</span>
+                </button>
+                <button
+                  onClick={() => push(`/dex?tab=liquidity&child_tab=${Route.ADD_LIQUIDITY}`)}
+                  className="flex justify-center items-center bg-[#105dcf] py-[13px] px-[17px] rounded-[8px] gap-2 text-[0.89em] text-white w-full"
+                >
+                  <FiPlus /> <span className="font-Syne capitalize">add liquidity</span>
+                </button>
               </div>
-              <button
-                onClick={() => push(`/dex?tab=liquidity&child_tab=${Route.ADD_LIQUIDITY}`)}
-                className="flex justify-center items-center bg-[#1673b9]/50 py-[14px] px-[62px] rounded-[19px] text-[18px] text-white w-full"
-              >
-                <FiPlus /> <span className="ml-[16px] font-MontserratAlt">Add Liquidity</span>
-              </button>
-            </div>
+            ) : (
+              <div className="flex flex-col justify-center items-center gap-10 py-10">
+                <span className="text-[#fff] font-Poppins font-[400] capitalize">connect wallet to view your liquidity</span>
+                <button
+                  onClick={() => setIsProviderSelectModalVisible(true)}
+                  className="flex justify-center items-center bg-[#105dcf] py-4 px-2 rounded-[8px] gap-2 text-[0.89em] text-white w-full"
+                >
+                  <FaWallet /> <span className="font-Syne capitalize">connect wallet</span>
+                </button>
+              </div>
+            )}
           </div>
           <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
+          <ProviderSelectModal isOpen={isProviderSelectModalVisible} onClose={() => setIsProviderSelectModalVisible(false)} />
         </TradeCard>
       </div>
     </div>
@@ -94,7 +112,7 @@ const LPRoute = () => {
 };
 
 const AddLiquidityRoute = () => {
-  const { reload, back } = useRouter();
+  const { back } = useRouter();
   const [val1, setVal1] = useState<number>(0.0);
   const [val2, setVal2] = useState<number>(0.0);
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
@@ -253,136 +271,135 @@ const AddLiquidityRoute = () => {
   // }, [outputAmount2]);
 
   return (
-    <div className="bg-[#000]/[.75] rounded-[15px] shadow-lg flex justify-center items-center w-full md:w-1/3 md:max-h-[600px] font-Montserrat">
-      <div className="flex flex-col justify-evenly items-center w-full gap-2">
-        <div className="flex justify-between w-full bg-[#161525] rounded-t-[15px] py-6 px-3">
-          <button onClick={() => back()} className="bg-transparent text-white text-[30px]">
-            <IoIosUndo />
-          </button>
+    <>
+      <div className="flex justify-center w-full items-center flex-col lg:flex-row">
+        <div className="w-full lg:w-1/3">
+          <TradeCard>
+            <div className="flex flex-col justify-evenly items-center w-full h-full">
+              <div className="flex justify-between w-full py-6 px-3">
+                <button onClick={() => back()} className="bg-transparent text-[#a6b2ec] text-[30px]">
+                  <FiArrowLeftCircle />
+                </button>
+                <div className="flex flex-col justify-center items-start">
+                  <span className="font-Syne text-[1.8em] text-white font-[700] capitalize">add liquidity</span>
+                  <p className="font-[400] font-Poppins text-[0.9em] text-[#9d9d9d] capitalize">receive LP tokens</p>
+                </div>
+                <div className="flex justify-center items-center gap-2">
+                  <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-[#a6b2ec] text-[30px]">
+                    <FiSettings />
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-col justify-center w-full gap-2 px-[9px]">
+                <div className="flex flex-col w-full px-2 py-2 justify-evenly gap-2">
+                  <div className="flex justify-between w-full font-Syne">
+                    <span className="text-white">From</span>
+                    <span className="text-[#c8bfbf]"> Balance: {balance1}</span>
+                  </div>
+                  <div className="flex justify-between w-full gap-1 items-center rounded-[8px] bg-[#fff]/[.07]">
+                    <div
+                      className="flex justify-evenly items-center p-4 cursor-pointer gap-2 w-auto"
+                      onClick={() => setIsFirstTokensListModalVisible(true)}
+                    >
+                      <div className="avatar">
+                        <div className="w-8 rounded-full">
+                          <img src={firstSelectedToken.logoURI} alt={firstSelectedToken.name} />
+                        </div>
+                      </div>
+                      <span className="text-white uppercase font-[700] text-[1em] font-Syne">{firstSelectedToken.symbol}</span>
+                      <FiChevronDown className="text-white" />
+                    </div>
 
-          <div className="flex justify-center items-center gap-2">
-            <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-white text-[30px]">
-              <FiSettings />
-            </button>
-            <button onClick={reload} className="bg-transparent text-white text-[30px]">
-              <IoMdRefreshCircle />
-            </button>
-          </div>
-        </div>
-        <div className="flex flex-col justify-center w-full gap-2 px-[9px]">
-          <div className="bg-[#0c0b16] rounded-[12px] flex flex-col w-full px-[23px] py-[9px] justify-evenly gap-2">
-            <div className="flex justify-between w-full">
-              <span className="text-white">From</span>
-              <span className="text-white"> Balance: {balance1}</span>
-            </div>
-            <div className="flex justify-between w-full gap-1">
-              <div className="flex justify-between items-center gap-1">
-                <div
-                  className="flex justify-start items-center border-r border-white p-4 cursor-pointer gap-1 w-[150px]"
-                  onClick={() => setIsFirstTokensListModalVisible(true)}
+                    <input
+                      type="number"
+                      value={val1}
+                      className="p-3 bg-transparent text-white w-1/2 border-0 outline-0 appearance-none font-[600] text-[1em] font-Poppins text-right"
+                      onChange={(e) => setVal1(e.target.valueAsNumber || 0.0)}
+                    />
+                  </div>
+                  <div className="flex justify-end items-center w-full gap-1">
+                    <button className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]">
+                      25%
+                    </button>
+                    <button className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]">
+                      50%
+                    </button>
+                    <button className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]">
+                      75%
+                    </button>
+                    <button className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]">
+                      100%
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-center items-center">
+                  <button className="bg-transparent text-[#a6b2ec] text-[1em] rounded-full border border-[#a6b2ec]">
+                    <FiPlus />
+                  </button>
+                </div>
+                <div className="flex flex-col w-full px-2 py-2 justify-evenly gap-2">
+                  <div className="flex justify-between w-full font-Syne">
+                    <span className="text-white">To</span>
+                    <span className="text-[#c8bfbf]"> Balance: {balance2}</span>
+                  </div>
+                  <div className="flex justify-between w-full gap-1 items-center rounded-[8px] bg-[#fff]/[.07]">
+                    <div
+                      className="flex justify-evenly items-center p-4 cursor-pointer gap-2 w-auto"
+                      onClick={() => setIsSecondTokensListModalVisible(true)}
+                    >
+                      <div className="avatar">
+                        <div className="w-8 rounded-full">
+                          <img src={secondSelectedToken.logoURI} alt={secondSelectedToken.name} />
+                        </div>
+                      </div>
+                      <span className="text-white uppercase font-[700] text-[1em] font-Syne">{secondSelectedToken.symbol}</span>
+                      <FiChevronDown className="text-white" />
+                    </div>
+
+                    <input
+                      type="number"
+                      value={val2}
+                      className="p-3 bg-transparent text-white w-1/2 border-0 outline-0 appearance-none font-[600] text-[1em] font-Poppins text-right"
+                      onChange={(e) => setVal2(e.target.valueAsNumber || 0.0)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center items-center w-full px-2 py-8">
+                <button
+                  onClick={addLiquidity}
+                  disabled={isLoading || !active}
+                  className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                 >
-                  <img src={firstSelectedToken.logoURI} alt={firstSelectedToken.name} className="rounded-[50px] w-[30px] h-[30px]" />
-                  <span className="text-white uppercase font-[700] text-[16px]">{firstSelectedToken.symbol}</span>
-                  <FiChevronDown className="text-white" />
-                </div>
-                <div className="flex justify-center items-center gap-1 flex-1">
-                  <button
-                    onClick={() => setVal1(parseFloat(balance1))}
-                    className="p-[2px] bg-[#2775ca] opacity-[.19] text-[#c6c3c3] text-[10px] font-[600]"
-                  >
-                    Max
-                  </button>
-                  <button
-                    onClick={() => setVal1(_.multiply(0.5, parseFloat(balance1)))}
-                    className="p-[2px] bg-[#2775ca] opacity-[.19] text-[#c6c3c3] text-[10px] font-[600]"
-                  >
-                    Half
-                  </button>
-                </div>
-              </div>
-              <div className="flex justify-end w-[200px]">
-                <input
-                  type="number"
-                  className="p-[12px] bg-transparent text-white border-0 w-full outline-0 appearance-none font-[600] text-[18px]"
-                  value={val1}
-                  onChange={(e) => setVal1(e.target.valueAsNumber || 0.0)}
-                />
+                  <span className="font-Syne">
+                    {!active
+                      ? 'Wallet not connected'
+                      : val1 > parseFloat(balance1)
+                      ? `Insufficient ${firstSelectedToken.symbol} balance`
+                      : 'Add Liquidity'}
+                  </span>
+                  <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
+                </button>
               </div>
             </div>
-          </div>
-          <div className="flex justify-center items-center">
-            <button className="bg-transparent text-[#ffffff] text-[30px]">
-              <FiPlus />
-            </button>
-          </div>
-          <div className="bg-[#0c0b16] rounded-[12px] flex flex-col w-full px-[23px] py-[9px] justify-evenly gap-2">
-            <div className="flex justify-between w-full">
-              <span className="text-white">To</span>
-              <span className="text-white"> Balance: {balance2}</span>
-            </div>
-            <div className="flex justify-between w-full gap-1">
-              <div className="flex justify-center items-center gap-1">
-                <div
-                  onClick={() => setIsSecondTokensListModalVisible(true)}
-                  className="flex justify-start items-center border-r border-white p-4 cursor-pointer gap-1 w-[150px]"
-                >
-                  <img src={secondSelectedToken.logoURI} alt={secondSelectedToken.name} className="rounded-[50px] w-[30px] h-[30px]" />
-                  <span className="text-white uppercase font-[700] text-[16px]">{secondSelectedToken.symbol}</span>
-                  <FiChevronDown className="text-white" />
-                </div>
-                <div className="flex justify-center items-center flex-1 gap-1">
-                  <button
-                    onClick={() => setVal2(parseFloat(balance2))}
-                    className="p-[2px] bg-[#2775ca] opacity-[.19] text-[#c6c3c3] text-[10px] font-[600]"
-                  >
-                    Max
-                  </button>
-                  <button
-                    onClick={() => setVal2(_.multiply(0.5, parseFloat(balance2)))}
-                    className="p-[2px] bg-[#2775ca] opacity-[.19] text-[#c6c3c3] text-[10px] font-[600]"
-                  >
-                    Half
-                  </button>
-                </div>
-              </div>
-              <div className="flex justify-end w-[200px]">
-                <input
-                  type="number"
-                  className="p-[12px] bg-transparent text-white border-0 w-full outline-0 appearance-none font-[600] text-[18px]"
-                  value={val2}
-                  onChange={(e) => setVal2(e.target.valueAsNumber || 0.0)}
-                />
-              </div>
-            </div>
-          </div>
+          </TradeCard>
         </div>
-        <div className="flex justify-center items-center w-full px-2 py-2">
-          <button
-            onClick={addLiquidity}
-            disabled={isLoading || !active}
-            className={`flex justify-center font-Montserrat items-center bg-[#1673b9]/50 btn py-[14px] px-[10px] rounded-[19px] text-[18px] text-white w-full ${
-              isLoading ? 'loading' : ''
-            }`}
-          >
-            <span className="font-MontserratAlt">{!active ? 'Wallet not connected' : 'Add Liquidity'}</span>
-          </button>
-        </div>
+        <ToastContainer position="top-right" theme="dark" autoClose={5000} />
+        <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
+        <TokensListModal
+          isVisible={isFirstTokensListModalVisible}
+          onClose={() => setIsFirstTokensListModalVisible(false)}
+          onTokenSelected={(token) => setFirstSelectedToken(token)}
+          selectedTokens={[firstSelectedToken, secondSelectedToken]}
+        />
+        <TokensListModal
+          isVisible={isSecondTokensListModalVisible}
+          onClose={() => setIsSecondTokensListModalVisible(false)}
+          onTokenSelected={(token) => setSecondSelectedToken(token)}
+          selectedTokens={[firstSelectedToken, secondSelectedToken]}
+        />
       </div>
-      <ToastContainer position="top-right" theme="dark" autoClose={5000} />
-      <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
-      <TokensListModal
-        isVisible={isFirstTokensListModalVisible}
-        onClose={() => setIsFirstTokensListModalVisible(false)}
-        onTokenSelected={(token) => setFirstSelectedToken(token)}
-        selectedTokens={[firstSelectedToken, secondSelectedToken]}
-      />
-      <TokensListModal
-        isVisible={isSecondTokensListModalVisible}
-        onClose={() => setIsSecondTokensListModalVisible(false)}
-        onTokenSelected={(token) => setSecondSelectedToken(token)}
-        selectedTokens={[firstSelectedToken, secondSelectedToken]}
-      />
-    </div>
+    </>
   );
 };
 
@@ -412,64 +429,69 @@ const FindOtherLPRoute = () => {
     }
   }, [tokensListing]);
   return (
-    <div className="bg-[#000]/[.75] rounded-[15px] shadow-lg flex justify-center items-center w-full md:w-1/3 md:max-h-[600px] font-Montserrat">
-      <div className="flex flex-col justify-evenly items-center w-full gap-5">
-        <div className="flex justify-between items-center w-full bg-[#161525] rounded-t-[15px] py-6 px-3">
-          <div>
-            <button onClick={() => back()} className="bg-transparent text-white text-[30px]">
-              <IoIosUndo />
-            </button>
-          </div>
-          <div className="flex justify-start items-start flex-col gap-3">
-            <span className="text-white text-[20px] font-Montserrat font-semibold">Import Liquidity Pool</span>
-            <span className="text-white text-[14px] font-Montserrat">Import an existing pool</span>
-          </div>
-          <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-white text-[30px]">
-            <FiSettings />
-          </button>
-        </div>
-        <div className="flex flex-col justify-center items-center gap-7 w-full px-4 font-Montserrat text-white">
-          <button onClick={() => setIsFirstTokensListModalVisible(true)} className="btn w-full rounded-[25px] flex justify-between items-center">
-            <div className="flex justify-between items-center gap-2">
-              <div className="avatar">
-                <div className="w-6 rounded-full">
-                  <img src={firstSelectedToken.logoURI} alt={firstSelectedToken.symbol} />
-                </div>
-              </div>
-              <span>{firstSelectedToken.symbol}</span>
-            </div>
-            <FiChevronDown />
-          </button>
-          <button className="bg-transparent text-[30px]">
-            <FiPlus />
-          </button>
-          <button onClick={() => setIsSecondTokensListModalVisible(true)} className="btn w-full rounded-[25px] flex justify-between items-center">
-            <div className="flex justify-between items-center gap-2">
-              <div className="avatar">
-                <div className="w-6 rounded-full">
-                  <img src={secondSelectedToken.logoURI} alt={secondSelectedToken.symbol} />
-                </div>
-              </div>
-              <span>{secondSelectedToken.symbol}</span>
-            </div>
-            <FiChevronDown />
-          </button>
-          <div className="flex w-full justify-center items-center px-2 py-3">
-            {!!pairError ? (
-              <span className="text-[red]/50">{pairError.message}</span>
-            ) : (
-              <button
-                disabled={isImportLoading || _.includes(importedPools[chainId as number], pair)}
-                onClick={addToPools}
-                className={`flex justify-center items-center bg-[#1673b9]/50 btn py-[14px] px-[10px] rounded-[19px] text-[18px] text-white w-full ${
-                  isImportLoading ? 'loading' : ''
-                }`}
-              >
-                <span className="font-MontserratAlt">Import</span>
+    <div className="flex justify-center w-full items-center flex-col lg:flex-row">
+      <div className="w-full lg:w-1/3">
+        <TradeCard>
+          <div className="flex flex-col justify-evenly items-center w-full gap-5">
+            <div className="flex justify-between w-full py-6 px-3">
+              <button onClick={() => back()} className="bg-transparent text-[#a6b2ec] text-[30px]">
+                <FiArrowLeftCircle />
               </button>
-            )}
+              <div className="flex flex-col justify-center items-start">
+                <span className="font-Syne text-[1.8em] text-white font-[700] capitalize">import pool</span>
+                <p className="font-[400] font-Poppins text-[0.9em] text-[#9d9d9d] capitalize">import an existing LP token</p>
+              </div>
+              <div className="flex justify-center items-center gap-2">
+                <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-[#a6b2ec] text-[30px]">
+                  <FiSettings />
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-col justify-center items-center gap-7 w-full px-4 font-Syne text-white">
+              <button onClick={() => setIsFirstTokensListModalVisible(true)} className="bg-[#fff]/[.07] w-full rounded-[8px] flex justify-between items-center px-5 py-7">
+                <div className="flex justify-between items-center gap-2">
+                  <div className="avatar">
+                    <div className="w-6 rounded-full">
+                      <img src={firstSelectedToken.logoURI} alt={firstSelectedToken.symbol} />
+                    </div>
+                  </div>
+                  <span>{firstSelectedToken.symbol}</span>
+                </div>
+                <FiChevronDown />
+              </button>
+              <button className="bg-transparent text-[#a6b2ec] text-[1em] rounded-full border border-[#a6b2ec]">
+                    <FiPlus />
+                  </button>
+              <button onClick={() => setIsSecondTokensListModalVisible(true)} className="bg-[#fff]/[.07] w-full rounded-[8px] flex justify-between items-center px-5 py-7">
+                <div className="flex justify-between items-center gap-2">
+                  <div className="avatar">
+                    <div className="w-6 rounded-full">
+                      <img src={secondSelectedToken.logoURI} alt={secondSelectedToken.symbol} />
+                    </div>
+                  </div>
+                  <span>{secondSelectedToken.symbol}</span>
+                </div>
+                <FiChevronDown />
+              </button>
+              <div className="flex w-full justify-center items-center px-2 py-3">
+                {!!pairError ? (
+                  <span className="text-[red]/50">{pairError.message}</span>
+                ) : (
+                  <button
+                    disabled={isImportLoading || _.includes(importedPools[chainId as number], pair)}
+                    onClick={addToPools}
+                    className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
+                  >
+                    <span className="font-Syne capitalize">
+                    import
+                  </span>
+                  <TailSpin color="#dcdcdc" visible={isImportLoading} width={20} height={20} />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+        </TradeCard>
       </div>
       <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
       <TokensListModal
