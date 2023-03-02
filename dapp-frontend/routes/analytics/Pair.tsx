@@ -729,7 +729,7 @@ export default function PairView() {
               </div>
             </div>
             <div className="flex justify-center items-center gap-3">
-              <Link href={`/dex?tab=swap&inputToken=${data.token0.id}&outputToken=${data.token1.id}`}>
+              <Link href={`/dex?tab=liquidity&child_tab=add_liquidity&inputToken=${data.token0.id}&outputToken=${data.token1.id}`}>
                 <button className="capitalize font-Inter font-[500] border border-[#3878d7] text-[0.5em] lg:text-[0.85em] bg-[#0c0c0c] text-[#3878d7] rounded-[8px] lg:px-4 px-1 lg:py-2 py-1 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)]">
                   add liquidity
                 </button>

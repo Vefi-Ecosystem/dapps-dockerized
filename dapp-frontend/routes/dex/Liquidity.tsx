@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import assert from 'assert';
-import _ from 'lodash';
+import _, { multiply } from 'lodash';
 import { FaWallet } from 'react-icons/fa';
 import { FiSettings, FiPlus, FiChevronDown, FiArrowLeftCircle } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
@@ -112,7 +112,7 @@ const LPRoute = () => {
 };
 
 const AddLiquidityRoute = () => {
-  const { back } = useRouter();
+  const { back, query } = useRouter();
   const [val1, setVal1] = useState<number>(0.0);
   const [val2, setVal2] = useState<number>(0.0);
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
@@ -266,6 +266,26 @@ const AddLiquidityRoute = () => {
     if (outputAmount1 > 0) setVal2(outputAmount1);
   }, [outputAmount1]);
 
+  useEffect(() => {
+    if (tokensListing.length >= 2) {
+      if (query.inputToken)
+        if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.inputToken as string).toLowerCase())) {
+          setFirstSelectedToken(
+            _.find(tokensListing, (model) => model.address.toLowerCase() === (query.inputToken as string).toLowerCase()) as ListingModel
+          );
+        } else setFirstSelectedToken(tokensListing[0]);
+      else setFirstSelectedToken(tokensListing[0]);
+
+      if (query.outputToken)
+        if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.outputToken as string).toLowerCase())) {
+          setSecondSelectedToken(
+            _.find(tokensListing, (model) => model.address.toLowerCase() === (query.outputToken as string).toLowerCase()) as ListingModel
+          );
+        } else setSecondSelectedToken(tokensListing[1]);
+      else setSecondSelectedToken(tokensListing[1]);
+    }
+  }, [query.inputToken, query.outputToken, tokensListing]);
+
   // useEffect(() => {
   //   if (outputAmount2 > 0) setVal1(outputAmount2);
   // }, [outputAmount2]);
@@ -318,16 +338,28 @@ const AddLiquidityRoute = () => {
                     />
                   </div>
                   <div className="flex justify-end items-center w-full gap-1">
-                    <button className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]">
+                    <button
+                      onClick={() => setVal1(multiply(1 / 4, parseFloat(balance1)))}
+                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                    >
                       25%
                     </button>
-                    <button className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]">
+                    <button
+                      onClick={() => setVal1(multiply(2 / 4, parseFloat(balance1)))}
+                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                    >
                       50%
                     </button>
-                    <button className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]">
+                    <button
+                      onClick={() => setVal1(multiply(3 / 4, parseFloat(balance1)))}
+                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                    >
                       75%
                     </button>
-                    <button className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]">
+                    <button
+                      onClick={() => setVal1(parseFloat(balance1))}
+                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                    >
                       100%
                     </button>
                   </div>
@@ -448,7 +480,10 @@ const FindOtherLPRoute = () => {
               </div>
             </div>
             <div className="flex flex-col justify-center items-center gap-7 w-full px-4 font-Syne text-white">
-              <button onClick={() => setIsFirstTokensListModalVisible(true)} className="bg-[#fff]/[.07] w-full rounded-[8px] flex justify-between items-center px-5 py-7">
+              <button
+                onClick={() => setIsFirstTokensListModalVisible(true)}
+                className="bg-[#fff]/[.07] w-full rounded-[8px] flex justify-between items-center px-5 py-7"
+              >
                 <div className="flex justify-between items-center gap-2">
                   <div className="avatar">
                     <div className="w-6 rounded-full">
@@ -460,9 +495,12 @@ const FindOtherLPRoute = () => {
                 <FiChevronDown />
               </button>
               <button className="bg-transparent text-[#a6b2ec] text-[1em] rounded-full border border-[#a6b2ec]">
-                    <FiPlus />
-                  </button>
-              <button onClick={() => setIsSecondTokensListModalVisible(true)} className="bg-[#fff]/[.07] w-full rounded-[8px] flex justify-between items-center px-5 py-7">
+                <FiPlus />
+              </button>
+              <button
+                onClick={() => setIsSecondTokensListModalVisible(true)}
+                className="bg-[#fff]/[.07] w-full rounded-[8px] flex justify-between items-center px-5 py-7"
+              >
                 <div className="flex justify-between items-center gap-2">
                   <div className="avatar">
                     <div className="w-6 rounded-full">
@@ -482,10 +520,8 @@ const FindOtherLPRoute = () => {
                     onClick={addToPools}
                     className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                   >
-                    <span className="font-Syne capitalize">
-                    import
-                  </span>
-                  <TailSpin color="#dcdcdc" visible={isImportLoading} width={20} height={20} />
+                    <span className="font-Syne capitalize">import</span>
+                    <TailSpin color="#dcdcdc" visible={isImportLoading} width={20} height={20} />
                   </button>
                 )}
               </div>
