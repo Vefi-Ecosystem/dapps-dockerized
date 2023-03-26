@@ -87,17 +87,17 @@ export default function Header() {
                 <span className="text-white text-[1em] font-[400]">Analytics</span>
               </ActiveLink>
             </div>
-            <div className="px-[23px] cursor-pointer">
+            {/* <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#105dcf]" href="/launchpad">
                 <span className="text-white text-[1em] font-[400]">Launchpad</span>
               </ActiveLink>
-            </div>
+            </div> */}
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#105dcf]" href="/staking">
                 <span className="text-white text-[1em] font-[400]">Staking Pools</span>
               </ActiveLink>
             </div>
-            <div className="px-[23px] cursor-pointer">
+            {/* <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#105dcf]" href="/multisig">
                 <span className="text-white text-[1em] font-[400]">Multi-Signature</span>
               </ActiveLink>
@@ -106,7 +106,7 @@ export default function Header() {
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#105dcf]" href="/bridge">
                 <span className="text-white text-[1em] font-[400]">Bridge</span>
               </ActiveLink>
-            </div>
+            </div> */}
           </div>
           <div className="flex justify-center items-center gap-2">
             <div className="flex justify-center items-center gap-2 flex-1">

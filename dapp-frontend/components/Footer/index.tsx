@@ -18,16 +18,16 @@ export default function Footer() {
               utmost discretion.
             </p>
           </div>
-          <div className="flex flex-col lg:flex-row justify-center items-start gap-5 lg:gap-16 lg:items-center">
+          <div className="flex flex-col lg:flex-row justify-center items-start gap-5 lg:gap-16">
             <div className="flex flex-col justify-center items-start gap-3 font-Syne capitalize">
               <span className="text-[#b2b2b2] font-[400] text-[0.97em]">pages</span>
               <div className="text-[#fff] flex flex-col justify-center items-start gap-2 text-[0.82em]">
                 <Link href="/dex">trade</Link>
                 <Link href="/analytics">analytics</Link>
-                <Link href="/launchpad">launchpad</Link>
+                {/* <Link href="/launchpad">launchpad</Link> */}
                 <Link href="/staking">staking</Link>
-                <Link href="/multisig">multi-signature</Link>
-                <Link href="/bridge">bridge</Link>
+                {/* <Link href="/multisig">multi-signature</Link>
+                <Link href="/bridge">bridge</Link> */}
               </div>
             </div>
             <div className="flex flex-col justify-center items-start gap-3 font-Syne capitalize">

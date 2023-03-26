@@ -241,9 +241,13 @@ const PairsList = ({ token }: { token: string }) => {
                                 </div>
                               </div>
                             </div>
-                            <span className="font-Syne text-[#fff] text-[700] text-[0.5em] lg:text-[0.85em] uppercase">
-                              {item.token0.symbol}/{item.token1.symbol}
-                            </span>
+                            <Link href={`/analytics?view=singlePair&pair=${item.id}`}>
+                              <a>
+                                <span className="font-Syne text-[#fff] text-[700] text-[0.5em] lg:text-[0.85em] uppercase">
+                                  {item.token0.symbol}/{item.token1.symbol}
+                                </span>
+                              </a>
+                            </Link>
                           </div>
                         </TCell>
                         <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">

@@ -58,6 +58,7 @@ export default function BarChart({
         tickFormatter={(val) => (val.toLocaleDateString ? val.toLocaleDateString(undefined, { month: '2-digit' }) : '')}
         minTickGap={1}
         fontSize={12}
+        tickCount={12}
       />
       <YAxis
         hide={hideYAxis}

@@ -1,86 +1,32 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { RegularStakingPools, CreateNewStakingPool, PersonalPoolsAndEarnings, SpecialStakingPools } from '../routes/staking';
-
-enum Routes {
-  REGULAR_POOLS = 'regular',
-  CREATE_NEW_POOL = 'new',
-  SPECIAL_POOLS = 'special',
-  MY_POOLS = 'owned'
-}
-
-const useStakingPoolsSubRoutes = (routes: Routes) => {
-  const [component, setComponent] = useState(() => RegularStakingPools);
-
-  useEffect(() => {
-    switch (routes) {
-      case Routes.REGULAR_POOLS:
-        setComponent(() => RegularStakingPools);
-        break;
-      case Routes.SPECIAL_POOLS:
-        setComponent(() => SpecialStakingPools);
-        break;
-      case Routes.CREATE_NEW_POOL:
-        setComponent(() => CreateNewStakingPool);
-        break;
-      case Routes.MY_POOLS:
-        setComponent(() => PersonalPoolsAndEarnings);
-        break;
-      default:
-        setComponent(() => RegularStakingPools);
-        break;
-    }
-  }, [routes]);
-  return component;
-};
+import CreateStakingPoolModal from '../components/Staking/CreateStakingPoolModal';
 
 export default function Staking() {
   const { query, push } = useRouter();
-  const activeRoute = useMemo(() => (query.tab as Routes) || Routes.REGULAR_POOLS, [query.tab]);
-  const RenderedChild = useStakingPoolsSubRoutes(query.tab as Routes);
+  const [showCreatePoolModal, setShowCreatePoolModal] = useState<boolean>(false);
   return (
     <>
       <Head>
         <title>Vefi DApps | Stake</title>
       </Head>
-      <div className="flex-1 h-screen flex-col gap-12 w-full backdrop-opacity-10 backdrop-invert px-[2px] py-[12px] md:px-[82px] md:py-[44px] justify-start items-center overflow-auto hidden-scrollbar">
-        <div className="flex flex-col md:flex-row justify-center items-center w-full gap-4 overflow-auto hidden-scrollbar">
-          <div className="flex flex-row justify-center items-baseline text-[#fff] font-Montserrat w-full text-[12px]">
-            <button
-              className={`${activeRoute === Routes.REGULAR_POOLS ? 'border-b-[1px] border-[#0cedfc]' : 'border-b border-[#fff]/50'} w-1/4 py-2`}
-              onClick={() => push(`/staking?tab=${Routes.REGULAR_POOLS}`)}
-            >
-              Regular Staking Pools
-            </button>
-            <button
-              className={`${activeRoute === Routes.SPECIAL_POOLS ? 'border-b-[1px] border-[#0cedfc]' : 'border-b border-[#fff]/50'} w-1/4 py-2`}
-              onClick={() => push(`/staking?tab=${Routes.SPECIAL_POOLS}`)}
-            >
-              Special Staking Pools
-            </button>
-            <button
-              className={`${activeRoute === Routes.CREATE_NEW_POOL ? 'border-b-[1px] border-[#0cedfc]' : 'border-b border-[#fff]/50'} w-1/4 py-2`}
-              onClick={() => push(`/staking?tab=${Routes.CREATE_NEW_POOL}`)}
-            >
-              Create New Pool
-            </button>
-            <button
-              className={`${activeRoute === Routes.MY_POOLS ? 'border-b-[1px] border-[#0cedfc]' : 'border-b border-[#fff]/50'} w-1/4 py-2`}
-              onClick={() => push(`/staking?tab=${Routes.MY_POOLS}`)}
-            >
-              My Pools & Rewards
-            </button>
+      <div className="flex container mx-auto flex-col justify-center items-start gap-8 px-8 lg:px-10 py-4">
+        <div className="flex justify-between items-center gap-2 w-full">
+          <div className="flex flex-col gap-1 justify-center items-start">
+            <span className="capitalize font-Syne text-[#fff] font-[700] text-[1.2em] lg:text-[1.9em]">stake & earn rewards</span>
+            <span className="capitalize font-Inter text-[#aeaeae] font-[400] text-[0.4em] lg:text-[0.9em]">
+              increase your financial capacity by engaging in staking programs.
+            </span>
           </div>
-          {/* <div className="bg-[#000]/[72] rounded-[20px] py-2 flex justify-center items-center gap-1 px-4">
-            <FiSearch className="text-[#fff]" />
-            <input className="bg-transparent outline-0 w-[120px] text-[#fff]" placeholder="Search pools" />
-          </div> */}
+          <button
+            onClick={() => setShowCreatePoolModal(true)}
+            className="capitalize font-Inter font-[500] border border-[#105dcf] text-[0.5em] lg:text-[0.85em] bg-[#105dcf] text-[#fff] rounded-[8px] lg:px-4 px-1 lg:py-2 py-1 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)]"
+          >
+            create new pool
+          </button>
         </div>
-
-        <div className="w-full px-3 flex-1 overflow-auto hidden-scrollbar justify-center items-start flex py-4">
-          <RenderedChild />
-        </div>
+        <CreateStakingPoolModal isOpen={showCreatePoolModal} onClose={() => setShowCreatePoolModal(false)} />
       </div>
     </>
   );

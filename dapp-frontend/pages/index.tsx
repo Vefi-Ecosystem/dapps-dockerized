@@ -11,7 +11,17 @@ export default function Index() {
       <Head>
         <title>Vefi DApps | Homepage</title>
       </Head>
-      <div className="flex flex-col justify-center items-center gap-24 w-full py-10 lg:py-20">
+      <div className="flex flex-col justify-center items-center gap-60 w-full py-10 lg:py-20">
+        <div className="hidden lg:block absolute top-[0%] -left-8 w-[499px] h-[499px] bg-[#105dcf]/[.38] rounded-full blur-[125px]"></div>
+        <div className="hidden lg:block absolute top-64 -right-8 w-80 h-80 bg-[#74fff7]/[.52] rounded-full blur-[125px]"></div>
+        <div className="hidden lg:block absolute top-[1088px] -left-8 w-[499px] h-[499px] bg-[#6093df]/[.38] rounded-full blur-[125px]"></div>
+        <div className="hidden lg:block absolute top-[1800px] -right-8 w-80 h-80 bg-[#535976] rounded-full blur-[125px]"></div>
+        <div className="absolute top-[8%] lg:top-[3%] -left-14 lg:-left-7 w-28 h-28 lg:w-60 lg:h-60">
+          <img src="/images/cube_1.svg" className="w-full h-full" alt="cube" />
+        </div>
+        <div className="absolute top-[8%] lg:top-[9%] -right-20 lg:-right-12 w-32 h-32 lg:w-80 lg:h-80">
+          <img src="/images/cube_1.svg" className="w-full h-full" alt="cube" />
+        </div>
         {/* <div className="hidden lg:block absolute -left-[3%] top-[10.93%]">
         <img src="/images/cube_1.svg" alt="cube" />
       </div> */}
@@ -29,7 +39,7 @@ export default function Index() {
             </button>
           </Link>
         </section>
-        <section className="flex justify-center items-center gap-4 w-full overflow-auto p-2 lg:p-5">
+        <section className="flex justify-center items-center gap-4 w-full overflow-auto p-2 lg:p-5 hidden-scrollbar">
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
             <span className="font-[700] font-Syne text-[2em] text-[#fff]">$13M</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">Total Liquidity Raised</span>
@@ -47,7 +57,7 @@ export default function Index() {
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">Total Liquidity Raised</span>
           </div>
         </section>
-        <section className="flex flex-col w-full justify-center items-center gap-12 p-2 lg:p-5">
+        <section className="flex flex-col w-full justify-center items-center gap-16 p-2 lg:p-5">
           <div className="flex flex-col lg:flex-row justify-evenly items-center gap-12 w-full">
             <div className="flex flex-col justify-start items-center gap-4 w-full lg:w-auto">
               <span className="font-Syne text-[2.5em] lg:text-[4em] capitalize font-[700] text-[#a6b2ec] lg:max-w-[38rem]">

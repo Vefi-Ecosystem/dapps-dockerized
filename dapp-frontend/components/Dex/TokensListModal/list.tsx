@@ -1,6 +1,8 @@
 import { FiCheckCircle } from 'react-icons/fi';
 import { ListingModel } from '../../../api/models/dex';
-import { fetchTokenBalanceForConnectedWallet } from '../../../hooks/dex';
+import { AddressZero } from '@ethersproject/constants';
+import { useEtherBalance, useTokenBalance } from '../../../hooks/wallet';
+import { RotatingLines } from 'react-loader-spinner';
 
 type TokensListItemProps = {
   onClick: () => void;
@@ -9,7 +11,8 @@ type TokensListItemProps = {
 };
 
 export default function TokensListItem({ onClick, disabled, model }: TokensListItemProps) {
-  const balance = fetchTokenBalanceForConnectedWallet(model.address);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { balance, isLoading } = model.address === AddressZero ? useEtherBalance() : useTokenBalance(model.address);
   return (
     <button disabled={disabled} onClick={onClick} className="flex justify-between items-start px-2 w-full overflow-auto font-Syne">
       <div className="flex justify-center items-center gap-2">
@@ -21,7 +24,7 @@ export default function TokensListItem({ onClick, disabled, model }: TokensListI
         <span className="font-[400] text-[0.8em]">{model.name}</span>
       </div>
       <div className="flex justify-center items-center gap-2">
-        <span className="text-[0.85em]">{balance}</span>
+        {isLoading ? <RotatingLines width="10" strokeColor="#fff" /> : <span className="text-[0.85em]">{balance}</span>}
         {disabled && <FiCheckCircle className="text-[0.85em] text-[#105dcf]" />}
       </div>
     </button>

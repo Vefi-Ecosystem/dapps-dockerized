@@ -1,16 +1,14 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TailSpin } from 'react-loader-spinner';
 import { AiOutlineSwap } from 'react-icons/ai';
 import { FiSettings, FiChevronDown } from 'react-icons/fi';
 import { IoMdRefreshCircle } from 'react-icons/io';
 import { MdArrowDownward } from 'react-icons/md';
-import { ToastContainer, toast } from 'react-toastify';
 import { AddressZero } from '@ethersproject/constants';
-import { Contract } from '@ethersproject/contracts';
-import { Web3Provider } from '@ethersproject/providers';
-import { parseUnits } from '@ethersproject/units';
-import _, { multiply } from 'lodash';
+import { parseEther, parseUnits } from '@ethersproject/units';
+import { multiply, toLower, find } from 'lodash';
 import assert from 'assert';
 import { WETH, Fetcher, Trade, TokenAmount, Router, Percent, ETHER, CurrencyAmount } from 'quasar-sdk-core';
 import JSBI from 'jsbi';
@@ -22,13 +20,15 @@ import TokensListModal from '../../components/Dex/TokensListModal';
 import { ListingModel } from '../../api/models/dex';
 import { useAPIContext } from '../../contexts/api';
 import { useWeb3Context } from '../../contexts/web3';
-import { computePair, fetchTokenBalanceForConnectedWallet, getInputAmount, getOutputAmount } from '../../hooks/dex';
+import { computePair, getInputAmount, getOutputAmount } from '../../hooks/dex';
 import routers from '../../assets/routers.json';
 import chains from '../../assets/chains.json';
 import { useDEXSettingsContext } from '../../contexts/dex/settings';
 import successFx from '../../assets/sounds/success_sound.mp3';
 import errorFx from '../../assets/sounds/error_sound.mp3';
 import TradeCard from '../../components/Dex/Card';
+import { useEtherBalance, useTokenBalance } from '../../hooks/wallet';
+import { useContract } from '../../hooks/global';
 
 export default function Swap() {
   const { reload, query } = useRouter();
@@ -47,8 +47,14 @@ export default function Swap() {
 
   const { pair, error: pairError } = computePair(firstSelectedToken, secondSelectedToken, chainId || 97);
 
-  const balance1 = fetchTokenBalanceForConnectedWallet(firstSelectedToken.address, [isSwapLoading]);
-  const balance2 = fetchTokenBalanceForConnectedWallet(secondSelectedToken.address, [isSwapLoading]);
+  const { balance: balance1 } =
+    firstSelectedToken.address === AddressZero ? useEtherBalance([isSwapLoading]) : useTokenBalance(firstSelectedToken.address, [isSwapLoading]);
+  const { balance: balance2 } =
+    secondSelectedToken.address === AddressZero ? useEtherBalance([isSwapLoading]) : useTokenBalance(secondSelectedToken.address, [isSwapLoading]);
+  const routerContract = useContract(routers, routerAbi, true);
+  const t1Contract = useContract(firstSelectedToken.address, erc20Abi, true);
+  const t2Contract = useContract(secondSelectedToken.address, erc20Abi, true);
+  const explorerUrl = useMemo(() => chains[chainId as unknown as keyof typeof chains].explorer, [chainId]);
 
   const outputAmount = getOutputAmount(firstSelectedToken, secondSelectedToken, val1, chainId || 1);
   const inputAmount = getInputAmount(firstSelectedToken, secondSelectedToken, val2, chainId || 1);
@@ -67,37 +73,26 @@ export default function Swap() {
   const swapTokens = useCallback(async () => {
     try {
       setIsSwapLoading(true);
-      const firstIsZero = firstSelectedToken.address === AddressZero;
-      const secondIsZero = secondSelectedToken.address === AddressZero;
-      const t0 = firstIsZero ? WETH[(chainId as keyof typeof WETH) || 97] : await Fetcher.fetchTokenData(chainId || 97, firstSelectedToken.address);
-      const t1 = secondIsZero ? WETH[(chainId as keyof typeof WETH) || 97] : await Fetcher.fetchTokenData(chainId || 97, secondSelectedToken.address);
-      const router = routers[chainId as unknown as keyof typeof routers];
+      assert.notEqual(toLower(firstSelectedToken.address), toLower(secondSelectedToken.address), 'Identical tokens');
+      const value0 = (t1Contract ? parseUnits(val1.toString(), await t1Contract.decimals()) : parseEther(val1.toString())).toHexString();
 
-      assert.notDeepEqual(t0, t1, 'Identical tokens');
-
-      const value0 = parseUnits(val1.toString(), t0.decimals).toHexString();
-      // const value1 = parseUnits(val2.toString(), t1.decimals).toHexString();
-
-      const provider = new Web3Provider(library?.givenProvider);
-      const token0Contract = new Contract(t0.address, erc20Abi, provider.getSigner());
-      const routerContract = new Contract(router, routerAbi, provider.getSigner());
-
-      if (!firstIsZero) {
-        const approvalTx = await token0Contract.approve(router, value0);
+      if (t1Contract) {
+        const approvalTx = await t1Contract.approve(routerContract?.address, value0);
         await approvalTx.wait();
-        toast(`Router approved to spend ${val1} ${t0.symbol}`, { type: 'info' });
       }
 
       let swapTx: any;
 
-      const pair = await Fetcher.fetchPairData(t0, t1);
+      const token1 = t1Contract ? await Fetcher.fetchTokenData(chainId, t1Contract.address) : WETH[chainId as keyof typeof WETH];
+      const token2 = t2Contract ? await Fetcher.fetchTokenData(chainId, t2Contract.address) : WETH[chainId as keyof typeof WETH];
+      const pair = await Fetcher.fetchPairData(token1, token2);
       const trades = Trade.bestTradeExactIn(
         [pair],
-        _.isEqual(firstSelectedToken.address, AddressZero) ? CurrencyAmount.ether(value0) : new TokenAmount(t0, value0),
-        _.isEqual(secondSelectedToken.address, AddressZero) ? ETHER : t1
+        !t1Contract ? CurrencyAmount.ether(value0) : new TokenAmount(token1, value0),
+        !t2Contract ? ETHER : token2
       );
       const { args, methodName, value } = Router.swapCallParameters(trades[0], {
-        ttl: _.multiply(txDeadlineInMins, 60),
+        ttl: multiply(txDeadlineInMins, 60),
         allowedSlippage: new Percent(`0x${JSBI.BigInt(slippageTolerance * 100).toString(16)}`, `0x${JSBI.BigInt(100).toString(16)}`),
         recipient: account as string,
         feeOnTransfer: chainId !== 97
@@ -105,31 +100,31 @@ export default function Swap() {
 
       switch (methodName) {
         case 'swapExactETHForTokensSupportingFeeOnTransferTokens': {
-          const gas = await routerContract.estimateGas.swapExactETHForTokensSupportingFeeOnTransferTokens(args[0], args[1], args[2], args[3], {
+          const gas = await routerContract?.estimateGas.swapExactETHForTokensSupportingFeeOnTransferTokens(args[0], args[1], args[2], args[3], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString()
           });
-          swapTx = await routerContract.swapExactETHForTokensSupportingFeeOnTransferTokens(args[0], args[1], args[2], args[3], {
+          swapTx = await routerContract?.swapExactETHForTokensSupportingFeeOnTransferTokens(args[0], args[1], args[2], args[3], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString(),
-            gasLimit: gas.toHexString()
+            gasLimit: gas?.toHexString()
           });
           break;
         }
         case 'swapExactETHForTokens': {
-          const gas = await routerContract.estimateGas.swapExactETHForTokens(args[0], args[1], args[2], args[3], {
+          const gas = await routerContract?.estimateGas.swapExactETHForTokens(args[0], args[1], args[2], args[3], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString()
           });
-          swapTx = await routerContract.swapExactETHForTokens(args[0], args[1], args[2], args[3], {
+          swapTx = await routerContract?.swapExactETHForTokens(args[0], args[1], args[2], args[3], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString(),
-            gasLimit: gas.toHexString()
+            gasLimit: gas?.toHexString()
           });
           break;
         }
         case 'swapExactTokensForETHSupportingFeeOnTransferTokens': {
-          const gas = await routerContract.estimateGas.swapExactTokensForETHSupportingFeeOnTransferTokens(
+          const gas = await routerContract?.estimateGas.swapExactTokensForETHSupportingFeeOnTransferTokens(
             args[0],
             args[1],
             args[2],
@@ -140,27 +135,27 @@ export default function Swap() {
               gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString()
             }
           );
-          swapTx = await routerContract.swapExactTokensForETHSupportingFeeOnTransferTokens(args[0], args[1], args[2], args[3], args[4], {
+          swapTx = await routerContract?.swapExactTokensForETHSupportingFeeOnTransferTokens(args[0], args[1], args[2], args[3], args[4], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString(),
-            gasLimit: gas.toHexString()
+            gasLimit: gas?.toHexString()
           });
           break;
         }
         case 'swapExactTokensForETH': {
-          const gas = await routerContract.estimateGas.swapExactTokensForETH(args[0], args[1], args[2], args[3], args[4], {
+          const gas = await routerContract?.estimateGas.swapExactTokensForETH(args[0], args[1], args[2], args[3], args[4], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString()
           });
-          swapTx = await routerContract.swapExactTokensForETH(args[0], args[1], args[2], args[3], args[4], {
+          swapTx = await routerContract?.swapExactTokensForETH(args[0], args[1], args[2], args[3], args[4], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString(),
-            gasLimit: gas.toHexString()
+            gasLimit: gas?.toHexString()
           });
           break;
         }
         case 'swapExactTokensForTokensSupportingFeeOnTransferTokens': {
-          const gas = await routerContract.estimateGas.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+          const gas = await routerContract?.estimateGas.swapExactTokensForTokensSupportingFeeOnTransferTokens(
             args[0],
             args[1],
             args[2],
@@ -171,22 +166,22 @@ export default function Swap() {
               gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString()
             }
           );
-          swapTx = await routerContract.swapExactTokensForTokensSupportingFeeOnTransferTokens(args[0], args[1], args[2], args[3], args[4], {
+          swapTx = await routerContract?.swapExactTokensForTokensSupportingFeeOnTransferTokens(args[0], args[1], args[2], args[3], args[4], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString(),
-            gasLimit: gas.toHexString()
+            gasLimit: gas?.toHexString()
           });
           break;
         }
         case 'swapExactTokensForTokens': {
-          const gas = await routerContract.estimateGas.swapExactTokensForTokens(args[0], args[1], args[2], args[3], args[4], {
+          const gas = await routerContract?.estimateGas.swapExactTokensForTokens(args[0], args[1], args[2], args[3], args[4], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString()
           });
-          swapTx = await routerContract.swapExactTokensForTokens(args[0], args[1], args[2], args[3], args[4], {
+          swapTx = await routerContract?.swapExactTokensForTokens(args[0], args[1], args[2], args[3], args[4], {
             value,
             gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString(),
-            gasLimit: gas.toHexString()
+            gasLimit: gas?.toHexString()
           });
           break;
         }
@@ -195,34 +190,24 @@ export default function Swap() {
 
       setIsSwapLoading(false);
       if (playSounds) playSuccess();
-
-      const explorerUrl = chains[chainId as unknown as keyof typeof chains].explorer;
-      toast(
-        <div className="flex justify-center gap-2 text-[16px] font-poppins items-center">
-          <span className="text-white">Trade successful!</span>
-          <a href={explorerUrl.concat(`/tx/${swapTx.transactionHash}`)} target="_blank" rel="noreferrer">
-            View on explorer
-          </a>
-        </div>,
-        { type: 'success' }
-      );
     } catch (error: any) {
       console.log(error);
       setIsSwapLoading(false);
       if (playSounds) playError();
-      toast(error.message, { type: 'error' });
     }
   }, [
     account,
     chainId,
     firstSelectedToken.address,
     gasPrice,
-    library?.givenProvider,
     playError,
     playSounds,
     playSuccess,
+    routerContract,
     secondSelectedToken.address,
     slippageTolerance,
+    t1Contract,
+    t2Contract,
     txDeadlineInMins,
     val1
   ]);
@@ -232,7 +217,7 @@ export default function Swap() {
       if (query.inputToken)
         if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.inputToken as string).toLowerCase())) {
           setFirstSelectedToken(
-            _.find(tokensListing, (model) => model.address.toLowerCase() === (query.inputToken as string).toLowerCase()) as ListingModel
+            find(tokensListing, (model) => model.address.toLowerCase() === (query.inputToken as string).toLowerCase()) as ListingModel
           );
         } else setFirstSelectedToken(tokensListing[0]);
       else setFirstSelectedToken(tokensListing[0]);
@@ -240,7 +225,7 @@ export default function Swap() {
       if (query.outputToken)
         if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.outputToken as string).toLowerCase())) {
           setSecondSelectedToken(
-            _.find(tokensListing, (model) => model.address.toLowerCase() === (query.outputToken as string).toLowerCase()) as ListingModel
+            find(tokensListing, (model) => model.address.toLowerCase() === (query.outputToken as string).toLowerCase()) as ListingModel
           );
         } else setSecondSelectedToken(tokensListing[1]);
       else setSecondSelectedToken(tokensListing[1]);
@@ -304,25 +289,25 @@ export default function Swap() {
                   </div>
                   <div className="flex justify-end items-center w-full gap-1">
                     <button
-                      onClick={() => setVal1(multiply(1 / 4, parseFloat(balance1)))}
+                      onClick={() => setVal1(multiply(1 / 4, balance1))}
                       className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
                     >
                       25%
                     </button>
                     <button
-                      onClick={() => setVal1(multiply(2 / 4, parseFloat(balance1)))}
+                      onClick={() => setVal1(multiply(2 / 4, balance1))}
                       className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
                     >
                       50%
                     </button>
                     <button
-                      onClick={() => setVal1(multiply(3 / 4, parseFloat(balance1)))}
+                      onClick={() => setVal1(multiply(3 / 4, balance1))}
                       className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
                     >
                       75%
                     </button>
                     <button
-                      onClick={() => setVal1(parseFloat(balance1))}
+                      onClick={() => setVal1(balance1)}
                       className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
                     >
                       100%
@@ -383,11 +368,11 @@ export default function Swap() {
               <div className="flex justify-center gap-2 items-center w-full flex-col px-2 py-4">
                 <button
                   onClick={swapTokens}
-                  disabled={!!pairError || isSwapLoading || val1 <= 0 || val1 > parseFloat(balance1) || !active}
+                  disabled={!!pairError || isSwapLoading || val1 <= 0 || val1 > balance1 || !active}
                   className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                 >
                   <span className="font-Syne">
-                    {!active ? 'Wallet not connected' : val1 > parseFloat(balance1) ? `Insufficient ${firstSelectedToken.symbol} balance` : 'Swap'}
+                    {!active ? 'Wallet not connected' : val1 > balance1 ? `Insufficient ${firstSelectedToken.symbol} balance` : 'Swap'}
                   </span>
                   <TailSpin color="#dcdcdc" visible={isSwapLoading} width={20} height={20} />
                 </button>
@@ -395,7 +380,6 @@ export default function Swap() {
             </div>
           </TradeCard>
         </div>
-        <ToastContainer position="top-right" theme="dark" autoClose={5000} />
         <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
         <TokensListModal
           isVisible={isFirstTokensListModalVisible}
