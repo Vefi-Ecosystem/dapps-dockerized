@@ -29,24 +29,25 @@ import errorFx from '../../assets/sounds/error_sound.mp3';
 import TradeCard from '../../components/Dex/Card';
 import { useEtherBalance, useTokenBalance } from '../../hooks/wallet';
 import { useContract } from '../../hooks/global';
+import Toast from '../../components/Toast';
 
 export default function Swap() {
   const { reload, query } = useRouter();
   const [val1, setVal1] = useState<number>(0.0);
   const [val2, setVal2] = useState<number>(0.0);
+  const [showToast, setShowToast] = useState<boolean>(false);
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
+  const [toastMessage, setToastMessage] = useState<string>('');
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
   const [isFirstTokensListModalVisible, setIsFirstTokensListModalVisible] = useState<boolean>(false);
   const [isSecondTokensListModalVisible, setIsSecondTokensListModalVisible] = useState<boolean>(false);
   const [isSwapLoading, setIsSwapLoading] = useState<boolean>(false);
-
   const { tokensListing } = useAPIContext();
   const { chainId, active, library, account } = useWeb3Context();
   const { txDeadlineInMins, slippageTolerance, gasPrice, playSounds } = useDEXSettingsContext();
   const [firstSelectedToken, setFirstSelectedToken] = useState<ListingModel>({} as ListingModel);
   const [secondSelectedToken, setSecondSelectedToken] = useState<ListingModel>({} as ListingModel);
-
   const { pair, error: pairError } = computePair(firstSelectedToken, secondSelectedToken, chainId || 97);
-
   const { balance: balance1 } =
     firstSelectedToken.address === AddressZero ? useEtherBalance([isSwapLoading]) : useTokenBalance(firstSelectedToken.address, [isSwapLoading]);
   const { balance: balance2 } =
@@ -55,13 +56,15 @@ export default function Swap() {
   const t1Contract = useContract(firstSelectedToken.address, erc20Abi, true);
   const t2Contract = useContract(secondSelectedToken.address, erc20Abi, true);
   const explorerUrl = useMemo(() => chains[chainId as unknown as keyof typeof chains].explorer, [chainId]);
-
   const outputAmount = getOutputAmount(firstSelectedToken, secondSelectedToken, val1, chainId || 1);
   const inputAmount = getInputAmount(firstSelectedToken, secondSelectedToken, val2, chainId || 1);
-
   const [playSuccess] = useSound(successFx);
   const [playError] = useSound(errorFx);
-
+  const displayToast = useCallback((msg: string, toastType: 'success' | 'info' | 'error') => {
+    setToastMessage(msg);
+    setToastType(toastType);
+    setShowToast(true);
+  }, []);
   const switchSelectedTokens = useCallback(() => {
     const token1 = firstSelectedToken;
     const token2 = secondSelectedToken;
@@ -69,7 +72,6 @@ export default function Swap() {
     setFirstSelectedToken(token2);
     setSecondSelectedToken(token1);
   }, [firstSelectedToken, secondSelectedToken]);
-
   const swapTokens = useCallback(async () => {
     try {
       setIsSwapLoading(true);
@@ -79,6 +81,7 @@ export default function Swap() {
       if (t1Contract) {
         const approvalTx = await t1Contract.approve(routerContract?.address, value0);
         await approvalTx.wait();
+        displayToast('spend approved', 'info');
       }
 
       let swapTx: any;
@@ -189,15 +192,17 @@ export default function Swap() {
       swapTx = await swapTx.wait();
 
       setIsSwapLoading(false);
+      displayToast('transaction executed', 'success');
       if (playSounds) playSuccess();
     } catch (error: any) {
-      console.log(error);
       setIsSwapLoading(false);
+      displayToast('transaction execution failed', 'error');
       if (playSounds) playError();
     }
   }, [
     account,
     chainId,
+    displayToast,
     firstSelectedToken.address,
     gasPrice,
     playError,
@@ -380,6 +385,7 @@ export default function Swap() {
             </div>
           </TradeCard>
         </div>
+        <Toast message={toastMessage} toastType={toastType} duration={10} onHide={() => setShowToast(false)} show={showToast} />
         <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
         <TokensListModal
           isVisible={isFirstTokensListModalVisible}

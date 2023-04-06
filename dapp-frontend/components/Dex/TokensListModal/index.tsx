@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useCallback, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { ToastContainer, toast } from 'react-toastify';
 import { FiSearch, FiX } from 'react-icons/fi';
 import _ from 'lodash';
 import { isAddress } from '@ethersproject/address';
@@ -10,6 +9,9 @@ import { useAPIContext } from '../../../contexts/api';
 import { ListingModel } from '../../../api/models/dex';
 import TokensListItem from './list';
 import { useWeb3Context } from '../../../contexts/web3';
+import Empty from '../../Empty';
+import { TailSpin } from 'react-loader-spinner';
+import Toast from '../../Toast';
 
 type ITokensListModalProps = {
   onClose: () => void;
@@ -19,11 +21,18 @@ type ITokensListModalProps = {
 };
 
 export default function TokensListModal({ onClose, isVisible, onTokenSelected, selectedTokens }: ITokensListModalProps) {
+  const [showToast, setShowToast] = useState<boolean>(false);
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
+  const [toastMessage, setToastMessage] = useState<string>('');
   const { tokensListing, importToken } = useAPIContext();
   const { chainId } = useWeb3Context();
   const [searchValue, setSearchValue] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const displayToast = useCallback((msg: string, toastType: 'success' | 'info' | 'error') => {
+    setToastMessage(msg);
+    setToastType(toastType);
+    setShowToast(true);
+  }, []);
   const addTokenUsingSearchValue = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -36,10 +45,10 @@ export default function TokensListModal({ onClose, isVisible, onTokenSelected, s
         symbol: token.symbol as string
       });
       setIsLoading(false);
-      toast(`Successfully imported token ${token.symbol}`, { type: 'success' });
+      displayToast(`successfully imported token ${token.symbol}`, 'success');
     } catch (error: any) {
       setIsLoading(false);
-      toast(error.message, { type: 'error' });
+      displayToast(error.message, 'error');
     }
   }, [chainId, searchValue]);
   return (
@@ -126,16 +135,15 @@ export default function TokensListModal({ onClose, isVisible, onTokenSelected, s
                         ))
                       ) : (
                         <div className="flex justify-center items-center w-full flex-col gap-2 px-2 py-2">
-                          <div className="flex justify-center items-center w-full">
-                            <span className="text-[red]/50 font-[600] text-[20px]">Empty Search Result!</span>
-                          </div>
+                          <Empty />
                           {isAddress(searchValue) && (
                             <button
                               onClick={addTokenUsingSearchValue}
                               disabled={isLoading}
-                              className={`btn btn-primary font-Montserrat w-full rounded-[25px] ${isLoading ? 'loading' : ''}`}
+                              className={`flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3 capitalize font-Syne`}
                             >
-                              Import Token
+                              import token
+                              {isLoading && <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />}
                             </button>
                           )}
                         </div>
@@ -145,7 +153,7 @@ export default function TokensListModal({ onClose, isVisible, onTokenSelected, s
                 </div>
               </div>
             </Transition.Child>
-            <ToastContainer position="bottom-center" theme="dark" autoClose={5000} />
+            <Toast message={toastMessage} toastType={toastType} duration={10} onHide={() => setShowToast(false)} show={showToast} />
           </div>
         </div>
       </Dialog>
