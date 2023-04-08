@@ -1,20 +1,18 @@
-import { useMemo, createContext, useContext } from 'react';
+import { createContext, useContext } from 'react';
 import { GraphQLClient } from 'graphql-request';
-import { useWeb3Context } from './web3';
 import grapqlConfig from '../assets/graphql.json';
+import { useGQLClient } from '../hooks/global';
 
 type GraphQLContextType = {
-  dexGQLClient: GraphQLClient;
-  poolsGQLClient: GraphQLClient;
+  dexGQLClient: GraphQLClient | null;
+  poolsGQLClient: GraphQLClient | null;
 };
 
 const GQLContext = createContext<GraphQLContextType>({} as GraphQLContextType);
 
 export const GQLProvider = ({ children }: any) => {
-  const { chainId } = useWeb3Context();
-  const gqlConfig = useMemo(() => grapqlConfig[chainId as unknown as keyof typeof grapqlConfig], [chainId]);
-  const dexGQLClient = useMemo(() => new GraphQLClient(`${gqlConfig.root}${gqlConfig.slugs.exchange}`), [gqlConfig.root, gqlConfig.slugs.exchange]);
-  const poolsGQLClient = useMemo(() => new GraphQLClient(`${gqlConfig.root}${gqlConfig.slugs.pools}`), [gqlConfig.root, gqlConfig.slugs.pools]);
+  const dexGQLClient = useGQLClient(grapqlConfig, 'exchange');
+  const poolsGQLClient = useGQLClient(grapqlConfig, 'pools');
 
   return <GQLContext.Provider value={{ dexGQLClient, poolsGQLClient }}>{children}</GQLContext.Provider>;
 };

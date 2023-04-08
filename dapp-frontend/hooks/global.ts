@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { useWeb3Context } from '../contexts/web3';
 import { getContract } from '../utils';
-import { map } from 'lodash';
+import { get, map } from 'lodash';
+import { GraphQLClient } from 'graphql-request';
 
-export const useContract = (addressOrAddressMap: string | { [chainId: number]: string }, ABI: any, withSignerIfPossible = true) => {
+export const useContract = (addressOrAddressMap: string | { [chainId: number | string]: string }, ABI: any, withSignerIfPossible = true) => {
   const { account, library, chainId } = useWeb3Context();
 
   return useMemo(() => {
@@ -24,7 +25,7 @@ export const useContract = (addressOrAddressMap: string | { [chainId: number]: s
   }, [account, addressOrAddressMap, chainId, library, withSignerIfPossible, ABI]);
 };
 
-export const useContracts = (addressesOrAddressMaps: (string | { [chainId: number]: string })[], ABI: any, withSignerIfPossible = true) => {
+export const useContracts = (addressesOrAddressMaps: (string | { [chainId: number | string]: string })[], ABI: any, withSignerIfPossible = true) => {
   const { account, library, chainId } = useWeb3Context();
 
   return useMemo(() => {
@@ -45,4 +46,29 @@ export const useContracts = (addressesOrAddressMaps: (string | { [chainId: numbe
       }
     });
   }, [ABI, account, addressesOrAddressMaps, chainId, library, withSignerIfPossible]);
+};
+
+export const useGQLClient = (
+  uriOrUriMap: string | { [chainId: number | string]: { root: string; slugs: { [key: string]: string } } },
+  slug: string
+) => {
+  const { chainId } = useWeb3Context();
+  return useMemo(() => {
+    let uri: string | undefined;
+
+    if (!uriOrUriMap) return null;
+
+    if (typeof uriOrUriMap === 'string') uri = uriOrUriMap;
+    else {
+      const fromMap = get(uriOrUriMap, chainId);
+      if (!fromMap) return null;
+      if (!fromMap.slugs[slug]) return null;
+
+      uri = fromMap.root + fromMap.slugs[slug];
+    }
+
+    if (!uri) return null;
+
+    return new GraphQLClient(uri);
+  }, [chainId, slug, uriOrUriMap]);
 };
