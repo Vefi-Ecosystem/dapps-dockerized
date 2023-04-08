@@ -15,5 +15,7 @@ export const TCell = ({ children, className }: HTMLAttributes<HTMLDivElement>) =
 export const TBody = ({ children }: any) => <div className="table-row-group w-full">{children}</div>;
 
 export const Table = ({ children }: any) => (
-  <div className="table w-full overflow-auto hidden-scrollbar border-collapse border-spacing-y-[1em] border-spacing-x-0">{children}</div>
+  <div className="table w-full table-compact overflow-auto hidden-scrollbar border-collapse border-spacing-y-[1em] border-spacing-x-0">
+    {children}
+  </div>
 );

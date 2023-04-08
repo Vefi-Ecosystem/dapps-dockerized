@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import CreateStakingPoolModal from '../components/Staking/CreateStakingPoolModal';
 import SquareToggleButton from '../components/Button/SquareToggleButton';
-import { AllPools } from '../routes/staking';
+import { AllPools, AccountPools } from '../routes/staking';
 
 enum Tabs {
   ALL_POOLS = 'all_pools',
@@ -18,6 +18,9 @@ const useStakingView = (tab: Tabs) => {
     switch (tab) {
       case Tabs.ALL_POOLS:
         setComponent(() => AllPools);
+        break;
+      case Tabs.MY_POOLS:
+        setComponent(() => AccountPools);
         break;
       default:
         setComponent(() => AllPools);
