@@ -3,7 +3,7 @@ import { ChangeEvent, Fragment, useCallback, useEffect, useMemo, useState } from
 import { formatEthAddress } from 'eth-address';
 import { FiChevronDown, FiX } from 'react-icons/fi';
 import { Step, Steps } from '../../Steps';
-import { add, ceil, map, multiply } from 'lodash';
+import { add, ceil, map, multiply, toString } from 'lodash';
 import poolActions from '../../../assets/pool_actions.json';
 import { useContract } from '../../../hooks/global';
 import { abi as poolActionABI } from 'vefi-token-launchpad-staking/artifacts/contracts/StakingPoolActions.sol/StakingPoolActions.json';
@@ -123,13 +123,14 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
         let decimals = null;
         if (poolCreationData.rewardTokenAddress !== AddressZero) {
           decimals = await rewardTokenContract?.decimals();
-          await rewardTokenContract?.approve(poolCreator?.address, parseUnits(poolCreationData.initialAmount.toString(), decimals));
+          const approvalTx = await rewardTokenContract?.approve(poolCreator?.address, parseUnits(toString(poolCreationData.initialAmount), decimals));
+          await approvalTx.wait();
           displayToast('approved', 'info');
         }
 
         const deploymentFee = await poolCreator?.deploymentFee();
 
-        await poolCreator?.deployStakingPool(
+        const deploymentTx = await poolCreator?.deployStakingPool(
           poolCreationData.stakeTokenAddress,
           poolCreationData.rewardTokenAddress,
           hexValue(poolCreationData.apy),
@@ -145,6 +146,8 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                 : hexValue(deploymentFee.add(parseEther(poolCreationData.initialAmount.toString())))
           }
         );
+
+        await deploymentTx.wait();
 
         displayToast('staking pool created', 'success');
         setIsLoading(false);

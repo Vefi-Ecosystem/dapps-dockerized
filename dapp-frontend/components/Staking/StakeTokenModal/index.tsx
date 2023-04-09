@@ -1,18 +1,21 @@
 import { Transition, Dialog } from '@headlessui/react';
-import { Fragment, useCallback, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 import { formatEthAddress } from 'eth-address';
-import { FiChevronDown, FiX } from 'react-icons/fi';
-import { Step, Steps } from '../../Steps';
-import { multiply } from 'lodash';
+import { FiX } from 'react-icons/fi';
+import { isNull, multiply, toString, floor } from 'lodash';
 import Toast from '../../Toast';
 import { AddressZero } from '@ethersproject/constants';
 import millify from 'millify';
 import { TailSpin } from 'react-loader-spinner';
 import { abi as stakingPoolABI } from 'vefi-token-launchpad-staking/artifacts/contracts/StakingPool.sol/StakingPool.json';
+import { abi as erc20ABI } from 'vefi-token-launchpad-staking/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
 import { useContract } from '../../../hooks/global';
 import { useSingleStakingPool } from '../../../hooks/staking';
 import { useAPIContext } from '../../../contexts/api';
 import Countdown from 'react-countdown';
+import { useEtherBalance, useTokenBalance } from '../../../hooks/wallet';
+import { useWeb3Context } from '../../../contexts/web3';
+import { parseEther, parseUnits } from '@ethersproject/units';
 
 type StakeTokenModalProps = {
   isOpen: boolean;
@@ -46,7 +49,12 @@ export default function StakeTokenModal({ isOpen, onClose, selectedStakingPoolID
 
   const stakingPoolContract = useContract(selectedStakingPoolID, stakingPoolABI, true);
   const { isLoading: isStakingPoolLoading, data } = useSingleStakingPool(selectedStakingPoolID);
+  const { isLoading: isBalanceLoading, balance } =
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    data?.stakedToken.id === AddressZero ? useEtherBalance([isLoading]) : useTokenBalance(data?.stakedToken.id, [isLoading]);
   const { tokensListingAsDictionary } = useAPIContext();
+  const { active } = useWeb3Context();
+  const stakedTokenContract = useContract(data?.stakedToken.id, erc20ABI, true);
 
   const displayToast = useCallback((msg: string, toastType: 'success' | 'info' | 'error') => {
     setToastMessage(msg);
@@ -54,7 +62,38 @@ export default function StakeTokenModal({ isOpen, onClose, selectedStakingPoolID
     setShowToast(true);
   }, []);
 
-  const submit = useCallback(async () => {}, []);
+  const canStake = useMemo(
+    () =>
+      stakedAmount && stakedAmount > 0 && stakedAmount <= balance && stakingPoolContract && parseInt(data?.endsIn || '0') > floor(Date.now() / 1000),
+    [balance, data?.endsIn, stakedAmount, stakingPoolContract]
+  );
+
+  const submit = useCallback(async () => {
+    try {
+      if (canStake) {
+        setIsLoading(true);
+        if (!isNull(stakedTokenContract)) {
+          const decimals = await stakedTokenContract.decimals();
+          const approvalTx = await stakedTokenContract.approve(selectedStakingPoolID, parseUnits(toString(stakedAmount), decimals));
+          await approvalTx.wait();
+          displayToast('approved', 'info');
+
+          const stakeTx = await stakingPoolContract?.stakeERC20(parseUnits(toString(stakedAmount), decimals));
+          await stakeTx.wait();
+        } else {
+          const stakeTx = await stakingPoolContract?.stakeEther({ value: parseEther(toString(stakedAmount)) });
+          await stakeTx.wait();
+        }
+
+        setIsLoading(false);
+        displayToast('successfully staked amount', 'success');
+        setStakedAmount(0);
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      displayToast('error occurred', 'error');
+    }
+  }, [canStake, displayToast, selectedStakingPoolID, stakedAmount, stakedTokenContract, stakingPoolContract]);
 
   return (
     <>
@@ -149,7 +188,97 @@ export default function StakeTokenModal({ isOpen, onClose, selectedStakingPoolID
                           </div>
                         </div>
                         <div className="w-[2px] min-h-full bg-[#5d5d5d]"></div>
-                        <div className="w-1/2 px-4 py-5">hi</div>
+                        <div className="w-1/2 px-4 py-5 flex flex-col justify-start items-start gap-5">
+                          <span className="font-Syne text-[#808080] text-[1.2em] capitalize font-[700]">stake tokens</span>
+                          <div className="flex justify-center items-center w-full">
+                            <div className="flex flex-col justify-center items-center w-full gap-4">
+                              <div className="flex flex-col justify-start items-center gap-2 w-full">
+                                <div className="flex justify-between w-full font-Syne text-[0.78em] lg:text-[1em]">
+                                  <span className="text-white capitalize">amount</span>
+
+                                  {isBalanceLoading ? (
+                                    <TailSpin color="#dcdcdc" visible={isBalanceLoading} width={20} height={20} />
+                                  ) : (
+                                    <span className="text-[#c8bfbf] capitalize"> balance: {millify(balance)} </span>
+                                  )}
+                                </div>
+                                <input
+                                  type="number"
+                                  value={stakedAmount}
+                                  className="p-3 bg-[#fff]/[.07] text-white w-full border-0 outline-0 rounded-[8px] appearance-none font-[600] text-[0.78em] lg:text-[1em] font-Poppins text-left"
+                                  onChange={(e) => setStakedAmount(e.target.valueAsNumber ?? 0)}
+                                />
+                                <div className="flex justify-end items-center w-full gap-1">
+                                  <button
+                                    onClick={() => setStakedAmount(multiply(1 / 4, balance))}
+                                    className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.58em] lg:text-[0.78em]"
+                                  >
+                                    25%
+                                  </button>
+                                  <button
+                                    onClick={() => setStakedAmount(multiply(2 / 4, balance))}
+                                    className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.58em] lg:text-[0.78em]"
+                                  >
+                                    50%
+                                  </button>
+                                  <button
+                                    onClick={() => setStakedAmount(multiply(3 / 4, balance))}
+                                    className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.58em] lg:text-[0.78em]"
+                                  >
+                                    75%
+                                  </button>
+                                  <button
+                                    onClick={() => setStakedAmount(balance)}
+                                    className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.58em] lg:text-[0.78em]"
+                                  >
+                                    100%
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="flex justify-start items-start w-full overflow-auto hidden-scrollbar">
+                                <ul className="steps steps-vertical w-full text-[0.63em] lg:text-[0.8em]">
+                                  <li className="step step-neutral w-full">
+                                    <div className="flex justify-between items-center w-full">
+                                      <span className="capitalize font-Syne text-[#d4d4d4]/50">tax</span>
+                                      <span className="capitalize font-Poppins text-[#aaa]">{data?.tax}%</span>
+                                    </div>
+                                  </li>
+                                  <li className="step step-neutral w-full">
+                                    <div className="flex justify-between items-center w-full">
+                                      <span className="capitalize font-Syne text-[#d4d4d4]/50">stake date</span>
+                                      <span className="capitalize font-Poppins text-[#aaa]">{new Date().toDateString()}</span>
+                                    </div>
+                                  </li>
+                                  <li className="step step-neutral w-full">
+                                    <div className="flex justify-between items-center w-full">
+                                      <span className="capitalize font-Syne text-[#d4d4d4]/50">reward calculation</span>
+                                      <div className="flex flex-col justify-start items-end">
+                                        <span className="capitalize font-Poppins text-[#aaa]">
+                                          p: (apy &times; (current block timestamp &minus; last stake time) &#247; withdrawal intervals) &#247; 12
+                                        </span>
+                                        <span className="capitalize font-Poppins text-[#aaa]">reward: (amount staked &times; p) &#247; 100</span>
+                                      </div>
+                                    </div>
+                                  </li>
+                                </ul>
+                              </div>
+                              <button
+                                onClick={submit}
+                                disabled={isLoading || !canStake || !active}
+                                className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
+                              >
+                                <span className="font-Syne capitalize">
+                                  {!active
+                                    ? 'wallet not connected'
+                                    : stakedAmount > balance
+                                    ? `insufficient ${data?.stakedToken.symbol} balance`
+                                    : 'stake'}
+                                </span>
+                                <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
 

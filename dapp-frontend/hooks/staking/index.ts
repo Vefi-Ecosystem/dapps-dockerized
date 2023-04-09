@@ -97,6 +97,7 @@ const SINGLE_STAKING_POOL_QUERY = gql`
     stakingPool(id: $id) {
       id
       apy
+      tax
       owner
       endsIn
       blockNumber
@@ -112,6 +113,72 @@ const SINGLE_STAKING_POOL_QUERY = gql`
         id
         name
         symbol
+      }
+    }
+  }
+`;
+
+const ACCOUNT_STAKES_QUERY = gql`
+  query AccountStakes($account: Bytes!) {
+    stakes({ where: { account: $account }}) {
+      id
+      amount
+      account
+      blockTimestamp
+      blockNumber
+      pool {
+        id
+        apy
+        tax
+        owner
+        endsIn
+        blockNumber
+        blockTimestamp
+        totalStaked
+        totalRewards
+        stakedToken {
+          id
+          name
+          symbol
+        }
+        rewardToken {
+          id
+          name
+          symbol
+        }
+      }
+    }
+  }
+`;
+
+const SINGLE_STAKE_QUERY = gql`
+  query SingleStake($id: ID!) {
+    stake(id: $id) {
+      id
+      amount
+      account
+      blockTimestamp
+      blockNumber
+      pool {
+        id
+        apy
+        tax
+        owner
+        endsIn
+        blockNumber
+        blockTimestamp
+        totalStaked
+        totalRewards
+        stakedToken {
+          id
+          name
+          symbol
+        }
+        rewardToken {
+          id
+          name
+          symbol
+        }
       }
     }
   }
@@ -264,3 +331,53 @@ export const useSingleStakingPool = (id: string) => {
   }, [id, poolsGQLClient]);
   return { isLoading, data };
 };
+
+export const useAccountStakes = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<any[]>([]);
+  const { poolsGQLClient } = useGQLContext();
+  const { account } = useWeb3Context();
+
+  useEffect(() => {
+    if (account)
+      (async () => {
+        try {
+          setIsLoading(true);
+          const req = await poolsGQLClient?.request(ACCOUNT_STAKES_QUERY, { account });
+          setData(req.stakes);
+          setIsLoading(false);
+        } catch (error: any) {
+          console.error(error);
+          setIsLoading(false);
+        }
+      })();
+    else setData([]);
+  }, [account, poolsGQLClient]);
+
+  return { isLoading, data };
+};
+
+export const useSingleStake = (id: string) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<any>(null);
+  const { poolsGQLClient } = useGQLContext();
+
+  useEffect(() => {
+    if (id)
+      (async () => {
+        try {
+          setIsLoading(true);
+          const req = await poolsGQLClient?.request(SINGLE_STAKE_QUERY, { id });
+          setData(req.stake);
+          setIsLoading(false);
+        } catch (error: any) {
+          console.error(error);
+          setIsLoading(false);
+        }
+      })();
+  }, [id, poolsGQLClient]);
+
+  return { isLoading, data };
+};
+
+export const useAmountStakedMinusTax = () => {};
