@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
-import { useAllAccountPools, useStakingPoolFactoriesStats } from '../../hooks/staking';
+import { useAccountStakes } from '../../hooks/staking';
 import { TBody, TCell, THead, TRow, Table } from '../../ui/Table';
-import { filter, floor, map, multiply, startsWith, trim } from 'lodash';
+import { filter, map, multiply, startsWith, trim } from 'lodash';
 import { TailSpin } from 'react-loader-spinner';
 import CountDown from 'react-countdown';
 import Empty from '../../ui/Empty';
 import { useAPIContext } from '../../contexts/api';
-import Pagination from '../../ui/Pagination';
-import StakeTokenModal from '../../ui/Staking/StakeTokenModal';
+import UnstakeTokenModal from '../../ui/Staking/UnstakeTokenModal';
+import millify from 'millify';
+import ViewStakeModal from '../../ui/Staking/ViewStakeModal';
 
 const countdownRender = ({ days, hours, minutes, seconds }: any) => (
   <span className="font-Poppins font-[400] text-[1em] capitalize text-[#fff]">
@@ -27,12 +28,11 @@ const StatusLabel = ({ timestamp }: { timestamp: number }) => (
 );
 
 const All = ({ searchValue = '' }: { searchValue?: string }) => {
-  const [page, setPage] = useState(1);
-  const { data, isLoading } = useAllAccountPools(page - 1);
+  const { data, isLoading } = useAccountStakes();
   const { tokensListingAsDictionary } = useAPIContext();
-  const stats = useStakingPoolFactoriesStats();
-  const [showStakeModal, setShowStakeModal] = useState(false);
-  const [selectedStakingPool, setSelectedStakingPool] = useState<any>(null);
+  const [showUnstakeModal, setShowUnstakeModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedStake, setSelectedStake] = useState<any>(null);
 
   return (
     <div className="w-full px-0 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
@@ -49,16 +49,19 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
               <span className="capitalize">apy</span>
             </TCell>
             <TCell className="text-center py-2 hidden lg:table-cell">
-              <span className="capitalize">ends in</span>
+              <span className="capitalize">pool ends in</span>
             </TCell>
             <TCell className="text-center py-2 hidden lg:table-cell">
-              <span className="capitalize">created on</span>
+              <span className="capitalize">stake created on</span>
             </TCell>
             <TCell className="text-center py-2 hidden lg:table-cell">
               <span className="capitalize">block</span>
             </TCell>
             <TCell className="text-center py-2 hidden lg:table-cell">
-              <span className="capitalize">status</span>
+              <span className="capitalize">pool status</span>
+            </TCell>
+            <TCell className="text-center py-2 hidden lg:table-cell">
+              <span className="capitalize">amount staked</span>
             </TCell>
             <TCell className="text-center py-2">
               <span className="capitalize">action</span>
@@ -76,10 +79,10 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                     data,
                     (item) =>
                       startsWith(item.id.toLowerCase(), searchValue.toLowerCase()) ||
-                      startsWith(item.stakedToken.name.toLowerCase(), searchValue.toLowerCase()) ||
-                      startsWith(item.rewardToken.name.toLowerCase(), searchValue.toLowerCase()) ||
-                      startsWith(item.stakedToken.id.toLowerCase(), searchValue.toLowerCase()) ||
-                      startsWith(item.rewardToken.id.toLowerCase(), searchValue.toLowerCase())
+                      startsWith(item.pool.stakedToken.name.toLowerCase(), searchValue.toLowerCase()) ||
+                      startsWith(item.pool.rewardToken.name.toLowerCase(), searchValue.toLowerCase()) ||
+                      startsWith(item.pool.stakedToken.id.toLowerCase(), searchValue.toLowerCase()) ||
+                      startsWith(item.pool.rewardToken.id.toLowerCase(), searchValue.toLowerCase())
                   )
                 : data,
               (item, index) => (
@@ -90,16 +93,16 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
                             src={
-                              tokensListingAsDictionary[item.stakedToken.id]
-                                ? tokensListingAsDictionary[item.stakedToken.id].logoURI
+                              tokensListingAsDictionary[item.pool.stakedToken.id]
+                                ? tokensListingAsDictionary[item.pool.stakedToken.id].logoURI
                                 : '/images/placeholder_image.svg'
                             }
-                            alt={item.stakedToken.symbol}
+                            alt={item.pool.stakedToken.symbol}
                           />
                         </div>
                       </div>
-                      <span className="text-[#fff] font-[700] capitalize text-[1em]">{item.stakedToken.name}</span>
-                      <span className="text-[#aaaaaa] font-[400] uppercase text-[1em]">{item.stakedToken.symbol}</span>
+                      <span className="text-[#fff] font-[700] capitalize text-[1em]">{item.pool.stakedToken.name}</span>
+                      <span className="text-[#aaaaaa] font-[400] uppercase text-[1em]">{item.pool.stakedToken.symbol}</span>
                     </div>
                   </TCell>
                   <TCell className="text-center px-2 py-2">
@@ -108,23 +111,23 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
                             src={
-                              tokensListingAsDictionary[item.rewardToken.id]
-                                ? tokensListingAsDictionary[item.rewardToken.id].logoURI
+                              tokensListingAsDictionary[item.pool.rewardToken.id]
+                                ? tokensListingAsDictionary[item.pool.rewardToken.id].logoURI
                                 : '/images/placeholder_image.svg'
                             }
-                            alt={item.rewardToken.symbol}
+                            alt={item.pool.rewardToken.symbol}
                           />
                         </div>
                       </div>
-                      <span className="text-[#fff] font-[700] capitalize text-[1em]">{item.rewardToken.name}</span>
-                      <span className="text-[#aaaaaa] font-[400] uppercase text-[1em]">{item.rewardToken.symbol}</span>
+                      <span className="text-[#fff] font-[700] capitalize text-[1em]">{item.pool.rewardToken.name}</span>
+                      <span className="text-[#aaaaaa] font-[400] uppercase text-[1em]">{item.pool.rewardToken.symbol}</span>
                     </div>
                   </TCell>
                   <TCell className="text-center px-2 py-2">
-                    <span className="text-[#23e33e] font-[400] uppercase text-[1em] font-Poppins">{item.apy}%</span>
+                    <span className="text-[#23e33e] font-[400] uppercase text-[1em] font-Poppins">{item.pool.apy}%</span>
                   </TCell>
                   <TCell className="text-center px-2 py-2">
-                    <CountDown date={multiply(parseInt(item.endsIn), 1000)} renderer={countdownRender} />
+                    <CountDown date={multiply(parseInt(item.pool.endsIn), 1000)} renderer={countdownRender} />
                   </TCell>
                   <TCell className="text-center px-2 py-2">
                     <span className="text-[#fff] font-[400] text-[1em] font-Poppins">
@@ -135,20 +138,32 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                     <span className="text-[#fff] font-[400] text-[1em] font-Poppins">{item.blockNumber}</span>
                   </TCell>
                   <TCell className="text-center px-2 py-2">
-                    <StatusLabel timestamp={parseInt(item.endsIn)} />
+                    <StatusLabel timestamp={parseInt(item.pool.endsIn)} />
+                  </TCell>
+                  <TCell className="text-center px-2 py-2">
+                    <span className="text-[#fff] font-[400] text-[1em] font-Poppins">{millify(parseFloat(item.amount))}</span>
                   </TCell>
                   <TCell className="text-center">
-                    <button
-                      className="btn btn-ghost btn-xs lg:btn-sm"
-                      onClick={() => {
-                        setSelectedStakingPool(item);
-                        setShowStakeModal(true);
-                      }}
-                    >
-                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
-                        {parseInt(item.endsIn) > floor(Date.now() / 1000) ? 'stake' : 'check'}
-                      </span>
-                    </button>
+                    <div className="w-full justify-center items-center gap-1 flex">
+                      <button
+                        className="btn btn-ghost btn-xs lg:btn-sm"
+                        onClick={() => {
+                          setSelectedStake(item);
+                          setShowUnstakeModal(true);
+                        }}
+                      >
+                        <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">unstake</span>
+                      </button>
+                      <button
+                        className="btn btn-ghost btn-xs lg:btn-sm"
+                        onClick={() => {
+                          setSelectedStake(item);
+                          setShowViewModal(true);
+                        }}
+                      >
+                        <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">view</span>
+                      </button>
+                    </div>
                   </TCell>
                 </TRow>
               )
@@ -156,17 +171,23 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
           )}
         </TBody>{' '}
       </Table>
-      {data.length > 0 && (
-        <div className="w-full px-5 py-2">
-          <Pagination currentPage={page} itemsPerPage={10} onPageChange={setPage} dataLength={stats?.poolsCount || 0} />
-        </div>
-      )}
-      <StakeTokenModal isOpen={showStakeModal} onClose={() => setShowStakeModal(false)} selectedStakingPoolID={selectedStakingPool?.id} />
+      <UnstakeTokenModal
+        isOpen={showUnstakeModal}
+        onClose={() => setShowUnstakeModal(false)}
+        selectedStakingPoolID={selectedStake?.pool.id}
+        stakeID={selectedStake?.id}
+      />
+      <ViewStakeModal
+        isOpen={showViewModal}
+        onClose={() => setShowViewModal(false)}
+        selectedStakingPoolID={selectedStake?.pool.id}
+        stakeID={selectedStake?.id}
+      />
     </div>
   );
 };
 
-export default function AccountPools() {
+export default function AccountStakes() {
   const [searchValue, setSearchValue] = useState('');
   return (
     <div className="w-full px-0 py-4 border border-[#858585] rounded-[20px] overflow-auto hidden-scrollbar">

@@ -16,6 +16,6 @@
     "incremental": true,
     "typeRoots": ["./node_modules/@types", "./typings"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/Footer/Footer.style.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "ui/Footer/Footer.style.js"],
   "exclude": ["node_modules"]
 }

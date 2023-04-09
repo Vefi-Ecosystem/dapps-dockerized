@@ -12,12 +12,12 @@ import { ResponsiveContainer } from 'recharts';
 import { map, multiply, truncate } from 'lodash';
 import { useAPIContext } from '../../contexts/api';
 import { useSingleTokenChartData, useSingleTokenQuery } from '../../hooks/analytics';
-import SquareToggleButton from '../../components/Button/SquareToggleButton';
-import BarChart from '../../components/Chart/BarChart';
+import SquareToggleButton from '../../ui/Button/SquareToggleButton';
+import BarChart from '../../ui/Chart/BarChart';
 import { useWeb3Context } from '../../contexts/web3';
 import chains from '../../assets/chains.json';
-import { TBody, TCell, THead, TRow, Table } from '../../components/Table';
-import Pagination from '../../components/Pagination';
+import { TBody, TCell, THead, TRow, Table } from '../../ui/Table';
+import Pagination from '../../ui/Pagination';
 
 enum Tabs {
   OVERVIEW = 'overview',

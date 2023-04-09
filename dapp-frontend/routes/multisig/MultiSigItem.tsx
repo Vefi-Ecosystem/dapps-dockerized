@@ -14,7 +14,7 @@ import _ from 'lodash';
 import chains from '../../assets/chains.json';
 import rpcCall from '../../api/rpc';
 import { useWeb3Context } from '../../contexts/web3';
-import SendTransactionModal from '../../components/Multisig/SendTransactionModal';
+import SendTransactionModal from '../../ui/Multisig/SendTransactionModal';
 
 type IMultiSigItemProps = {
   wallet: string;

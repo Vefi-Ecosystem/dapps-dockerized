@@ -3,6 +3,13 @@ import { gql } from 'graphql-request';
 import { floor, head } from 'lodash';
 import { useGQLContext } from '../../contexts/graphql';
 import { useWeb3Context } from '../../contexts/web3';
+import { abi as stakingPoolABI } from 'vefi-token-launchpad-staking/artifacts/contracts/StakingPool.sol/StakingPool.json';
+import { abi as erc20ABI } from 'vefi-token-launchpad-staking/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
+import { useContract } from '../global';
+import { Contract } from '@ethersproject/contracts';
+import type { BigNumber } from '@ethersproject/bignumber';
+import { formatEther, formatUnits } from '@ethersproject/units';
+import { AddressZero } from '@ethersproject/constants';
 
 const ALL_POOLS_QUERY = gql`
   query GetAllPools($skip: Int!) {
@@ -119,8 +126,8 @@ const SINGLE_STAKING_POOL_QUERY = gql`
 `;
 
 const ACCOUNT_STAKES_QUERY = gql`
-  query AccountStakes($account: Bytes!) {
-    stakes({ where: { account: $account }}) {
+  query AccountStakes($account: Bytes) {
+    stakes(where: { account: $account }) {
       id
       amount
       account
@@ -380,4 +387,75 @@ export const useSingleStake = (id: string) => {
   return { isLoading, data };
 };
 
-export const useAmountStakedMinusTax = () => {};
+export const useAmountStakedMinusTax = (stakingPoolId: string, deps: any[] = []) => {
+  const [amount, setAmount] = useState(0);
+  const stakingContract = useContract(stakingPoolId, stakingPoolABI);
+  const { account } = useWeb3Context();
+
+  useEffect(() => {
+    if (stakingContract && account) {
+      (async () => {
+        try {
+          const tokenA: string = await stakingContract.tokenA();
+          const amountStaked: BigNumber = await stakingContract.amountStaked(account);
+
+          if (tokenA !== AddressZero) {
+            const tokenContract = new Contract(tokenA, erc20ABI);
+            const decimals = await tokenContract.decimals();
+            setAmount(parseFloat(formatUnits(amountStaked, decimals)));
+          } else setAmount(parseFloat(formatEther(amountStaked)));
+        } catch (error: any) {
+          console.error(error);
+        }
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, stakingContract, ...deps]);
+  return amount;
+};
+
+export const useStakeReward = (stakingPoolId: string) => {
+  const [amount, setAmount] = useState(0);
+  const stakingContract = useContract(stakingPoolId, stakingPoolABI);
+  const { account } = useWeb3Context();
+
+  useEffect(() => {
+    if (stakingContract && account) {
+      (async () => {
+        try {
+          const rewardToken: string = await stakingContract.rewardToken();
+          const reward: BigNumber = await stakingContract.calculateReward(account);
+
+          if (rewardToken !== AddressZero) {
+            const tokenContract = new Contract(rewardToken, erc20ABI);
+            const decimals = await tokenContract.decimals();
+            setAmount(parseFloat(formatUnits(reward, decimals)));
+          } else setAmount(parseFloat(formatEther(reward)));
+        } catch (error: any) {
+          console.error(error);
+        }
+      })();
+    }
+  }, [account, stakingContract]);
+  return amount;
+};
+
+export const useNextWithdrawalTime = (stakingPoolId: string) => {
+  const [timestamp, setTimestamp] = useState(0);
+  const { account } = useWeb3Context();
+  const stakingContract = useContract(stakingPoolId, stakingPoolABI);
+
+  useEffect(() => {
+    if (stakingContract && account) {
+      (async () => {
+        try {
+          const time: BigNumber = await stakingContract.nextWithdrawalTime(account);
+          setTimestamp(parseInt(time.toHexString()));
+        } catch (error: any) {
+          console.error(error);
+        }
+      })();
+    }
+  }, [account, stakingContract]);
+  return timestamp;
+};

@@ -19,7 +19,7 @@ import { abi as saleAbi } from 'vefi-token-launchpad-staking/artifacts/contracts
 import { abi as erc20Abi } from 'vefi-token-launchpad-staking/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
 import millify from 'millify';
 import { useRouter } from 'next/router';
-import { TokenSaleItemCard } from '../../components/LaunchPad';
+import { TokenSaleItemCard } from '../../ui/LaunchPad';
 import { useWeb3Context } from '../../contexts/web3';
 import chains from '../../assets/chains.json';
 import tokenSaleCreators from '../../assets/token_sales_creators.json';

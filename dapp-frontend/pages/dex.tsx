@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import ToggleButton from '../components/Button/ToggleButton';
+import ToggleButton from '../ui/Button/ToggleButton';
 import { Liquidity, Swap } from '../routes/dex';
 
 enum Route {

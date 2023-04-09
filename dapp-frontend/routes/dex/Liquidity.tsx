@@ -17,19 +17,19 @@ import { abi as erc20Abi } from 'quasar-v1-core/artifacts/@openzeppelin/contract
 import { abi as routerAbi } from 'quasar-v1-periphery/artifacts/contracts/QuasarRouter.sol/QuasarRouter.json';
 import useSound from 'use-sound';
 import { useAPIContext } from '../../contexts/api';
-import UserLPItem from '../../components/Dex/PoolsListItem';
+import UserLPItem from '../../ui/Dex/PoolsListItem';
 import { useWeb3Context } from '../../contexts/web3';
 import { ListingModel } from '../../api/models/dex';
 import { computePair, fetchTokenBalanceForConnectedWallet, getLiquidityPositionsOfConnectedAccount, quote } from '../../hooks/dex';
-import SwapSettingsModal from '../../components/Dex/SwapSettingsModal';
-import TokensListModal from '../../components/Dex/TokensListModal';
+import SwapSettingsModal from '../../ui/Dex/SwapSettingsModal';
+import TokensListModal from '../../ui/Dex/TokensListModal';
 import { useDEXSettingsContext } from '../../contexts/dex/settings';
 import routers from '../../assets/routers.json';
 import { addToMetamask } from '../../utils';
 import successFx from '../../assets/sounds/success_sound.mp3';
 import errorFx from '../../assets/sounds/error_sound.mp3';
-import TradeCard from '../../components/Dex/Card';
-import ProviderSelectModal from '../../components/ProviderSelectModal';
+import TradeCard from '../../ui/Dex/Card';
+import ProviderSelectModal from '../../ui/ProviderSelectModal';
 
 enum Route {
   ADD_LIQUIDITY = 'add_liquidity',

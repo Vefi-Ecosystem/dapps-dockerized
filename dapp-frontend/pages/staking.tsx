@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
-import CreateStakingPoolModal from '../components/Staking/CreateStakingPoolModal';
-import SquareToggleButton from '../components/Button/SquareToggleButton';
-import { AllPools, AccountPools } from '../routes/staking';
+import CreateStakingPoolModal from '../ui/Staking/CreateStakingPoolModal';
+import SquareToggleButton from '../ui/Button/SquareToggleButton';
+import { AllPools, AccountPools, AccountStakes } from '../routes/staking';
 
 enum Tabs {
   ALL_POOLS = 'all_pools',
@@ -21,6 +21,9 @@ const useStakingView = (tab: Tabs) => {
         break;
       case Tabs.MY_POOLS:
         setComponent(() => AccountPools);
+        break;
+      case Tabs.MY_STAKES:
+        setComponent(() => AccountStakes);
         break;
       default:
         setComponent(() => AllPools);

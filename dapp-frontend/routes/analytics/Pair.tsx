@@ -11,13 +11,13 @@ import { ResponsiveContainer } from 'recharts';
 import { map, multiply, truncate } from 'lodash';
 import { useAPIContext } from '../../contexts/api';
 import { useSinglePairChartData, useSinglePairQuery } from '../../hooks/analytics';
-import SquareToggleButton from '../../components/Button/SquareToggleButton';
-import BarChart from '../../components/Chart/BarChart';
-import ComposedChart from '../../components/Chart/ComposedChart';
+import SquareToggleButton from '../../ui/Button/SquareToggleButton';
+import BarChart from '../../ui/Chart/BarChart';
+import ComposedChart from '../../ui/Chart/ComposedChart';
 import { useWeb3Context } from '../../contexts/web3';
 import chains from '../../assets/chains.json';
-import { TBody, TCell, THead, TRow, Table } from '../../components/Table';
-import Pagination from '../../components/Pagination';
+import { TBody, TCell, THead, TRow, Table } from '../../ui/Table';
+import Pagination from '../../ui/Pagination';
 
 enum Tabs {
   OVERVIEW = 'overview',

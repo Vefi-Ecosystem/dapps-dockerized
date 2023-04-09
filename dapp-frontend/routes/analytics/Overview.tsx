@@ -23,12 +23,12 @@ import {
   useTopTokens
 } from '../../hooks/analytics';
 import { useAPIContext } from '../../contexts/api';
-import SquareToggleButton from '../../components/Button/SquareToggleButton';
-import { TBody, TCell, THead, TRow, Table } from '../../components/Table';
-import Pagination from '../../components/Pagination';
+import SquareToggleButton from '../../ui/Button/SquareToggleButton';
+import { TBody, TCell, THead, TRow, Table } from '../../ui/Table';
+import Pagination from '../../ui/Pagination';
 import chains from '../../assets/chains.json';
 import { useWeb3Context } from '../../contexts/web3';
-import AreaChart from '../../components/Chart/AreaChart';
+import AreaChart from '../../ui/Chart/AreaChart';
 
 enum Tabs {
   OVERVIEW = 'overview',

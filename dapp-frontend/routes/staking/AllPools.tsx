@@ -1,15 +1,15 @@
 import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { useAllPools, useAvailablePools, useSoldoutPools, useStakingPoolFactoriesStats } from '../../hooks/staking';
-import { TBody, TCell, THead, TRow, Table } from '../../components/Table';
+import { TBody, TCell, THead, TRow, Table } from '../../ui/Table';
 import { filter, floor, map, multiply, startsWith, trim } from 'lodash';
 import { TailSpin } from 'react-loader-spinner';
 import { useRouter } from 'next/router';
 import CountDown from 'react-countdown';
-import Empty from '../../components/Empty';
+import Empty from '../../ui/Empty';
 import { useAPIContext } from '../../contexts/api';
-import Pagination from '../../components/Pagination';
-import StakeTokenModal from '../../components/Staking/StakeTokenModal';
+import Pagination from '../../ui/Pagination';
+import StakeTokenModal from '../../ui/Staking/StakeTokenModal';
 
 enum SubRoutes {
   ALL = 'all',

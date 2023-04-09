@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { FaParachuteBox } from 'react-icons/fa';
 import { FiShield, FiLock, FiDollarSign, FiSettings, FiNavigation } from 'react-icons/fi';
 import { TiArrowShuffle } from 'react-icons/ti';
-import { NavLink, LaunchpadNavbar } from '../components/LaunchPad';
+import { NavLink, LaunchpadNavbar } from '../ui/LaunchPad';
 import { Presales } from '../routes/launchpad';
 
 enum Routes {
