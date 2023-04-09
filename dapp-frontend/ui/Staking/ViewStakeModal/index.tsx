@@ -49,7 +49,7 @@ export default function ViewStakeModal({ isOpen, onClose, selectedStakingPoolID,
   const stakeReward = useStakeReward(selectedStakingPoolID);
   const { tokensListingAsDictionary } = useAPIContext();
   const { active } = useWeb3Context();
-  const nextWithdrawalTime = useNextWithdrawalTime(selectedStakingPoolID);
+  const nextWithdrawalTime = useNextWithdrawalTime(selectedStakingPoolID, [isLoading]);
 
   const displayToast = useCallback((msg: string, toastType: 'success' | 'info' | 'error') => {
     setToastMessage(msg);

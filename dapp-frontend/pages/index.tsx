@@ -4,8 +4,13 @@ import { FiCheckCircle } from 'react-icons/fi';
 import { MdSwapHoriz } from 'react-icons/md';
 import { map } from 'lodash';
 import chains from '../assets/chains.json';
+import { useStakingPoolFactoriesStats } from '../hooks/staking';
+import millify from 'millify';
+import { useQuasarFactoriesStats } from '../hooks/analytics';
 
 export default function Index() {
+  const stakingPoolStats = useStakingPoolFactoriesStats();
+  const { data: dexFactoryData } = useQuasarFactoriesStats();
   return (
     <>
       <Head>
@@ -39,22 +44,22 @@ export default function Index() {
             </button>
           </Link>
         </section>
-        <section className="flex justify-center items-center gap-4 w-full overflow-auto p-2 lg:p-5 hidden-scrollbar">
+        <section className="flex justify-center items-center gap-4 w-full overflow-auto p-2 lg:p-5 hidden-scrollbar capitalize">
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">$13M</span>
-            <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">Total Liquidity Raised</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.pairCount)}</span>
+            <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">total liquidity pools</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">$13M</span>
-            <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">Total Liquidity Raised</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(stakingPoolStats?.poolsCount)}</span>
+            <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">staking pools created</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">$13M</span>
-            <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">Total Liquidity Raised</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.txCount)}</span>
+            <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">transactions made</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">$13M</span>
-            <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">Total Liquidity Raised</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">&#36;{millify(dexFactoryData.totalLiquidityUSD)}</span>
+            <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">total liquidity raised</span>
           </div>
         </section>
         <section className="flex flex-col w-full justify-center items-center gap-16 p-2 lg:p-5">
@@ -105,7 +110,7 @@ export default function Index() {
           <div className="flex flex-col w-full justify-center items-center gap-6 px-2 lg:px-10">
             <div className="flex flex-col lg:flex-row w-full justify-center items-center gap-3">
               <Link href="/analytics">
-                <a className="w-full lg:w-1/3 h-auto lg:h-full">
+                <a className="w-full lg:w-1/3 lg:h-full">
                   <div className="bg-[#392200] w-full h-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
                     <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Analytics</span>
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
@@ -116,7 +121,7 @@ export default function Index() {
                 </a>
               </Link>
               <Link href="/dex">
-                <a className="w-full lg:w-1/3">
+                <a className="w-full lg:w-1/3 lg:h-full">
                   <div className="bg-[#00391e] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
                     <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Trade</span>
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
@@ -126,21 +131,8 @@ export default function Index() {
                   </div>
                 </a>
               </Link>
-              <Link href="/launchpad">
-                <a className="w-full lg:w-1/3">
-                  <div className="bg-[#380039] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
-                    <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Launchpad</span>
-                    <p className="text-[#fff] font-Poppins text-[1em] text-center">
-                      Raise funds for and kickstart your project with a [pre/private]-sale launch through our easy-to-use launchpad.
-                    </p>
-                    <img src="/images/coins.png" alt="coins" className="w-full max-h-[18rem]" />
-                  </div>
-                </a>
-              </Link>
-            </div>
-            <div className="flex flex-col lg:flex-row w-full justify-center items-center gap-3">
               <Link href="/staking">
-                <a className="w-full lg:w-1/3 h-auto lg:h-full">
+                <a className="w-full lg:w-1/3 lg:h-full">
                   <div className="bg-[#105dcf] w-full h-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
                     <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Staking Pools</span>
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
@@ -150,6 +142,8 @@ export default function Index() {
                   </div>
                 </a>
               </Link>
+            </div>
+            {/* <div className="flex flex-col lg:flex-row w-full justify-center items-center gap-3">
               <Link href="/multisig">
                 <a className="w-full lg:w-1/3">
                   <div className="bg-[#0b0039] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
@@ -172,7 +166,7 @@ export default function Index() {
                   </div>
                 </a>
               </Link>
-            </div>
+            </div> */}
           </div>
         </section>
         <section className="w-full flex flex-col justify-center items-center gap-6">

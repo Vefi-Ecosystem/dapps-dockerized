@@ -440,7 +440,7 @@ export const useStakeReward = (stakingPoolId: string) => {
   return amount;
 };
 
-export const useNextWithdrawalTime = (stakingPoolId: string) => {
+export const useNextWithdrawalTime = (stakingPoolId: string, deps: any[] = []) => {
   const [timestamp, setTimestamp] = useState(0);
   const { account } = useWeb3Context();
   const stakingContract = useContract(stakingPoolId, stakingPoolABI);
@@ -456,6 +456,7 @@ export const useNextWithdrawalTime = (stakingPoolId: string) => {
         }
       })();
     }
-  }, [account, stakingContract]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, stakingContract, ...deps]);
   return timestamp;
 };
