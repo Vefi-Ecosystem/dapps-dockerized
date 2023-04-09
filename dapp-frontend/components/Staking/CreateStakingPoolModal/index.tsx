@@ -220,7 +220,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
               >
                 <div className="container  top-0 bottom-0 left-0 right-0 w-screen min-h-screen mx-auto overflow-hidden bg-[#0c0c0c] flex flex-col justify-start items-center mix-blend-normal backdrop-blur-[64px] text-white">
                   <div className="bg-[#0f0f10] px-2 py-4 w-full border-b border-[#5e5e5e]">
-                    <div className="flex flex-row items-center justify-between">
+                    <div className="flex flex-row items-center justify-between w-full">
                       <div className="flex justify-center items-center gap-4">
                         <button
                           onClick={onClose}

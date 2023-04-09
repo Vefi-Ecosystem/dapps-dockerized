@@ -9,6 +9,7 @@ import CountDown from 'react-countdown';
 import Empty from '../../components/Empty';
 import { useAPIContext } from '../../contexts/api';
 import Pagination from '../../components/Pagination';
+import StakeTokenModal from '../../components/Staking/StakeTokenModal';
 
 enum SubRoutes {
   ALL = 'all',
@@ -48,6 +49,8 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
   const { data, isLoading } = useAllPools(page - 1);
   const { tokensListingAsDictionary } = useAPIContext();
   const stats = useStakingPoolFactoriesStats();
+  const [showStakeModal, setShowStakeModal] = useState(false);
+  const [selectedStakingPool, setSelectedStakingPool] = useState<any>(null);
 
   return (
     <div className="w-full px-0 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
@@ -153,7 +156,13 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                     <StatusLabel timestamp={parseInt(item.endsIn)} />
                   </TCell>
                   <TCell className="text-center">
-                    <button className="btn btn-ghost btn-xs lg:btn-sm">
+                    <button
+                      className="btn btn-ghost btn-xs lg:btn-sm"
+                      onClick={() => {
+                        setSelectedStakingPool(item);
+                        setShowStakeModal(true);
+                      }}
+                    >
                       <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
                         {parseInt(item.endsIn) > floor(Date.now() / 1000) ? 'stake' : 'check'}
                       </span>
@@ -170,6 +179,7 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
           <Pagination currentPage={page} itemsPerPage={10} onPageChange={setPage} dataLength={stats?.poolsCount || 0} />
         </div>
       )}
+      <StakeTokenModal isOpen={showStakeModal} onClose={() => setShowStakeModal(false)} selectedStakingPoolID={selectedStakingPool?.id} />
     </div>
   );
 };

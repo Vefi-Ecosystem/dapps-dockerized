@@ -92,6 +92,31 @@ const ACCOUNT_POOLS_QUERY = gql`
   }
 `;
 
+const SINGLE_STAKING_POOL_QUERY = gql`
+  query SingleStakingPool($id: ID!) {
+    stakingPool(id: $id) {
+      id
+      apy
+      owner
+      endsIn
+      blockNumber
+      blockTimestamp
+      totalStaked
+      totalRewards
+      stakedToken {
+        id
+        name
+        symbol
+      }
+      rewardToken {
+        id
+        name
+        symbol
+      }
+    }
+  }
+`;
+
 const STATS_QUERY = gql`
   {
     stakingPoolFactories {
@@ -215,4 +240,27 @@ export const useStakingPoolFactoriesStats = () => {
     })();
   }, [poolsGQLClient]);
   return data;
+};
+
+export const useSingleStakingPool = (id: string) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<any>(null);
+  const { poolsGQLClient } = useGQLContext();
+
+  useEffect(() => {
+    if (id) {
+      (async () => {
+        try {
+          setIsLoading(true);
+          const req = await poolsGQLClient?.request(SINGLE_STAKING_POOL_QUERY, { id });
+          setData(req.stakingPool);
+          setIsLoading(false);
+        } catch (error: any) {
+          console.error(error);
+          setIsLoading(false);
+        }
+      })();
+    }
+  }, [id, poolsGQLClient]);
+  return { isLoading, data };
 };
