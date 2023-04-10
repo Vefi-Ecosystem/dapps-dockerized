@@ -840,7 +840,7 @@ export default function SingleTokenView() {
   const chain = useMemo(() => chains[chainId as unknown as keyof typeof chains], [chainId]);
   const RenderedChild = useTokenViewRoutes(tab, query.token as string, chartPeriod);
   return (
-    <div className="flex container mx-auto flex-col justify-center items-start gap-8 px-8 lg:px-10">
+    <div className="flex container mx-auto flex-col justify-center items-start gap-8 px-8 lg:px-10 py-4 lg:py-6">
       <div className="flex justify-start items-center w-full font-Syne text-[#808080] font-[500] text-[0.7em] lg:text-[0.8em] gap-2 capitalize">
         <Link href="/analytics?view=allStats">analytics</Link>
         <FiChevronRight />

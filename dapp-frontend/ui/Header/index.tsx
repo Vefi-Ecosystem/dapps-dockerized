@@ -3,11 +3,9 @@ import { Transition } from '@headlessui/react';
 import Link, { LinkProps } from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { FaWallet, FaDiceSix, FaHandshake } from 'react-icons/fa';
+import { FaWallet } from 'react-icons/fa';
 import { RiMenu4Fill } from 'react-icons/ri';
-import { FiX, FiChevronDown, FiLogOut, FiCheck, FiLink } from 'react-icons/fi';
-import { BsCurrencyExchange } from 'react-icons/bs';
-import { SiLaunchpad } from 'react-icons/si';
+import { FiX, FiChevronDown, FiLogOut, FiCheck } from 'react-icons/fi';
 import { formatEthAddress } from 'eth-address';
 import _ from 'lodash';
 import { hexValue } from '@ethersproject/bytes';
@@ -141,7 +139,7 @@ export default function Header() {
                 <button
                   tabIndex={0}
                   onClick={() => !active && setShowProviderModal(true)}
-                  className="hidden md:flex justify-center items-center bg-[#105dcf] py-[9px] px-[10px] text-[1em] text-white gap-2 rounded-[8px]"
+                  className="hidden lg:flex justify-center items-center bg-[#105dcf] py-[9px] px-[10px] text-[1em] text-white gap-2 rounded-[8px]"
                 >
                   {active ? (
                     <>
@@ -168,50 +166,66 @@ export default function Header() {
                 )}
               </div>
             </div>
-            <button
-              className="md:hidden flex justify-center items-center bg-transparent py-[9px] px-[10px] rounded-[5px] text-[1.6em] text-white"
-              onClick={() => setShowMobileSidebar((val) => !val)}
-            >
-              {!showMobileSidebar ? <RiMenu4Fill /> : <FiX />}
-            </button>
+            <div className="lg:hidden flex justify-center items-center gap-2">
+              {active && (
+                <label
+                  htmlFor="chain-modal"
+                  className="flex justify-center items-center bg-[#fff]/[.09] py-2 px-3 rounded-[5px] text-[18px] text-white"
+                >
+                  <div className="avatar">
+                    <div className="w-4 rounded-full">
+                      <img src={selectedChain.logoURI} alt={selectedChain.symbol} />
+                    </div>
+                  </div>
+                </label>
+              )}
+              <button
+                onClick={() => (!active ? setShowProviderModal(true) : disconnectWallet())}
+                className="flex justify-center items-center bg-[#105dcf] py-2 px-4 text-[0.52em] text-white gap-2 rounded-[8px]"
+              >
+                {active ? (
+                  <>{formatEthAddress(account as string, 4)}</>
+                ) : (
+                  <div className="flex justify-center items-center gap-2 capitalize">
+                    <FaWallet /> connect wallet
+                  </div>
+                )}
+              </button>
+              <button
+                className="flex justify-center items-center bg-transparent py-[9px] px-[10px] rounded-[5px] text-[1.6em] text-white"
+                onClick={() => setShowMobileSidebar((val) => !val)}
+              >
+                {!showMobileSidebar ? <RiMenu4Fill /> : <FiX />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
       <Transition
         as="div"
-        className="flex flex-row md:hidden bg-[#000]/80 h-[50px] gap-2 overflow-auto hidden-scrollbar justify-between items-center w-full px-4 py-4"
+        className="flex flex-col lg:hidden h-screen gap-2 overflow-auto hidden-scrollbar justify-between items-center w-full px-4 py-4 z-20"
         enter="transform transition ease-in-out duration-[500ms]"
-        enterFrom="opacity-0 -translate-y-6]"
-        enterTo="opacity-100 translate-y-0"
+        enterFrom="opacity-0 -translate-x-6]"
+        enterTo="opacity-100 translate-x-0"
         show={showMobileSidebar}
       >
-        <div className="flex justify-center items-center gap-4 h-full">
-          <div className="cursor-pointer">
-            <ActiveLink activeClassName="text-[#0cedfc]" href="/dex">
-              <BsCurrencyExchange className="text-[#fff] text-[40px]" />
+        <ul className="menu bg-[#fff]/[.09] w-full p-2 rounded-box text-[#fff] font-Syne" onClick={() => setShowMobileSidebar(false)}>
+          <li>
+            <ActiveLink activeClassName="active" href="/dex">
+              <span className="capitalize">trade</span>
             </ActiveLink>
-          </div>
-          <div className="cursor-pointer">
-            <ActiveLink activeClassName="text-[#0cedfc]" href="/launchpad">
-              <SiLaunchpad className="text-[#fff] text-[40px]" />
+          </li>
+          <li>
+            <ActiveLink activeClassName="active" href="/analytics">
+              <span className="capitalize">analytics</span>
             </ActiveLink>
-          </div>
-          <div className="cursor-pointer">
-            <ActiveLink activeClassName="text-[#0cedfc]" href="/staking">
-              <FaDiceSix className="text-[#fff] text-[40px]" />
+          </li>
+          <li>
+            <ActiveLink activeClassName="active" href="/staking">
+              <span className="capitalize">staking pools</span>
             </ActiveLink>
-          </div>
-          <div className="cursor-pointer">
-            <ActiveLink activeClassName="text-[#0cedfc]" href="/multisig">
-              <FaHandshake className="text-[#fff] text-[40px]" />
-            </ActiveLink>
-          </div>
-          <div className="cursor-pointer">
-            <ActiveLink activeClassName="text-[#0cedfc]" href="/bridge">
-              <FiLink className="text-[#fff] text-[40px]" />
-            </ActiveLink>
-          </div>
-        </div>
+          </li>
+        </ul>
         {!active ? (
           <button
             onClick={() => setShowProviderModal(true)}
@@ -221,16 +235,6 @@ export default function Header() {
           </button>
         ) : (
           <div className="flex justify-center items-center gap-2">
-            <label
-              htmlFor="chain-modal"
-              className="md:hidden flex justify-center items-center bg-[#000]/40 py-[9px] px-[10px] rounded-[5px] text-[18px] text-white"
-            >
-              <div className="avatar">
-                <div className="w-8 rounded-full">
-                  <img src={selectedChain.logoURI} alt={selectedChain.symbol} />
-                </div>
-              </div>
-            </label>
             <button
               onClick={disconnectWallet}
               className="md:hidden flex justify-center items-center bg-green-500 py-[9px] px-[10px] rounded-[5px] text-[18px] text-white"

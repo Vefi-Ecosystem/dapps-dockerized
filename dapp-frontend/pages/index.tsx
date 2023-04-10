@@ -16,7 +16,7 @@ export default function Index() {
       <Head>
         <title>Vefi DApps | Homepage</title>
       </Head>
-      <div className="flex flex-col justify-center items-center gap-60 w-full py-10 lg:py-20">
+      <div className="flex flex-col justify-center items-center gap-60 w-full">
         <div className="hidden lg:block absolute top-[0%] -left-8 w-[499px] h-[499px] bg-[#105dcf]/[.38] rounded-full blur-[125px]"></div>
         <div className="hidden lg:block absolute top-64 -right-8 w-80 h-80 bg-[#74fff7]/[.52] rounded-full blur-[125px]"></div>
         <div className="hidden lg:block absolute top-[1088px] -left-8 w-[499px] h-[499px] bg-[#6093df]/[.38] rounded-full blur-[125px]"></div>
@@ -30,9 +30,9 @@ export default function Index() {
         {/* <div className="hidden lg:block absolute -left-[3%] top-[10.93%]">
         <img src="/images/cube_1.svg" alt="cube" />
       </div> */}
-        <section className="flex justify-center items-center flex-col w-full px-6 lg:px-12 gap-3 bg-home_radialed">
+        <section className="flex justify-center items-center flex-col w-full px-6 lg:px-12 py-7 lg:py-24 gap-3 bg-home_radialed">
           <span className="text-white font-Syne capitalize text-[2.5em] lg:text-[3.5em] text-center lg:max-w-[70rem]">
-            Enjoy fast transactions, security, and total ownership of your assets.
+            enjoy fast transactions, security, and total ownership of your assets.
           </span>
           <p className="text-[#a49999] font-Poppins text-[1em] text-center">
             Lightning-Fast transactions, secure smart contracts, and complete asset control.
@@ -77,25 +77,25 @@ export default function Index() {
               <img src="/images/blocks.svg" alt="blocks" className="w-[inherit] h-[inherit]" />
             </div>
           </div>
-          <div className="flex flex-col justify-center items-center w-full gap-3">
+          <div className="flex flex-col justify-center items-center w-full gap-3 capitalize">
             <div className="flex justify-evenly items-center gap-2 w-full flex-col lg:flex-row px-2 lg:px-10">
               <div className="flex justify-start items-center w-full lg:w-1/3 gap-2 px-3 py-3 self-stretch bg-[#fff]/[.06] order-[0] rounded-[10px]">
                 <FiCheckCircle className="text-[green]" />
-                <span className="font-[500] font-Syne text-[0.95em] text-[#fff]">Instant Trades</span>
+                <span className="font-[500] font-Syne text-[0.95em] text-[#fff]">instant trades</span>
               </div>
               <div className="flex justify-start items-center w-full lg:w-1/3 gap-2 px-3 py-3 self-stretch bg-[#fff]/[.06] order-[0] rounded-[10px]">
                 <FiCheckCircle className="text-[green]" />
-                <span className="font-[500] font-Syne text-[0.95em] text-[#fff]">Secure Smart Contracts</span>
+                <span className="font-[500] font-Syne text-[0.95em] text-[#fff]">secure smart contracts</span>
               </div>
             </div>
             <div className="flex justify-evenly items-center gap-2 w-full flex-col lg:flex-row px-2 lg:px-10">
               <div className="flex justify-start items-center w-full lg:w-1/3 gap-2 px-3 py-3 self-stretch bg-[#fff]/[.06] order-[0] rounded-[10px]">
                 <FiCheckCircle className="text-[green]" />
-                <span className="font-[500] font-Syne text-[0.95em] text-[#fff]">Community-Driven</span>
+                <span className="font-[500] font-Syne text-[0.95em] text-[#fff]">community-driven</span>
               </div>
               <div className="flex justify-start items-center w-full lg:w-1/3 gap-2 px-3 py-3 self-stretch bg-[#fff]/[.06] order-[0] rounded-[10px]">
                 <FiCheckCircle className="text-[green]" />
-                <span className="font-[500] font-Syne text-[0.95em] text-[#fff]">Accurate Analytics</span>
+                <span className="font-[500] font-Syne text-[0.95em] text-[#fff]">accurate analytics</span>
               </div>
             </div>
           </div>
@@ -171,7 +171,7 @@ export default function Index() {
         </section>
         <section className="w-full flex flex-col justify-center items-center gap-6">
           <span className="text-white font-Syne capitalize text-[2.5em] lg:text-[3.5em] text-center lg:max-w-[70rem] font-[700]">
-            Supported Chains
+            supported chains
           </span>
           <div className="flex justify-center items-center w-full px-1">
             <div className="carousel carousel-center p-4 space-x-6 rounded-box">
@@ -187,6 +187,34 @@ export default function Index() {
               ))}
             </div>
           </div>
+        </section>
+        <section className="w-full flex flex-col lg:flex-row lg:justify-center gap-5 justify-start items-center bg-[#031329] py-12 px-5">
+          <div className="flex flex-col justify-start items-center lg:items-start gap-4 w-full lg:w-1/3">
+            <span className="capitalize font-Syne text-[#fff] font-[700] text-[1.5em] lg:text-[2em]">don&apos;t miss out on what&apos;s next</span>
+            <span className="font-[400] font-Poppins text-[#d8d8d8] text-[0.82em] lg:text-[1em] text-center lg:text-justify">
+              Sign up for our newsletter and keep up to date with the latest news from Vefi. Be the first to hear about exclusive events.
+            </span>
+            <div className="flex flex-col justify-start items-start gap-3">
+              <div className="flex flex-col lg:flex-row justify-start lg:items-start items-center w-full gap-4 px-2 lg:px-0 py-2">
+                <input
+                  className="border border-[#b3b3b3] bg-[#fff]/[.09] rounded-[8px] outline-0 px-1 py-3 font-Poppins text-[#858181] w-full lg:w-3/4"
+                  placeholder="you@example.com"
+                />
+                <button className="capitalize bg-[#105dcf] font-Syne font-[400] text-[0.82em] lg:text-[1em] px-4 py-3 text-[#fff] rounded-[8px] lg:w-1/4">
+                  subscribe
+                </button>
+              </div>
+              <div className="form-control">
+                <label className="label cursor-pointer gap-2">
+                  <input type="checkbox" className="checkbox checkbox-sm" />
+                  <span className="label-text font-Poppins text-[#d8d8d8]">
+                    I consent to the processing of personal data by Vefi for marketing purposes and I accept the terms of service
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <img className="h-[352px] lg:h-[428px] w-full lg:w-1/3" src="/images/notif-bell.png" alt="notif-bell" />
         </section>
       </div>
     </>

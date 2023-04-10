@@ -3,6 +3,7 @@ import { useWeb3Context } from '../contexts/web3';
 import { getContract } from '../utils';
 import { get, map } from 'lodash';
 import { GraphQLClient } from 'graphql-request';
+import chains from '../assets/chains.json';
 
 export const useContract = (addressOrAddressMap: string | { [chainId: number | string]: string }, ABI: any, withSignerIfPossible = true) => {
   const { account, library, chainId } = useWeb3Context();
@@ -71,4 +72,14 @@ export const useGQLClient = (
 
     return new GraphQLClient(uri);
   }, [chainId, slug, uriOrUriMap]);
+};
+
+export const useCurrentChain = () => {
+  const { chainId } = useWeb3Context();
+  return useMemo(() => chains[chainId as unknown as keyof typeof chains], [chainId]);
+};
+
+export const useExplorerLink = (subroute: 'tx' | 'address', extra: string) => {
+  const currentChain = useCurrentChain();
+  return useMemo(() => currentChain.explorer.concat('/', subroute).concat('/', extra), [currentChain.explorer, extra, subroute]);
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useMemo, MouseEvent, useState, useEffect } from 'react';
 import { ResponsiveContainer } from 'recharts';
 import { useRouter } from 'next/router';
@@ -29,6 +30,7 @@ import Pagination from '../../ui/Pagination';
 import chains from '../../assets/chains.json';
 import { useWeb3Context } from '../../contexts/web3';
 import AreaChart from '../../ui/Chart/AreaChart';
+import { useExplorerLink } from '../../hooks/global';
 
 enum Tabs {
   OVERVIEW = 'overview',
@@ -413,7 +415,7 @@ const TransactionsList = () => {
                 <span className="capitalize">account</span>
               </TCell>
               <TCell className="text-center py-2">
-                <span className="capitalize">tx ID</span>
+                <span className="capitalize">transaction</span>
               </TCell>
               <TCell className="text-center py-2 hidden lg:table-cell">
                 <div className="flex justify-center items-center gap-1">
@@ -453,10 +455,18 @@ const TransactionsList = () => {
                     </div>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                    {mint.to && formatEthAddress(mint.to, 6)}
+                    <a target="_blank" rel="noreferrer" href={useExplorerLink('address', mint.to)}>
+                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                        {mint.to && formatEthAddress(mint.to, 6)}
+                      </span>
+                    </a>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                    {item.id && truncate(item.id, { length: 9 })}
+                    <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.id)}>
+                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                        view transaction
+                      </span>
+                    </a>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
                     <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
@@ -484,10 +494,18 @@ const TransactionsList = () => {
                     </div>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                    {swap.to && formatEthAddress(swap.to, 6)}
+                    <a target="_blank" rel="noreferrer" href={useExplorerLink('address', swap.to)}>
+                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                        {swap.to && formatEthAddress(swap.to, 6)}
+                      </span>
+                    </a>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                    {item.id && truncate(item.id, { length: 9 })}
+                    <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.id)}>
+                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                        view transaction
+                      </span>
+                    </a>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
                     <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
@@ -515,10 +533,18 @@ const TransactionsList = () => {
                     </div>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                    {burn.to && formatEthAddress(burn.to, 6)}
+                    <a target="_blank" rel="noreferrer" href={useExplorerLink('address', burn.to)}>
+                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                        {burn.to && formatEthAddress(burn.to, 6)}
+                      </span>
+                    </a>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                    {item.id && truncate(item.id, { length: 9 })}
+                    <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.id)}>
+                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                        view transaction
+                      </span>
+                    </a>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
                     <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
@@ -808,8 +834,8 @@ const TransactionsList = () => {
   };
 
   return (
-    <div className="w-full px-3 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
-      <div className="w-full flex justify-between items-center px-2 py-2 gap-2">
+    <div className="w-full px-0 lg:px-3 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
+      <div className="w-full flex flex-col-reverse lg:flex-row justify-start lg:justify-between items-center px-2 py-2 gap-2">
         <div className="flex justify-start items-center gap-0 w-auto bg-[#fff]/[.07] border border-[#555555] rounded-[6px] px-0 py-0">
           <FilterBtn
             isActive={transactionView === TransactionView.ALL}

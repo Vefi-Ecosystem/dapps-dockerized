@@ -47,7 +47,7 @@ export default function Dex() {
           </ToggleButton>
         </div>
       </div>
-      <div className="flex justify-center items-center my-16 px-1 w-full">
+      <div className="flex justify-center items-center my-16 px-2 w-full">
         <RenderedChild />
       </div>
     </>
