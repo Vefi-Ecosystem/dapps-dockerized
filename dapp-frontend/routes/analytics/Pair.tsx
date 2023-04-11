@@ -1,14 +1,15 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useMemo, useState, MouseEvent, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FiArrowDown, FiArrowUp, FiChevronRight, FiCopy, FiExternalLink, FiSearch } from 'react-icons/fi';
+import { FiArrowDown, FiArrowUp, FiChevronRight, FiCopy, FiExternalLink } from 'react-icons/fi';
 import { formatEthAddress } from 'eth-address';
 import millify from 'millify';
 import { TailSpin } from 'react-loader-spinner';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Moment from 'react-moment';
 import { ResponsiveContainer } from 'recharts';
-import { map, multiply, truncate } from 'lodash';
+import { map, multiply } from 'lodash';
 import { useAPIContext } from '../../contexts/api';
 import { useSinglePairChartData, useSinglePairQuery } from '../../hooks/analytics';
 import SquareToggleButton from '../../ui/Button/SquareToggleButton';
@@ -18,6 +19,7 @@ import { useWeb3Context } from '../../contexts/web3';
 import chains from '../../assets/chains.json';
 import { TBody, TCell, THead, TRow, Table } from '../../ui/Table';
 import Pagination from '../../ui/Pagination';
+import { useExplorerLink } from '../../hooks/global';
 
 enum Tabs {
   OVERVIEW = 'overview',
@@ -202,7 +204,7 @@ const TransactionsList = ({ pair }: { pair: string }) => {
                 <span className="capitalize">account</span>
               </TCell>
               <TCell className="text-center py-2">
-                <span className="capitalize">tx ID</span>
+                <span className="capitalize">transaction</span>
               </TCell>
               <TCell className="text-center py-2 hidden lg:table-cell">
                 <div className="flex justify-center items-center gap-1">
@@ -264,10 +266,18 @@ const TransactionsList = ({ pair }: { pair: string }) => {
                     </div>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                    {txn.to && formatEthAddress(txn.to, 6)}
+                    <a target="_blank" rel="noreferrer" href={useExplorerLink('address', txn.to)}>
+                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                        {txn.to && formatEthAddress(txn.to, 6)}
+                      </span>
+                    </a>
                   </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                    {txn.transaction && truncate(txn.transaction.id, { length: 9 })}
+                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                    <a target="_blank" rel="noreferrer" href={useExplorerLink('address', txn.transaction.id)}>
+                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                        view transaction
+                      </span>
+                    </a>
                   </TCell>
                   <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
                     <Moment date={multiply(parseInt(txn.timestamp), 1000)} fromNow ago />
@@ -309,7 +319,7 @@ const TransactionsList = ({ pair }: { pair: string }) => {
                 <span className="capitalize">account</span>
               </TCell>
               <TCell className="text-center py-2">
-                <span className="capitalize">tx ID</span>
+                <span className="capitalize">transaction</span>
               </TCell>
               <TCell className="text-center py-2 hidden lg:table-cell">
                 <div className="flex justify-center items-center gap-1">
@@ -348,10 +358,18 @@ const TransactionsList = ({ pair }: { pair: string }) => {
                   </div>
                 </TCell>
                 <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                  {item.to && formatEthAddress(item.to, 6)}
+                  <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.to)}>
+                    <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                      {item.to && formatEthAddress(item.to, 6)}
+                    </span>
+                  </a>
                 </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                  {item.transaction && truncate(item.transaction.id, { length: 9 })}
+                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                  <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.transaction.id)}>
+                    <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                      view transaction
+                    </span>
+                  </a>
                 </TCell>
                 <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
                   <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
@@ -391,7 +409,7 @@ const TransactionsList = ({ pair }: { pair: string }) => {
                 <span className="capitalize">account</span>
               </TCell>
               <TCell className="text-center py-2">
-                <span className="capitalize">tx ID</span>
+                <span className="capitalize">transaction</span>
               </TCell>
               <TCell className="text-center py-2 hidden lg:table-cell">
                 <div className="flex justify-center items-center gap-1">
@@ -430,10 +448,18 @@ const TransactionsList = ({ pair }: { pair: string }) => {
                   </div>
                 </TCell>
                 <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                  {item.to && formatEthAddress(item.to, 6)}
+                  <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.to)}>
+                    <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                      {item.to && formatEthAddress(item.to, 6)}
+                    </span>
+                  </a>
                 </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                  {item.transaction && truncate(item.transaction.id, { length: 9 })}
+                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                  <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.transaction.id)}>
+                    <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                      view transaction
+                    </span>
+                  </a>
                 </TCell>
                 <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
                   <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
@@ -479,7 +505,7 @@ const TransactionsList = ({ pair }: { pair: string }) => {
                 <span className="capitalize">account</span>
               </TCell>
               <TCell className="text-center py-2">
-                <span className="capitalize">tx ID</span>
+                <span className="capitalize">transaction</span>
               </TCell>
               <TCell className="text-center py-2 hidden lg:table-cell">
                 <div className="flex justify-center items-center gap-1">
@@ -530,10 +556,18 @@ const TransactionsList = ({ pair }: { pair: string }) => {
                   </div>
                 </TCell>
                 <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                  {item.to && formatEthAddress(item.to, 6)}
+                  <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.to)}>
+                    <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                      {item.to && formatEthAddress(item.to, 6)}
+                    </span>
+                  </a>
                 </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                  {item.transaction && truncate(item.transaction.id, { length: 9 })}
+                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                  <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.transaction.id)}>
+                    <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                      view transaction
+                    </span>
+                  </a>
                 </TCell>
                 <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
                   <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
@@ -569,7 +603,7 @@ const TransactionsList = ({ pair }: { pair: string }) => {
       {data && (
         <div className="w-full px-0 py-4 border border-[#5d5d5d] rounded-[8px] overflow-auto hidden-scrollbar">
           <div className="w-full px-0 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
-            <div className="w-full flex justify-between items-center px-2 py-2 gap-2">
+            <div className="w-full flex justify-start items-center px-2 py-2 gap-2">
               <div className="flex justify-start items-center gap-0 w-auto bg-[#fff]/[.07] border border-[#555555] rounded-[6px] px-0 py-0">
                 <FilterBtn
                   isActive={transactionView === TransactionView.ALL}
@@ -619,16 +653,6 @@ const TransactionsList = ({ pair }: { pair: string }) => {
                 >
                   <span>Removes</span>
                 </FilterBtn>
-              </div>
-              <div className="bg-[#fff]/[.13] rounded-[8px] py-1 flex justify-start items-center gap-1 border border-[#5d5d5d] px-2">
-                <FiSearch className="text-[1em] text-[#fff]" />
-                <input
-                  type="text"
-                  // value={searchValue}
-                  // onChange={(e) => setSearchValue(e.target.value)}
-                  className="bg-transparent outline-0 font-Syne flex-1 text-[#fff]"
-                  placeholder="Search"
-                />
               </div>
             </div>
             <RenderedChild />
@@ -687,7 +711,7 @@ export default function PairView() {
             <div className="flex justify-center items-center gap-3">
               <div className="flex justify-center items-center gap-2">
                 <div className="avatar">
-                  <div className="w-14 rounded-full">
+                  <div className="w-6 lg:w-14 rounded-full">
                     <img
                       src={
                         tokensListingAsDictionary[data.token0.id]
@@ -699,7 +723,7 @@ export default function PairView() {
                   </div>
                 </div>
                 <div className="avatar">
-                  <div className="w-14 rounded-full">
+                  <div className="w-6 lg:w-14 rounded-full">
                     <img
                       src={
                         tokensListingAsDictionary[data.token1.id]

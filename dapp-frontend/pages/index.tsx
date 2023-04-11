@@ -206,7 +206,7 @@ export default function Index() {
               </div>
               <div className="form-control">
                 <label className="label cursor-pointer gap-2">
-                  <input type="checkbox" className="checkbox checkbox-sm" />
+                  <input type="checkbox" className="checkbox checkbox-sm checkbox-accent" />
                   <span className="label-text font-Poppins text-[#d8d8d8]">
                     I consent to the processing of personal data by Vefi for marketing purposes and I accept the terms of service
                   </span>

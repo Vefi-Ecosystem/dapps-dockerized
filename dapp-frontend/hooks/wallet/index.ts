@@ -20,8 +20,8 @@ export const useTokenBalance = (address: string, deps: any[] = []) => {
         try {
           setIsLoading(true);
           const decimals: number = (await contract?.decimals()) || 0;
-          const balanceBigNumber: BigNumber = (await contract?.balanceOf(account as string)) || BigNumber.from(0);
-          const bal = balanceBigNumber.gt(0) ? balanceBigNumber.div(`0x${(10 ** decimals).toString(16)}`).toNumber() : 0;
+          const balanceBigNumber: BigNumber = (await contract?.balanceOf(account)) || BigNumber.from(0);
+          const bal = balanceBigNumber.gt(0) ? balanceBigNumber.div('0x'.concat(Math.pow(10, decimals).toString(16))).toNumber() : 0;
           setBalance(bal);
           setIsLoading(false);
         } catch (error: any) {

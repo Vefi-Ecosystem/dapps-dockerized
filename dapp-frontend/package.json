@@ -5,8 +5,7 @@
     "dev": "next dev",
     "build": "export NODE_ENV=production && next build",
     "start": "next start",
-    "lint:fix": "npx eslint --fix .",
-    "format": "prettier --write **/**.{css,js,json,ts,tsx}"
+    "lint:fix": "npx eslint --fix ."
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

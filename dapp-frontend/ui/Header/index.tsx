@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FaWallet } from 'react-icons/fa';
 import { RiMenu4Fill } from 'react-icons/ri';
-import { FiX, FiChevronDown, FiLogOut, FiCheck } from 'react-icons/fi';
+import { FiX, FiChevronDown, FiLogOut } from 'react-icons/fi';
 import { formatEthAddress } from 'eth-address';
 import _ from 'lodash';
 import { hexValue } from '@ethersproject/bytes';
@@ -203,13 +203,16 @@ export default function Header() {
       </div>
       <Transition
         as="div"
-        className="flex flex-col lg:hidden h-screen gap-2 overflow-auto hidden-scrollbar justify-between items-center w-full px-4 py-4 z-20"
+        className="flex flex-col lg:hidden gap-2 overflow-auto my-auto hidden-scrollbar justify-between items-center w-full px-4 py-4 z-20"
         enter="transform transition ease-in-out duration-[500ms]"
-        enterFrom="opacity-0 -translate-x-6]"
-        enterTo="opacity-100 translate-x-0"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
         show={showMobileSidebar}
       >
-        <ul className="menu bg-[#fff]/[.09] w-full p-2 rounded-box text-[#fff] font-Syne" onClick={() => setShowMobileSidebar(false)}>
+        <ul
+          className="menu bg-[#1a1a1a] mx-auto min-h-full my-auto w-full p-2 rounded-box text-[#fff] font-Syne"
+          onClick={() => setShowMobileSidebar(false)}
+        >
           <li>
             <ActiveLink activeClassName="active" href="/dex">
               <span className="capitalize">trade</span>
@@ -226,23 +229,6 @@ export default function Header() {
             </ActiveLink>
           </li>
         </ul>
-        {!active ? (
-          <button
-            onClick={() => setShowProviderModal(true)}
-            className="md:hidden flex justify-center items-center bg-[#1673b9] py-[9px] px-[10px] rounded-[5px] text-[18px] text-white"
-          >
-            <FaWallet />
-          </button>
-        ) : (
-          <div className="flex justify-center items-center gap-2">
-            <button
-              onClick={disconnectWallet}
-              className="md:hidden flex justify-center items-center bg-green-500 py-[9px] px-[10px] rounded-[5px] text-[18px] text-white"
-            >
-              <FiCheck />
-            </button>
-          </div>
-        )}
       </Transition>
       <ProviderSelectModal isOpen={showProviderModal} onClose={() => setShowProviderModal(false)} />
       <input type="checkbox" id="chain-modal" className="modal-toggle" />

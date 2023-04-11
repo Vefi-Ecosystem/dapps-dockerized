@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import millify from 'millify';
 import { FiPlus, FiTrash2 } from 'react-icons/fi';
 import RemoveLiquidityModal from '../RemoveLiquidityModal';
 import { useAPIContext } from '../../../contexts/api';
+import { useRouter } from 'next/router';
+import { useTokenBalance } from '../../../hooks/wallet';
 
 export default function UserLPItem({ pair }: any) {
   const { tokensListingAsDictionary } = useAPIContext();
+  const { push } = useRouter();
+  const [showRemoveLiquidityModal, setShowRemoveLiquidityModal] = useState(false);
+  const { balance } = useTokenBalance(pair.pair.id);
   return (
     <div tabIndex={0} className="w-full collapse collapse-arrow bg-[#fff]/[.11] rounded-[15px]">
       <input type="checkbox" className="peer" />
@@ -41,7 +46,7 @@ export default function UserLPItem({ pair }: any) {
             {pair.pair.token0.symbol}/{pair.pair.token1.symbol}
           </span>
         </div>
-        <span className="text-[#a2b6ec] text-[0.85em] font-[700]">{millify(pair.balance, { precision: 4 })}</span>
+        <span className="text-[#a2b6ec] text-[0.85em] font-[700]">{millify(balance, { precision: 4 })}</span>
       </div>
       <div className="collapse-content px-3">
         <div className="flex flex-col justify-between items-center gap-3 w-full">
@@ -89,13 +94,13 @@ export default function UserLPItem({ pair }: any) {
           </div>
           <div className="flex flex-col justify-center items-center w-full gap-5">
             <button
-              onClick={() => {}}
+              onClick={() => setShowRemoveLiquidityModal(true)}
               className="flex justify-center items-center bg-[#e32345] py-4 px-2 rounded-[8px] gap-2 text-[0.89em] text-white w-full"
             >
               <FiTrash2 /> <span className="font-Syne capitalize">remove liquidity</span>
             </button>
             <button
-              onClick={() => {}}
+              onClick={() => push(`/dex?tab=liquidity&child_tab=add_liquidity&inputToken=${pair.pair.token0.id}&outputToken=${pair.pair.token1.id}`)}
               className="border-[#a6b2ec] border rounded-[8px] w-full py-[13px] px-[17px] text-[#a6b2ec] text-[0.89em] font-[600] flex justify-center items-center gap-2"
             >
               <FiPlus /> <span className="font-Syne capitalize">add liquidity</span>
@@ -103,6 +108,7 @@ export default function UserLPItem({ pair }: any) {
           </div>
         </div>
       </div>
+      <RemoveLiquidityModal isVisible={showRemoveLiquidityModal} onClose={() => setShowRemoveLiquidityModal(false)} pair={pair.pair.id} />
     </div>
   );
 }

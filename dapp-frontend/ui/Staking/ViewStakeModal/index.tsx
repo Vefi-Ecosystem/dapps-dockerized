@@ -209,7 +209,7 @@ export default function ViewStakeModal({ isOpen, onClose, selectedStakingPoolID,
                               <button
                                 onClick={withdrawRewards}
                                 disabled={isLoading || !canWithdraw || !active}
-                                className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
+                                className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.72em] lg:text-[0.95em] text-white w-full rounded-[8px] gap-3"
                               >
                                 <span className="font-Syne capitalize">
                                   {!active ? 'wallet not connected' : !canWithdraw ? 'cannot withdraw now' : 'unstake'}

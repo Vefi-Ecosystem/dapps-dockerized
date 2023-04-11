@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { TailSpin } from 'react-loader-spinner';
 import { FiArrowDown, FiArrowUp, FiSearch } from 'react-icons/fi';
-import { map, multiply, truncate } from 'lodash';
+import { filter, map, multiply, toLower, trim } from 'lodash';
 import millify from 'millify';
 import { formatEthAddress } from 'eth-address';
 import Moment from 'react-moment';
@@ -31,6 +31,7 @@ import chains from '../../assets/chains.json';
 import { useWeb3Context } from '../../contexts/web3';
 import AreaChart from '../../ui/Chart/AreaChart';
 import { useExplorerLink } from '../../hooks/global';
+import Empty from '../../ui/Empty';
 
 enum Tabs {
   OVERVIEW = 'overview',
@@ -195,64 +196,68 @@ const TopPairsList = () => {
             <span className="font-Poppins text-red-500 text-[0.87em]">{error.message}</span>
           ) : (
             <>
-              {map(data, (item, index) => (
-                <TRow key={index}>
-                  <TCell className="text-center py-4">
-                    <div className="flex justify-start items-center gap-2 w-full">
-                      <div className="flex justify-center items-center gap-1">
-                        <div className="avatar">
-                          <div className="w-6 rounded-full border border-[#353535]">
-                            <img
-                              src={
-                                tokensListingAsDictionary[item.token0.id]
-                                  ? tokensListingAsDictionary[item.token0.id].logoURI
-                                  : '/images/placeholder_image.svg'
-                              }
-                              alt={item.token0.symbol}
-                            />
+              {data.length === 0 ? (
+                <Empty />
+              ) : (
+                map(data, (item, index) => (
+                  <TRow key={index}>
+                    <TCell className="text-center py-4">
+                      <div className="flex justify-start items-center gap-2 w-full">
+                        <div className="flex justify-center items-center gap-1">
+                          <div className="avatar">
+                            <div className="w-6 rounded-full border border-[#353535]">
+                              <img
+                                src={
+                                  tokensListingAsDictionary[item.token0.id]
+                                    ? tokensListingAsDictionary[item.token0.id].logoURI
+                                    : '/images/placeholder_image.svg'
+                                }
+                                alt={item.token0.symbol}
+                              />
+                            </div>
+                          </div>
+                          <div className="avatar">
+                            <div className="w-6 rounded-full border border-[#353535]">
+                              <img
+                                src={
+                                  tokensListingAsDictionary[item.token1.id]
+                                    ? tokensListingAsDictionary[item.token1.id].logoURI
+                                    : '/images/placeholder_image.svg'
+                                }
+                                alt={item.token1.symbol}
+                              />
+                            </div>
                           </div>
                         </div>
-                        <div className="avatar">
-                          <div className="w-6 rounded-full border border-[#353535]">
-                            <img
-                              src={
-                                tokensListingAsDictionary[item.token1.id]
-                                  ? tokensListingAsDictionary[item.token1.id].logoURI
-                                  : '/images/placeholder_image.svg'
-                              }
-                              alt={item.token1.symbol}
-                            />
-                          </div>
-                        </div>
+                        <Link href={`/analytics?view=singlePair&pair=${item.id}`}>
+                          <a>
+                            <span className="font-Syne text-[#fff] text-[700] text-[0.5em] lg:text-[0.85em] uppercase">
+                              {item.token0.symbol}/{item.token1.symbol}
+                            </span>
+                          </a>
+                        </Link>
                       </div>
-                      <Link href={`/analytics?view=singlePair&pair=${item.id}`}>
-                        <a>
-                          <span className="font-Syne text-[#fff] text-[700] text-[0.5em] lg:text-[0.85em] uppercase">
-                            {item.token0.symbol}/{item.token1.symbol}
-                          </span>
-                        </a>
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                      ${millify(parseFloat(item.volumeUSD))}
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      {millify(parseFloat(item.reserveETH))}
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      {millify(parseFloat(item.token0.tradeVolume))} {item.token0.symbol}
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      {millify(parseFloat(item.token1.tradeVolume))} {item.token1.symbol}
+                    </TCell>
+                    <TCell className="text-center">
+                      <Link href={`/dex?tab=swap&inputToken=${item.token0.id}&outputToken=${item.token1.id}`}>
+                        <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">trade</span>
                       </Link>
-                    </div>
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
-                    ${millify(parseFloat(item.volumeUSD))}
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    {millify(parseFloat(item.reserveETH))}
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    {millify(parseFloat(item.token0.tradeVolume))} {item.token0.symbol}
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    {millify(parseFloat(item.token1.tradeVolume))} {item.token1.symbol}
-                  </TCell>
-                  <TCell className="text-center">
-                    <Link href={`/dex?tab=swap&inputToken=${item.token0.id}&outputToken=${item.token1.id}`}>
-                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">trade</span>
-                    </Link>
-                  </TCell>
-                </TRow>
-              ))}
+                    </TCell>
+                  </TRow>
+                ))
+              )}
             </>
           )}
         </TBody>
@@ -306,61 +311,67 @@ const TopTokensList = () => {
             <span className="font-Poppins text-red-500 text-[0.87em]">{error.message}</span>
           ) : (
             <>
-              {map(data, (item, index) => (
-                <TRow key={index}>
-                  <TCell className="text-center py-4">
-                    <div className="flex justify-start items-center gap-2 w-full">
-                      <div className="flex justify-center items-center gap-1">
-                        <div className="avatar">
-                          <div className="w-6 rounded-full border border-[#353535]">
-                            <img
-                              src={tokensListingAsDictionary[item.id] ? tokensListingAsDictionary[item.id].logoURI : '/images/placeholder_image.svg'}
-                              alt={item.symbol}
-                            />
+              {data.length === 0 ? (
+                <Empty />
+              ) : (
+                map(data, (item, index) => (
+                  <TRow key={index}>
+                    <TCell className="text-center py-4">
+                      <div className="flex justify-start items-center gap-2 w-full">
+                        <div className="flex justify-center items-center gap-1">
+                          <div className="avatar">
+                            <div className="w-6 rounded-full border border-[#353535]">
+                              <img
+                                src={
+                                  tokensListingAsDictionary[item.id] ? tokensListingAsDictionary[item.id].logoURI : '/images/placeholder_image.svg'
+                                }
+                                alt={item.symbol}
+                              />
+                            </div>
                           </div>
+                          <Link href={`/analytics?view=singleToken&token=${item.id.toLowerCase()}`}>
+                            <a className="flex justify-center items-center gap-1 font-Syne">
+                              <span className="text-[#fff] capitalize text-[0.5em] lg:text-[0.86em]">{item.name}</span>
+                              <span className="text-[#fff]/50 uppercase text-[0.5em] lg:text-[0.86em]">{item.symbol}</span>
+                            </a>
+                          </Link>
                         </div>
-                        <Link href={`/analytics?view=singleToken&token=${item.id.toLowerCase()}`}>
-                          <a className="flex justify-center items-center gap-1 font-Syne">
-                            <span className="text-[#fff] capitalize text-[0.5em] lg:text-[0.86em]">{item.name}</span>
-                            <span className="text-[#fff]/50 uppercase text-[0.5em] lg:text-[0.86em]">{item.symbol}</span>
-                          </a>
-                        </Link>
                       </div>
-                    </div>
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    ${millify(parseFloat(item.derivedUSD))}
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    <div className="flex justify-center items-center">
-                      <AreaChart
-                        data={map(item.tokenDayData, (item) => ({
-                          date: new Date(multiply(item.date, 1000)),
-                          dailyVolumeETH: parseFloat(item.dailyVolumeETH)
-                        }))}
-                        width={50}
-                        height={50}
-                        xAxisDataKey="date"
-                        areaDataKey="dailyVolumeETH"
-                        hideXAxis={true}
-                        hideYAxis={true}
-                        yAxisOrientation="right"
-                        fill="transparent"
-                        stroke="#23e33e"
-                      />
-                    </div>
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
-                    ${millify(parseFloat(item.tradeVolumeUSD))}
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    {millify(parseFloat(item.derivedETH))}
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    {millify(parseInt(item.totalSupply))} {item.symbol}
-                  </TCell>
-                </TRow>
-              ))}
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      ${millify(parseFloat(item.derivedUSD))}
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      <div className="flex justify-center items-center">
+                        <AreaChart
+                          data={map(item.tokenDayData, (item) => ({
+                            date: new Date(multiply(item.date, 1000)),
+                            dailyVolumeETH: parseFloat(item.dailyVolumeETH)
+                          }))}
+                          width={50}
+                          height={50}
+                          xAxisDataKey="date"
+                          areaDataKey="dailyVolumeETH"
+                          hideXAxis={true}
+                          hideYAxis={true}
+                          yAxisOrientation="right"
+                          fill="transparent"
+                          stroke="#23e33e"
+                        />
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                      ${millify(parseFloat(item.tradeVolumeUSD))}
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      {millify(parseFloat(item.derivedETH))}
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      {millify(parseInt(item.totalSupply))} {item.symbol}
+                    </TCell>
+                  </TRow>
+                ))
+              )}
             </>
           )}
         </TBody>
@@ -390,6 +401,7 @@ const TransactionsList = () => {
   const { isLoading: allMintsLoading, data: allMintsData, error: allMintsError } = useAllMints(allMintsPage - 1, allMintsOrder);
   const { isLoading: allSwapsLoading, data: allSwapsData, error: allSwapsError } = useAllSwaps(allSwapsPage - 1, allSwapsOrder);
   const { isLoading: allBurnsLoading, data: allBurnsData, error: allBurnsError } = useAllBurns(allBurnsPage - 1, allBurnsOrder);
+  const [searchValue, setSearchValue] = useState('');
 
   const AllTransactions = () => (
     <div className="flex flex-col justify-center w-full items-center gap-2">
@@ -432,127 +444,136 @@ const TransactionsList = () => {
           </THead>
 
           <TailSpin color="#dcdcdc" visible={allTransactionsLoading} width={20} height={20} />
-          {map(allTransactionsData, (item, index) => (
-            <TBody key={index}>
-              {map(item.mints, (mint, i) => (
-                <TRow key={i}>
-                  <TCell className="text-center py-2">
-                    <span className="bg-[#03c25b]/[.15] text-[#23e33e] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">add</span>
-                  </TCell>
-                  <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    ${millify(parseFloat(mint.amountUSD))}
-                  </TCell>
-                  <TCell className="text-center py-2 font-[400]">
-                    <div className="flex justify-center items-center flex-col gap-1">
-                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(mint.amount0))}</span>
-                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{mint.pair.token0.symbol}</span>
-                    </div>
-                  </TCell>
-                  <TCell className="text-center py-2 font-[400]">
-                    <div className="flex justify-center items-center flex-col gap-1">
-                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(mint.amount1))}</span>
-                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{mint.pair.token1.symbol}</span>
-                    </div>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                    <a target="_blank" rel="noreferrer" href={useExplorerLink('address', mint.to)}>
-                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
-                        {mint.to && formatEthAddress(mint.to, 6)}
-                      </span>
-                    </a>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                    <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.id)}>
-                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
-                        view transaction
-                      </span>
-                    </a>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
-                    <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
-                  </TCell>
-                </TRow>
-              ))}
-              {map(item.swaps, (swap, i) => (
-                <TRow key={i}>
-                  <TCell className="text-center py-2">
-                    <span className="bg-[#3878d7]/[.10] text-[#3878d7] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">swap</span>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    ${millify(parseFloat(swap.amountUSD))}
-                  </TCell>
-                  <TCell className="text-center py-2 font-[400]">
-                    <div className="flex justify-center items-center flex-col gap-1">
-                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(swap.amount0In))}</span>
-                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{swap.pair.token0.symbol}</span>
-                    </div>
-                  </TCell>
-                  <TCell className="text-center py-2 font-[400]">
-                    <div className="flex justify-center items-center flex-col gap-1">
-                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(swap.amount1Out))}</span>
-                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{swap.pair.token1.symbol}</span>
-                    </div>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                    <a target="_blank" rel="noreferrer" href={useExplorerLink('address', swap.to)}>
-                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
-                        {swap.to && formatEthAddress(swap.to, 6)}
-                      </span>
-                    </a>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                    <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.id)}>
-                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
-                        view transaction
-                      </span>
-                    </a>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
-                    <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
-                  </TCell>
-                </TRow>
-              ))}
-              {map(item.burns, (burn, i) => (
-                <TRow key={i}>
-                  <TCell className="text-center py-2">
-                    <span className="bg-[#f63859]/[.1] text-[#f63859] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">remove</span>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                    ${millify(parseFloat(burn.amountUSD))}
-                  </TCell>
-                  <TCell className="text-center py-2 font-[400]">
-                    <div className="flex justify-center items-center flex-col gap-1">
-                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(burn.amount0))}</span>
-                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{burn.pair.token0.symbol}</span>
-                    </div>
-                  </TCell>
-                  <TCell className="text-center py-2 font-[400]">
-                    <div className="flex justify-center items-center flex-col gap-1">
-                      <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(burn.amount1))}</span>
-                      <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{burn.pair.token1.symbol}</span>
-                    </div>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                    <a target="_blank" rel="noreferrer" href={useExplorerLink('address', burn.to)}>
-                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
-                        {burn.to && formatEthAddress(burn.to, 6)}
-                      </span>
-                    </a>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                    <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.id)}>
-                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
-                        view transaction
-                      </span>
-                    </a>
-                  </TCell>
-                  <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
-                    <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
-                  </TCell>
-                </TRow>
-              ))}
-            </TBody>
-          ))}
+          {allTransactionsData.length === 0 ? (
+            <Empty />
+          ) : (
+            map(
+              trim(searchValue).length > 0
+                ? filter(allTransactionsData, (item) => toLower(item.id).startsWith(toLower(searchValue)))
+                : allTransactionsData,
+              (item, index) => (
+                <TBody key={index}>
+                  {map(item.mints, (mint, i) => (
+                    <TRow key={i}>
+                      <TCell className="text-center py-2">
+                        <span className="bg-[#03c25b]/[.15] text-[#23e33e] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">add</span>
+                      </TCell>
+                      <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                        ${millify(parseFloat(mint.amountUSD))}
+                      </TCell>
+                      <TCell className="text-center py-2 font-[400]">
+                        <div className="flex justify-center items-center flex-col gap-1">
+                          <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(mint.amount0))}</span>
+                          <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{mint.pair.token0.symbol}</span>
+                        </div>
+                      </TCell>
+                      <TCell className="text-center py-2 font-[400]">
+                        <div className="flex justify-center items-center flex-col gap-1">
+                          <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(mint.amount1))}</span>
+                          <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{mint.pair.token1.symbol}</span>
+                        </div>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                        <a target="_blank" rel="noreferrer" href={useExplorerLink('address', mint.to)}>
+                          <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                            {mint.to && formatEthAddress(mint.to, 6)}
+                          </span>
+                        </a>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
+                        <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.id)}>
+                          <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                            view transaction
+                          </span>
+                        </a>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                        <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
+                      </TCell>
+                    </TRow>
+                  ))}
+                  {map(item.swaps, (swap, i) => (
+                    <TRow key={i}>
+                      <TCell className="text-center py-2">
+                        <span className="bg-[#3878d7]/[.10] text-[#3878d7] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">swap</span>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                        ${millify(parseFloat(swap.amountUSD))}
+                      </TCell>
+                      <TCell className="text-center py-2 font-[400]">
+                        <div className="flex justify-center items-center flex-col gap-1">
+                          <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(swap.amount0In))}</span>
+                          <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{swap.pair.token0.symbol}</span>
+                        </div>
+                      </TCell>
+                      <TCell className="text-center py-2 font-[400]">
+                        <div className="flex justify-center items-center flex-col gap-1">
+                          <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(swap.amount1Out))}</span>
+                          <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{swap.pair.token1.symbol}</span>
+                        </div>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                        <a target="_blank" rel="noreferrer" href={useExplorerLink('address', swap.to)}>
+                          <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                            {swap.to && formatEthAddress(swap.to, 6)}
+                          </span>
+                        </a>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
+                        <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.id)}>
+                          <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                            view transaction
+                          </span>
+                        </a>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                        <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
+                      </TCell>
+                    </TRow>
+                  ))}
+                  {map(item.burns, (burn, i) => (
+                    <TRow key={i}>
+                      <TCell className="text-center py-2">
+                        <span className="bg-[#f63859]/[.1] text-[#f63859] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">remove</span>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                        ${millify(parseFloat(burn.amountUSD))}
+                      </TCell>
+                      <TCell className="text-center py-2 font-[400]">
+                        <div className="flex justify-center items-center flex-col gap-1">
+                          <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(burn.amount0))}</span>
+                          <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{burn.pair.token0.symbol}</span>
+                        </div>
+                      </TCell>
+                      <TCell className="text-center py-2 font-[400]">
+                        <div className="flex justify-center items-center flex-col gap-1">
+                          <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(burn.amount1))}</span>
+                          <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{burn.pair.token1.symbol}</span>
+                        </div>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                        <a target="_blank" rel="noreferrer" href={useExplorerLink('address', burn.to)}>
+                          <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                            {burn.to && formatEthAddress(burn.to, 6)}
+                          </span>
+                        </a>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
+                        <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.id)}>
+                          <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                            view transaction
+                          </span>
+                        </a>
+                      </TCell>
+                      <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                        <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
+                      </TCell>
+                    </TRow>
+                  ))}
+                </TBody>
+              )
+            )
+          )}
         </Table>
       )}
 
@@ -584,7 +605,7 @@ const TransactionsList = () => {
                 <span className="capitalize">account</span>
               </TCell>
               <TCell className="text-center py-2">
-                <span className="capitalize">tx ID</span>
+                <span className="capitalize">transaction</span>
               </TCell>
               <TCell className="text-center py-2 hidden lg:table-cell">
                 <div className="flex justify-center items-center gap-1">
@@ -602,37 +623,54 @@ const TransactionsList = () => {
 
           <TailSpin color="#dcdcdc" visible={allMintsLoading} width={20} height={20} />
           <TBody>
-            {map(allMintsData, (item, index) => (
-              <TRow key={index}>
-                <TCell className="text-center py-2">
-                  <span className="bg-[#03c25b]/[.15] text-[#23e33e] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">add</span>
-                </TCell>
-                <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                  ${millify(parseFloat(item.amountUSD))}
-                </TCell>
-                <TCell className="text-center py-2 font-[400]">
-                  <div className="flex justify-center items-center flex-col gap-1">
-                    <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0))}</span>
-                    <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
-                  </div>
-                </TCell>
-                <TCell className="text-center py-2 font-[400]">
-                  <div className="flex justify-center items-center flex-col gap-1">
-                    <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1))}</span>
-                    <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
-                  </div>
-                </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                  {item.to && formatEthAddress(item.to, 6)}
-                </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                  {item.transaction && truncate(item.transaction.id, { length: 9 })}
-                </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
-                  <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
-                </TCell>
-              </TRow>
-            ))}
+            {allMintsData.length === 0 ? (
+              <Empty />
+            ) : (
+              map(
+                trim(searchValue).length > 0
+                  ? filter(allMintsData, (item) => toLower(item.transaction.id).startsWith(toLower(searchValue)))
+                  : allMintsData,
+                (item, index) => (
+                  <TRow key={index}>
+                    <TCell className="text-center py-2">
+                      <span className="bg-[#03c25b]/[.15] text-[#23e33e] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">add</span>
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      ${millify(parseFloat(item.amountUSD))}
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                      <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.to)}>
+                        <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                          {item.to && formatEthAddress(item.to, 6)}
+                        </span>
+                      </a>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                      <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.transaction.id)}>
+                        <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                          view transaction
+                        </span>
+                      </a>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                      <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
+                    </TCell>
+                  </TRow>
+                )
+              )
+            )}
           </TBody>
         </Table>
       )}
@@ -664,7 +702,7 @@ const TransactionsList = () => {
                 <span className="capitalize">account</span>
               </TCell>
               <TCell className="text-center py-2">
-                <span className="capitalize">tx ID</span>
+                <span className="capitalize">transaction</span>
               </TCell>
               <TCell className="text-center py-2 hidden lg:table-cell">
                 <div className="flex justify-center items-center gap-1">
@@ -682,37 +720,54 @@ const TransactionsList = () => {
 
           <TailSpin color="#dcdcdc" visible={allBurnsLoading} width={20} height={20} />
           <TBody>
-            {map(allBurnsData, (item, index) => (
-              <TRow key={index}>
-                <TCell className="text-center py-2">
-                  <span className="bg-[#f63859]/[.1] text-[#f63859] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">remove</span>
-                </TCell>
-                <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                  ${millify(parseFloat(item.amountUSD))}
-                </TCell>
-                <TCell className="text-center py-2 font-[400]">
-                  <div className="flex justify-center items-center flex-col gap-1">
-                    <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0))}</span>
-                    <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
-                  </div>
-                </TCell>
-                <TCell className="text-center py-2 font-[400]">
-                  <div className="flex justify-center items-center flex-col gap-1">
-                    <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1))}</span>
-                    <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
-                  </div>
-                </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                  {item.to && formatEthAddress(item.to, 6)}
-                </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                  {item.transaction && truncate(item.transaction.id, { length: 9 })}
-                </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
-                  <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
-                </TCell>
-              </TRow>
-            ))}
+            {allBurnsData.length === 0 ? (
+              <Empty />
+            ) : (
+              map(
+                trim(searchValue).length > 0
+                  ? filter(allBurnsData, (item) => toLower(item.transaction.id).startsWith(toLower(searchValue)))
+                  : allBurnsData,
+                (item, index) => (
+                  <TRow key={index}>
+                    <TCell className="text-center py-2">
+                      <span className="bg-[#f63859]/[.1] text-[#f63859] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">remove</span>
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      ${millify(parseFloat(item.amountUSD))}
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                      <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.to)}>
+                        <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                          {item.to && formatEthAddress(item.to, 6)}
+                        </span>
+                      </a>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                      <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.transaction.id)}>
+                        <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                          view transaction
+                        </span>
+                      </a>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                      <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
+                    </TCell>
+                  </TRow>
+                )
+              )
+            )}
           </TBody>
         </Table>
       )}
@@ -750,7 +805,7 @@ const TransactionsList = () => {
                 <span className="capitalize">account</span>
               </TCell>
               <TCell className="text-center py-2">
-                <span className="capitalize">tx ID</span>
+                <span className="capitalize">transaction</span>
               </TCell>
               <TCell className="text-center py-2 hidden lg:table-cell">
                 <div className="flex justify-center items-center gap-1">
@@ -768,49 +823,66 @@ const TransactionsList = () => {
 
           <TailSpin color="#dcdcdc" visible={allSwapsLoading} width={20} height={20} />
           <TBody>
-            {map(allSwapsData, (item, index) => (
-              <TRow key={index}>
-                <TCell className="text-center py-2">
-                  <span className="bg-[#3878d7]/[.10] text-[#3878d7] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">swap</span>
-                </TCell>
-                <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
-                  ${millify(parseFloat(item.amountUSD))}
-                </TCell>
-                <TCell className="text-center py-2 font-[400]">
-                  <div className="flex justify-center items-center flex-col gap-1">
-                    <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0In))}</span>
-                    <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
-                  </div>
-                </TCell>
-                <TCell className="text-center py-2 font-[400]">
-                  <div className="flex justify-center items-center flex-col gap-1">
-                    <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0Out))}</span>
-                    <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
-                  </div>
-                </TCell>
-                <TCell className="text-center py-2 font-[400]">
-                  <div className="flex justify-center items-center flex-col gap-1">
-                    <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1In))}</span>
-                    <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
-                  </div>
-                </TCell>
-                <TCell className="text-center py-2 font-[400]">
-                  <div className="flex justify-center items-center flex-col gap-1">
-                    <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1Out))}</span>
-                    <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
-                  </div>
-                </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
-                  {item.to && formatEthAddress(item.to, 6)}
-                </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.86em] font-[400]">
-                  {item.transaction && truncate(item.transaction.id, { length: 9 })}
-                </TCell>
-                <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
-                  <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
-                </TCell>
-              </TRow>
-            ))}
+            {allSwapsData.length === 0 ? (
+              <Empty />
+            ) : (
+              map(
+                trim(searchValue).length > 0
+                  ? filter(allSwapsData, (item) => toLower(item.transaction.id).startsWith(toLower(searchValue)))
+                  : allSwapsData,
+                (item, index) => (
+                  <TRow key={index}>
+                    <TCell className="text-center py-2">
+                      <span className="bg-[#3878d7]/[.10] text-[#3878d7] font-Syne px-1 py-1 capitalize text-[0.75em] rounded-[30px]">swap</span>
+                    </TCell>
+                    <TCell className="text-center py-4 text-[#fff] font-Poppins text-[0.86em] font-[400] hidden lg:table-cell">
+                      ${millify(parseFloat(item.amountUSD))}
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0In))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount0Out))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token0.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1In))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 font-[400]">
+                      <div className="flex justify-center items-center flex-col gap-1">
+                        <span className="text-[#fff] font-Poppins text-[0.85em]">{millify(parseFloat(item.amount1Out))}</span>
+                        <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{item.pair.token1.symbol}</span>
+                      </div>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400] hidden lg:table-cell">
+                      <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.to)}>
+                        <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                          {item.to && formatEthAddress(item.to, 6)}
+                        </span>
+                      </a>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
+                      <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.transaction.id)}>
+                        <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                          view transaction
+                        </span>
+                      </a>
+                    </TCell>
+                    <TCell className="text-center py-2 text-[#fff] font-Syne text-[0.86em] font-[400] hidden lg:table-cell">
+                      <Moment date={multiply(parseInt(item.timestamp), 1000)} fromNow ago />
+                    </TCell>
+                  </TRow>
+                )
+              )
+            )}
           </TBody>
         </Table>
       )}
@@ -835,7 +907,7 @@ const TransactionsList = () => {
 
   return (
     <div className="w-full px-0 lg:px-3 py-2 flex flex-col gap-3 justify-center items-center overflow-auto hidden-scrollbar">
-      <div className="w-full flex flex-col-reverse lg:flex-row justify-start lg:justify-between items-center px-2 py-2 gap-2">
+      <div className="w-full flex flex-col-reverse lg:flex-row justify-start lg:justify-between items-center px-2 py-2 gap-4">
         <div className="flex justify-start items-center gap-0 w-auto bg-[#fff]/[.07] border border-[#555555] rounded-[6px] px-0 py-0">
           <FilterBtn
             isActive={transactionView === TransactionView.ALL}
@@ -866,10 +938,10 @@ const TransactionsList = () => {
           <FiSearch className="text-[1em] text-[#fff]" />
           <input
             type="text"
-            // value={searchValue}
-            // onChange={(e) => setSearchValue(e.target.value)}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
             className="bg-transparent outline-0 font-Syne flex-1 text-[#fff]"
-            placeholder="Search"
+            placeholder="Search transaction by ID"
           />
         </div>
       </div>
@@ -921,17 +993,27 @@ export default function Overview() {
   const RenderedComponent = useOverviewRoutes(tab, chartPeriod);
   return (
     <div className="flex flex-col justify-center items-center container mx-auto px-6 py-7 gap-12 overflow-auto hidden-scrollbar">
-      <div className="flex justify-center items-center w-full px-1">
-        <div className="carousel carousel-center p-4 space-x-6 rounded-box">
-          <div className="carousel-item flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 min-w-[193px]">
+      <div className="flex justify-center items-center w-full px-1 overflow-auto">
+        <div className="flex flex-col lg:flex-row justify-center items-center gap-4 p-4 overflow-auto hidden-scrollbar w-full">
+          <div className="flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 w-full lg:w-1/4">
+            <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">highest trade volume (24h)</span>
             {highestVolumeFetchError ? (
-              <span className="font-Poppins text-red-500 text-[0.87em]">{highestVolumeFetchError.message}</span>
+              <>
+                <div className="avatar">
+                  <div className="w-8 rounded-full">
+                    <img src="/images/placeholder_image.svg" alt="placeholder image" />
+                  </div>
+                </div>
+                <div className="font-Syne text-[0.95em] flex justify-center items-center gap-1 w-full">
+                  <span className="text-[#fff] capitalize">not available</span>
+                  <span className="text-[#fff]/50 capitalize">null</span>
+                </div>
+              </>
             ) : (
               <>
                 <TailSpin color="#dcdcdc" visible={isHighestVolumeDataLoading} width={20} height={20} />
                 {highestVolumeData && (
                   <>
-                    <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">highest trade volume (24h)</span>
                     <div className="avatar">
                       <div className="w-8 rounded-full">
                         <img
@@ -953,15 +1035,25 @@ export default function Overview() {
               </>
             )}
           </div>
-          <div className="carousel-item flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 min-w-[193px]">
+          <div className="flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 w-full lg:w-1/4">
+            <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">most traded token (24h)</span>
             {highestTransactionFetchError ? (
-              <span className="font-Poppins text-red-500 text-[0.87em]">{highestTransactionFetchError.message}</span>
+              <>
+                <div className="avatar">
+                  <div className="w-8 rounded-full">
+                    <img src="/images/placeholder_image.svg" alt="placeholder image" />
+                  </div>
+                </div>
+                <div className="font-Syne text-[0.95em] flex justify-center items-center gap-1 w-full">
+                  <span className="text-[#fff] capitalize">not available</span>
+                  <span className="text-[#fff]/50 capitalize">null</span>
+                </div>
+              </>
             ) : (
               <>
                 <TailSpin color="#dcdcdc" visible={isHighestTransactionDataLoading} width={20} height={20} />
                 {highestTransactionData && (
                   <>
-                    <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">most traded token (24h)</span>
                     <div className="avatar">
                       <div className="w-8 rounded-full">
                         <img
@@ -983,15 +1075,25 @@ export default function Overview() {
               </>
             )}
           </div>
-          <div className="carousel-item flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 min-w-[193px]">
+          <div className="flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 w-full lg:w-1/4">
+            <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">top pair</span>
             {topPairFetchError ? (
-              <span className="font-Poppins text-red-500 text-[0.87em]">{topPairFetchError.message}</span>
+              <>
+                <div className="avatar">
+                  <div className="w-8 rounded-full">
+                    <img src="/images/placeholder_image.svg" alt="placeholder image" />
+                  </div>
+                </div>
+                <div className="font-Syne text-[0.95em] flex justify-center items-center gap-1 w-full">
+                  <span className="text-[#fff] capitalize">not available</span>
+                  <span className="text-[#fff]/50 capitalize">null</span>
+                </div>
+              </>
             ) : (
               <>
                 <TailSpin color="#dcdcdc" visible={isTopPairDataLoading} width={20} height={20} />
                 {topPairData && (
                   <>
-                    <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">top pair</span>
                     <div className="flex justify-center items-center gap-1">
                       <div className="avatar">
                         <div className="w-8 rounded-full">
@@ -1027,15 +1129,25 @@ export default function Overview() {
               </>
             )}
           </div>
-          <div className="carousel-item flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 min-w-[193px]">
+          <div className="flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 w-full lg:w-1/4">
+            <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">most popular token</span>
             {mostPopularTokenFetchError ? (
-              <span className="font-Poppins text-red-500 text-[0.87em]">{mostPopularTokenFetchError.message}</span>
+              <>
+                <div className="avatar">
+                  <div className="w-8 rounded-full">
+                    <img src="/images/placeholder_image.svg" alt="placeholder image" />
+                  </div>
+                </div>
+                <div className="font-Syne text-[0.95em] flex justify-center items-center gap-1 w-full">
+                  <span className="text-[#fff] capitalize">not available</span>
+                  <span className="text-[#fff]/50 capitalize">null</span>
+                </div>
+              </>
             ) : (
               <>
                 <TailSpin color="#dcdcdc" visible={isMostPopularTokenDataLoading} width={20} height={20} />
                 {mostPopularTokenData && (
                   <>
-                    <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">most popular token</span>
                     <div className="avatar">
                       <div className="w-8 rounded-full">
                         <img

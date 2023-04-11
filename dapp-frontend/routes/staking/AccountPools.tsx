@@ -120,21 +120,21 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                       <span className="text-[#aaaaaa] font-[400] uppercase text-[1em]">{item.rewardToken.symbol}</span>
                     </div>
                   </TCell>
-                  <TCell className="text-center px-2 py-2">
+                  <TCell className="text-center px-2 py-2 hidden lg:table-cell">
                     <span className="text-[#23e33e] font-[400] uppercase text-[1em] font-Poppins">{item.apy}%</span>
                   </TCell>
-                  <TCell className="text-center px-2 py-2">
+                  <TCell className="text-center px-2 py-2 hidden lg:table-cell">
                     <CountDown date={multiply(parseInt(item.endsIn), 1000)} renderer={countdownRender} />
                   </TCell>
-                  <TCell className="text-center px-2 py-2">
+                  <TCell className="text-center px-2 py-2 hidden lg:table-cell">
                     <span className="text-[#fff] font-[400] text-[1em] font-Poppins">
                       {new Date(multiply(parseInt(item.blockTimestamp), 1000)).toDateString()}
                     </span>
                   </TCell>
-                  <TCell className="text-center px-2 py-2">
+                  <TCell className="text-center px-2 py-2 hidden lg:table-cell">
                     <span className="text-[#fff] font-[400] text-[1em] font-Poppins">{item.blockNumber}</span>
                   </TCell>
-                  <TCell className="text-center px-2 py-2">
+                  <TCell className="text-center px-2 py-2 hidden lg:table-cell">
                     <StatusLabel timestamp={parseInt(item.endsIn)} />
                   </TCell>
                   <TCell className="text-center">
@@ -145,7 +145,7 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                         setShowStakeModal(true);
                       }}
                     >
-                      <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                      <span className="capitalize font-Syne font-[400] text-[0.75em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
                         {parseInt(item.endsIn) > floor(Date.now() / 1000) ? 'stake' : 'check'}
                       </span>
                     </button>
@@ -171,7 +171,7 @@ export default function AccountPools() {
   return (
     <div className="w-full px-0 py-4 border border-[#858585] rounded-[20px] overflow-auto hidden-scrollbar">
       <div className="flex flex-col gap-5 justify-center items-start w-full">
-        <div className="flex justify-end items-center w-full gap-3 px-2 py-2">
+        <div className="flex justify-center lg:justify-end items-center w-full gap-3 px-2 py-2">
           <div className="bg-[#fff]/[.13] rounded-[8px] py-1 flex justify-start items-center gap-1 border border-[#5d5d5d] px-2">
             <FiSearch className="text-[1em] text-[#fff]" />
             <input

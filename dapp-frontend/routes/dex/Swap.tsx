@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TailSpin } from 'react-loader-spinner';
 import { AiOutlineSwap } from 'react-icons/ai';
 import { FiSettings, FiChevronDown } from 'react-icons/fi';
@@ -20,9 +20,8 @@ import TokensListModal from '../../ui/Dex/TokensListModal';
 import { ListingModel } from '../../api/models/dex';
 import { useAPIContext } from '../../contexts/api';
 import { useWeb3Context } from '../../contexts/web3';
-import { computePair, getInputAmount, getOutputAmount } from '../../hooks/dex';
+import { computePair, quote } from '../../hooks/dex';
 import routers from '../../assets/routers.json';
-import chains from '../../assets/chains.json';
 import { useDEXSettingsContext } from '../../contexts/dex/settings';
 import successFx from '../../assets/sounds/success_sound.mp3';
 import errorFx from '../../assets/sounds/error_sound.mp3';
@@ -43,11 +42,11 @@ export default function Swap() {
   const [isSecondTokensListModalVisible, setIsSecondTokensListModalVisible] = useState<boolean>(false);
   const [isSwapLoading, setIsSwapLoading] = useState<boolean>(false);
   const { tokensListing } = useAPIContext();
-  const { chainId, active, library, account } = useWeb3Context();
+  const { chainId, active, account } = useWeb3Context();
   const { txDeadlineInMins, slippageTolerance, gasPrice, playSounds } = useDEXSettingsContext();
   const [firstSelectedToken, setFirstSelectedToken] = useState<ListingModel>({} as ListingModel);
   const [secondSelectedToken, setSecondSelectedToken] = useState<ListingModel>({} as ListingModel);
-  const { pair, error: pairError } = computePair(firstSelectedToken, secondSelectedToken, chainId || 97);
+  const { error: pairError } = computePair(firstSelectedToken, secondSelectedToken);
   const { balance: balance1 } =
     firstSelectedToken.address === AddressZero ? useEtherBalance([isSwapLoading]) : useTokenBalance(firstSelectedToken.address, [isSwapLoading]);
   const { balance: balance2 } =
@@ -55,9 +54,8 @@ export default function Swap() {
   const routerContract = useContract(routers, routerAbi, true);
   const t1Contract = useContract(firstSelectedToken.address, erc20Abi, true);
   const t2Contract = useContract(secondSelectedToken.address, erc20Abi, true);
-  const explorerUrl = useMemo(() => chains[chainId as unknown as keyof typeof chains].explorer, [chainId]);
-  const outputAmount = getOutputAmount(firstSelectedToken, secondSelectedToken, val1, chainId || 1);
-  const inputAmount = getInputAmount(firstSelectedToken, secondSelectedToken, val2, chainId || 1);
+  const outputAmount = quote(firstSelectedToken.address, secondSelectedToken.address, val1);
+  const inputAmount = quote(secondSelectedToken.address, firstSelectedToken.address, val2);
   const [playSuccess] = useSound(successFx);
   const [playError] = useSound(errorFx);
   const displayToast = useCallback((msg: string, toastType: 'success' | 'info' | 'error') => {
@@ -189,7 +187,7 @@ export default function Swap() {
           break;
         }
       }
-      swapTx = await swapTx.wait();
+      await swapTx.wait();
 
       setIsSwapLoading(false);
       displayToast('transaction executed', 'success');
@@ -358,7 +356,7 @@ export default function Swap() {
                     <span className="text-[#d0d0d0] text-[0.75em] font-[400]">Slippage Tolerance: {slippageTolerance}%</span>
                     <div className="flex justify-between w-full items-center font-poppins gap-3">
                       <span className="text-white font-[300]">
-                        {inputAmount} {firstSelectedToken.symbol}
+                        {val1} {firstSelectedToken.symbol}
                       </span>
                       <AiOutlineSwap className="text-[#a6b2ec] font-[400] text-[1.9em]" />
                       <span className="text-white font-[300]">

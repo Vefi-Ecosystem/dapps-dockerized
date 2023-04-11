@@ -3,16 +3,12 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import assert from 'assert';
-import _, { multiply } from 'lodash';
+import { find, floor, includes, map, multiply, toString } from 'lodash';
 import { FaWallet } from 'react-icons/fa';
 import { FiSettings, FiPlus, FiChevronDown, FiArrowLeftCircle } from 'react-icons/fi';
-import { ToastContainer, toast } from 'react-toastify';
 import { TailSpin } from 'react-loader-spinner';
-import { Fetcher, Pair, WETH } from 'quasar-sdk-core';
-import { Contract } from '@ethersproject/contracts';
 import { AddressZero } from '@ethersproject/constants';
-import { Web3Provider } from '@ethersproject/providers';
-import { parseUnits } from '@ethersproject/units';
+import { parseEther, parseUnits } from '@ethersproject/units';
 import { abi as erc20Abi } from 'quasar-v1-core/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
 import { abi as routerAbi } from 'quasar-v1-periphery/artifacts/contracts/QuasarRouter.sol/QuasarRouter.json';
 import useSound from 'use-sound';
@@ -20,16 +16,19 @@ import { useAPIContext } from '../../contexts/api';
 import UserLPItem from '../../ui/Dex/PoolsListItem';
 import { useWeb3Context } from '../../contexts/web3';
 import { ListingModel } from '../../api/models/dex';
-import { computePair, fetchTokenBalanceForConnectedWallet, getLiquidityPositionsOfConnectedAccount, quote } from '../../hooks/dex';
+import { computePair, getLiquidityPositionsOfConnectedAccount, quote } from '../../hooks/dex';
 import SwapSettingsModal from '../../ui/Dex/SwapSettingsModal';
 import TokensListModal from '../../ui/Dex/TokensListModal';
 import { useDEXSettingsContext } from '../../contexts/dex/settings';
-import routers from '../../assets/routers.json';
-import { addToMetamask } from '../../utils';
 import successFx from '../../assets/sounds/success_sound.mp3';
 import errorFx from '../../assets/sounds/error_sound.mp3';
 import TradeCard from '../../ui/Dex/Card';
 import ProviderSelectModal from '../../ui/ProviderSelectModal';
+import { useEtherBalance, useTokenBalance } from '../../hooks/wallet';
+import routers from '../../assets/routers.json';
+import { useContract } from '../../hooks/global';
+import Toast from '../../ui/Toast';
+import { hexValue } from '@ethersproject/bytes';
 
 enum Route {
   ADD_LIQUIDITY = 'add_liquidity',
@@ -71,7 +70,7 @@ const LPRoute = () => {
                       </div>
                     ) : (
                       <div className="w-full px-2 py-2 flex flex-col justify-center items-center gap-3">
-                        {_.map(positions, (lp, index) => (
+                        {map(positions, (lp, index) => (
                           <UserLPItem pair={lp} key={index} />
                         ))}
                       </div>
@@ -126,119 +125,128 @@ const AddLiquidityRoute = () => {
   const [firstSelectedToken, setFirstSelectedToken] = useState<ListingModel>({} as ListingModel);
   const [secondSelectedToken, setSecondSelectedToken] = useState<ListingModel>({} as ListingModel);
 
-  const balance1 = fetchTokenBalanceForConnectedWallet(firstSelectedToken.address, [isLoading]);
-  const balance2 = fetchTokenBalanceForConnectedWallet(secondSelectedToken.address, [isLoading]);
+  const { balance: balance1 } =
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    firstSelectedToken.address === AddressZero ? useEtherBalance([isLoading]) : useTokenBalance(firstSelectedToken.address, [isLoading]);
+  const { balance: balance2 } =
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    secondSelectedToken.address === AddressZero ? useEtherBalance([isLoading]) : useTokenBalance(secondSelectedToken.address, [isLoading]);
+  const routerContract = useContract(routers, routerAbi, true);
+  const firstTokenContract = useContract(firstSelectedToken.address, erc20Abi, true);
+  const secondTokenContract = useContract(secondSelectedToken.address, erc20Abi, true);
 
-  const outputAmount1 = quote(firstSelectedToken.address, secondSelectedToken.address, val1, chainId || 97);
+  const outputAmount1 = quote(firstSelectedToken.address, secondSelectedToken.address, val1);
 
   const [playSuccess] = useSound(successFx);
   const [playError] = useSound(errorFx);
 
+  const [showToast, setShowToast] = useState<boolean>(false);
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
+  const [toastMessage, setToastMessage] = useState<string>('');
+
+  const displayToast = useCallback((msg: string, toastType: 'success' | 'info' | 'error') => {
+    setToastMessage(msg);
+    setToastType(toastType);
+    setShowToast(true);
+  }, []);
+
   const addLiquidity = useCallback(async () => {
     try {
       setIsLoading(true);
-      const firstIsZero = firstSelectedToken.address === AddressZero;
-      const secondIsZero = secondSelectedToken.address === AddressZero;
-      const t0 = firstIsZero ? WETH[(chainId as keyof typeof WETH) || 97] : await Fetcher.fetchTokenData(chainId || 97, firstSelectedToken.address);
-      const t1 = secondIsZero ? WETH[(chainId as keyof typeof WETH) || 97] : await Fetcher.fetchTokenData(chainId || 97, secondSelectedToken.address);
-      const router = routers[chainId as unknown as keyof typeof routers];
+      let amount1Hex = '0x0';
+      let amount2Hex = '0x0';
+      let liquidityTx;
 
-      assert.notDeepEqual(t0, t1, 'Identical tokens');
+      if (firstTokenContract && secondTokenContract) {
+        assert.notEqual(firstTokenContract.address, secondTokenContract.address, 'Identical tokens');
 
-      const value0 = parseUnits(val1.toString(), t0.decimals).toHexString();
-      const value1 = parseUnits(val2.toString(), t1.decimals).toHexString();
+        const firstDecimals = await firstTokenContract.decimals();
+        const secondDecimals = await secondTokenContract.decimals();
 
-      const provider = new Web3Provider(library?.givenProvider);
-      const token0Contract = new Contract(t0.address, erc20Abi, provider.getSigner());
-      const token1Contract = new Contract(t1.address, erc20Abi, provider.getSigner());
-      const routerContract = new Contract(router, routerAbi, provider.getSigner());
+        amount1Hex = parseUnits(toString(val1), firstDecimals).toHexString();
+        amount2Hex = parseUnits(toString(val2), secondDecimals).toHexString();
 
-      if (!firstIsZero) {
-        const approvalTx = await token0Contract.approve(router, value0);
-        await approvalTx.wait();
-        toast(`Router approved to spend ${val1} ${t0.symbol}`, { type: 'info' });
-      }
+        const firstApprovalTx = await firstTokenContract.approve(routerContract?.address, amount1Hex);
+        await firstApprovalTx.wait();
+        displayToast(`Router approved to spend ${val1} ${firstSelectedToken.symbol}`, 'info');
 
-      if (!secondIsZero) {
-        const approvalTx = await token1Contract.approve(router, value1);
-        await approvalTx.wait();
-        toast(`Router approved to spend ${val2} ${t1.symbol}`, { type: 'info' });
-      }
+        const secondApprovalTx = await secondTokenContract.approve(routerContract?.address, amount2Hex);
+        await secondApprovalTx.wait();
+        displayToast(`Router approved to spend ${val2} ${secondSelectedToken.symbol}`, 'info');
 
-      let liquidityTx: any;
+        const currentTime = floor(Date.now() / 1000);
 
-      if (firstIsZero || secondIsZero) {
-        const paths = firstIsZero ? [t0, t1] : [t1, t0];
-        const values = firstIsZero ? [value0, value1] : [value1, value0];
-        // Estimate gas first
-        const gas = await routerContract.estimateGas.addLiquidityETH(
-          paths[1].address,
-          values[1],
-          values[1],
-          values[0],
+        const gas = await routerContract?.estimateGas.addLiquidity(
+          firstTokenContract.address,
+          secondTokenContract.address,
+          amount1Hex,
+          amount2Hex,
+          amount1Hex,
+          amount2Hex,
           account,
-          `0x${Math.floor(Date.now() / 1000) + _.multiply(txDeadlineInMins, 60)}`,
-          { value: values[0], gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString() }
+          hexValue(currentTime + multiply(txDeadlineInMins, 60)),
+          { gasPrice: parseUnits(toString(gasPrice), 'gwei').toHexString() }
         );
-        liquidityTx = await routerContract.addLiquidityETH(
-          paths[1].address,
-          values[1],
-          values[1],
-          values[0],
+        liquidityTx = await routerContract?.addLiquidity(
+          firstTokenContract.address,
+          secondTokenContract.address,
+          amount1Hex,
+          amount2Hex,
+          amount1Hex,
+          amount2Hex,
           account,
-          `0x${Math.floor(Date.now() / 1000) + _.multiply(txDeadlineInMins, 60)}`,
-          { value: values[0], gasLimit: gas.toHexString(), gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString() }
+          hexValue(currentTime + multiply(txDeadlineInMins, 60)),
+          { gasPrice: parseUnits(toString(gasPrice), 'gwei').toHexString(), gasLimit: gas?.toHexString() }
         );
       } else {
-        const gas = await routerContract.estimateGas.addLiquidity(
-          firstSelectedToken.address,
-          secondSelectedToken.address,
-          value0,
-          value1,
-          value0,
-          value1,
+        const paths = firstTokenContract === null ? [AddressZero, secondTokenContract?.address] : [AddressZero, firstTokenContract.address];
+        let amount1 = '0x0';
+        let amount2 = '0x0';
+
+        if (firstTokenContract) {
+          const decimals = await firstTokenContract.decimals();
+          amount1 = parseUnits(toString(val1), decimals).toHexString();
+        } else {
+          amount1 = parseEther(toString(val1)).toHexString();
+        }
+
+        if (secondTokenContract) {
+          const decimals = await secondTokenContract.decimals();
+          amount2 = parseUnits(toString(val2), decimals).toHexString();
+        } else {
+          amount2 = parseEther(toString(val2)).toHexString();
+        }
+        const currentTime = floor(Date.now() / 1000);
+
+        const gas = await routerContract?.estimateGas.addLiquidityETH(
+          paths[1],
+          amount2,
+          amount2,
+          amount1,
           account,
-          `0x${Math.floor(Date.now() / 1000) + _.multiply(txDeadlineInMins, 60)}`,
-          { gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString() }
+          hexValue(currentTime + multiply(txDeadlineInMins, 60)),
+          { value: amount1, gasPrice: parseUnits(toString(gasPrice), 'gwei').toHexString() }
         );
-        liquidityTx = await routerContract.addLiquidity(
-          firstSelectedToken.address,
-          secondSelectedToken.address,
-          value0,
-          value1,
-          value0,
-          value1,
+        liquidityTx = await routerContract?.addLiquidityETH(
+          paths[1],
+          amount2,
+          amount2,
+          amount1,
           account,
-          `0x${Math.floor(Date.now() / 1000) + _.multiply(txDeadlineInMins, 60)}`,
-          { gasPrice: parseUnits(gasPrice.toString(), 'gwei').toHexString(), gasLimit: gas.toHexString() }
+          hexValue(currentTime + multiply(txDeadlineInMins, 60)),
+          { value: amount1, gasLimit: gas?.toHexString(), gasPrice: parseUnits(toString(gasPrice), 'gwei').toHexString() }
         );
       }
 
       await liquidityTx.wait();
       setIsLoading(false);
-
-      const pair = Pair.getAddress(t0, t1);
+      displayToast('liquidity created successfully', 'success');
 
       if (playSounds) playSuccess();
-
-      toast(
-        <div className="flex justify-between items-center w-full gap-2">
-          <span className="text-white font-poppins text-[16px]">Liquidity added successfully!</span>
-          <button
-            onClick={() => {
-              addToMetamask(pair, 'Quasar-LP', 18);
-            }}
-            className="btn btn-primary"
-          >
-            Add LP Token
-          </button>
-        </div>,
-        { type: 'success' }
-      );
     } catch (error: any) {
       setIsLoading(false);
       if (playSounds) playError();
-      toast(error.message, { type: 'error' });
+      displayToast('an error occurred', 'error');
     }
   }, [
     account,
@@ -271,7 +279,7 @@ const AddLiquidityRoute = () => {
       if (query.inputToken)
         if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.inputToken as string).toLowerCase())) {
           setFirstSelectedToken(
-            _.find(tokensListing, (model) => model.address.toLowerCase() === (query.inputToken as string).toLowerCase()) as ListingModel
+            find(tokensListing, (model) => model.address.toLowerCase() === (query.inputToken as string).toLowerCase()) as ListingModel
           );
         } else setFirstSelectedToken(tokensListing[0]);
       else setFirstSelectedToken(tokensListing[0]);
@@ -279,7 +287,7 @@ const AddLiquidityRoute = () => {
       if (query.outputToken)
         if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.outputToken as string).toLowerCase())) {
           setSecondSelectedToken(
-            _.find(tokensListing, (model) => model.address.toLowerCase() === (query.outputToken as string).toLowerCase()) as ListingModel
+            find(tokensListing, (model) => model.address.toLowerCase() === (query.outputToken as string).toLowerCase()) as ListingModel
           );
         } else setSecondSelectedToken(tokensListing[1]);
       else setSecondSelectedToken(tokensListing[1]);
@@ -339,25 +347,25 @@ const AddLiquidityRoute = () => {
                   </div>
                   <div className="flex justify-end items-center w-full gap-1">
                     <button
-                      onClick={() => setVal1(multiply(1 / 4, parseFloat(balance1)))}
+                      onClick={() => setVal1(multiply(1 / 4, balance1))}
                       className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
                     >
                       25%
                     </button>
                     <button
-                      onClick={() => setVal1(multiply(2 / 4, parseFloat(balance1)))}
+                      onClick={() => setVal1(multiply(2 / 4, balance1))}
                       className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
                     >
                       50%
                     </button>
                     <button
-                      onClick={() => setVal1(multiply(3 / 4, parseFloat(balance1)))}
+                      onClick={() => setVal1(multiply(3 / 4, balance1))}
                       className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
                     >
                       75%
                     </button>
                     <button
-                      onClick={() => setVal1(parseFloat(balance1))}
+                      onClick={() => setVal1(balance1)}
                       className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
                     >
                       100%
@@ -404,11 +412,7 @@ const AddLiquidityRoute = () => {
                   className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                 >
                   <span className="font-Syne">
-                    {!active
-                      ? 'Wallet not connected'
-                      : val1 > parseFloat(balance1)
-                      ? `Insufficient ${firstSelectedToken.symbol} balance`
-                      : 'Add Liquidity'}
+                    {!active ? 'Wallet not connected' : val1 > balance1 ? `Insufficient ${firstSelectedToken.symbol} balance` : 'Add Liquidity'}
                   </span>
                   <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
                 </button>
@@ -416,7 +420,7 @@ const AddLiquidityRoute = () => {
             </div>
           </TradeCard>
         </div>
-        <ToastContainer position="top-right" theme="dark" autoClose={5000} />
+        <Toast message={toastMessage} toastType={toastType} duration={10} onHide={() => setShowToast(false)} show={showToast} />
         <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
         <TokensListModal
           isVisible={isFirstTokensListModalVisible}
@@ -446,7 +450,7 @@ const FindOtherLPRoute = () => {
 
   const { tokensListing, importPool, importedPools } = useAPIContext();
   const { chainId } = useWeb3Context();
-  const { pair, error: pairError } = computePair(firstSelectedToken, secondSelectedToken, chainId || 97);
+  const { pair, error: pairError } = computePair(firstSelectedToken, secondSelectedToken);
 
   const addToPools = useCallback(() => {
     setIsImportLoading(true);
@@ -516,7 +520,7 @@ const FindOtherLPRoute = () => {
                   <span className="text-[red]/50">{pairError.message}</span>
                 ) : (
                   <button
-                    disabled={isImportLoading || _.includes(importedPools[chainId as number], pair)}
+                    disabled={isImportLoading || includes(importedPools[chainId as number], pair)}
                     onClick={addToPools}
                     className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                   >

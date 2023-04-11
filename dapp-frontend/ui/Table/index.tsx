@@ -9,7 +9,7 @@ export const THead = ({ children }: any) => (
 export const TRow = ({ children }: any) => <div className="table-row border-b border-[#353535] w-full">{children}</div>;
 
 export const TCell = ({ children, className }: HTMLAttributes<HTMLDivElement>) => (
-  <div className={'table-cell '.concat(className as string)}>{children}</div>
+  <div className={'table-cell text-[0.75em] lg:text-[1em] '.concat(className as string)}>{children}</div>
 );
 
 export const TBody = ({ children }: any) => <div className="table-row-group w-full">{children}</div>;
