@@ -392,7 +392,7 @@ const TransactionsList = ({ token }: { token: string }) => {
                   <TCell className="text-center py-2 font-[400]">
                     <div className="flex justify-center items-center flex-col gap-1">
                       <span className="text-[#fff] font-Poppins text-[0.85em]">
-                        {txn.type !== 'swap' ? millify(parseFloat(txn.amount0)) : millify(parseFloat(txn.amount0In))}
+                        {txn.type !== 'swap' ? millify(parseFloat(txn.amount1)) : millify(parseFloat(txn.amount1Out))}
                       </span>
                       <span className="text-[#aaaaaa] font-Syne text-[0.85em] uppercase">{txn.pair.token1.symbol}</span>
                     </div>
