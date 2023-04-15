@@ -423,14 +423,14 @@ const omax = [
 const astar = [];
 const telos = [
   {
-    address: '0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E',
-    symbol: 'WTLOS',
-    name: 'Wrapped TLOS',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'TLOS',
+    name: 'Telos',
     logoURI: 'https://raw.githubusercontent.com/telosnetwork/images/master/logos_2021/Symbol%202.svg',
     decimals: 18
   },
   {
-    address: '0xaE85Bf723A9e74d6c663dd226996AC1b8d075AA9',
+    address: '0x61F2ddAa57B328feE381D13D2E0E91C604a43fF7',
     symbol: 'WTLOS',
     name: 'Wrapped TLOS',
     logoURI: 'https://raw.githubusercontent.com/telosnetwork/images/master/logos_2021/Symbol%202.svg',

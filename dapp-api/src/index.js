@@ -8,7 +8,7 @@ router.get('/dex/listing/:chainId', (req, res) => {
   try {
     const { params } = req;
     const chainId = parseInt(params.chainId);
-    const result = dexListing[chainId];
+    const result = dexListing[chainId].sort((obj) => obj.name);
     return res.status(200).json({ result });
   } catch (error) {
     return res.status(500).json({ error: error.message });
