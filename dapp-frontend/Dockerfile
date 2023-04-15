@@ -1,5 +1,6 @@
 FROM node:16-alpine
 WORKDIR /app
+COPY .env.local /
 COPY ui /ui/
 COPY api /api/
 COPY assets /assets/
