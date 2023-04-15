@@ -61,5 +61,12 @@
     "explorer": "https://polygonscan.com",
     "logoURI": "/images/polygon.webp",
     "symbol": "MATIC"
+  },
+  "40": {
+    "name": "Telos EVM",
+    "rpcUrl": "https://rpc1.eu.telos.net/evm",
+    "explorer": "https://telos.blocksscan.io",
+    "logoURI": "/images/telos.webp",
+    "symbol": "TLOS"
   }
 }

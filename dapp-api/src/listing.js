@@ -421,7 +421,282 @@ const omax = [
 ];
 
 const astar = [];
-const telos = [];
+const telos = [
+  {
+    address: '0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E',
+    symbol: 'WTLOS',
+    name: 'Wrapped TLOS',
+    logoURI: 'https://raw.githubusercontent.com/telosnetwork/images/master/logos_2021/Symbol%202.svg',
+    decimals: 18
+  },
+  {
+    address: '0xaE85Bf723A9e74d6c663dd226996AC1b8d075AA9',
+    symbol: 'WTLOS',
+    name: 'Wrapped TLOS',
+    logoURI: 'https://raw.githubusercontent.com/telosnetwork/images/master/logos_2021/Symbol%202.svg',
+    decimals: 18
+  },
+  {
+    address: '0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905',
+    symbol: 'STLOS',
+    name: 'Staked TLOS',
+    logoURI: 'https://raw.githubusercontent.com/telosnetwork/teloscan/master/public/stlos-logo.png',
+    decimals: 18
+  },
+  {
+    address: '0xa9991E4daA44922D00a78B6D986cDf628d46C4DD',
+    symbol: 'STLOS',
+    name: 'Staked TLOS',
+    logoURI: 'https://raw.githubusercontent.com/telosnetwork/teloscan/master/public/stlos-logo.png',
+    decimals: 18
+  },
+  {
+    address: '0xf390830df829cf22c53c8840554b98eafc5dcbc2',
+    symbol: 'WBTC',
+    name: 'Wrapped Bitcoin',
+    logoURI: 'https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png',
+    decimals: 8
+  },
+  {
+    address: '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
+    symbol: 'ETH',
+    name: 'Ethereum',
+    logoURI: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    decimals: 18
+  },
+  {
+    address: '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b',
+    symbol: 'USDC',
+    name: 'USD Coin',
+    decimals: 6,
+    logoURI: 'ipfs://QmXfzKRvjZz3u5JRgC4v5mGVbm9ahrUiB4DgzHBsnWbTMM'
+  },
+  {
+    address: '0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73',
+    symbol: 'USDT',
+    name: 'Tether Stable Coin',
+    logoURI: 'https://raw.githubusercontent.com/elkfinance/tokens/main/logos/avax/0xc7198437980c041c805A1EDcbA50c1Ce5db95118/logo.png',
+    decimals: 6
+  },
+  {
+    address: '0x7c598c96d02398d89fbcb9d41eab3df0c16f227d',
+    symbol: 'AVAX',
+    name: 'Avalanche',
+    logoURI: 'https://raw.githubusercontent.com/elkfinance/tokens/main/logos/avax/0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7/logo.png',
+    decimals: 18
+  },
+  {
+    address: '0x2c78f1b70ccf63cdee49f9233e9faa99d43aa07e',
+    symbol: 'BNB',
+    name: 'Binance Coin',
+    logoURI: 'https://raw.githubusercontent.com/elkfinance/tokens/main/logos/ftm/0xD67de0e0a0Fd7b15dC8348Bb9BE742F3c5850454/logo.png',
+    decimals: 18
+  },
+  {
+    address: '0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4',
+    symbol: 'FTM',
+    name: 'Fantom',
+    logoURI: 'https://raw.githubusercontent.com/elkfinance/tokens/main/logos/ftm/0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83/logo.png',
+    decimals: 18
+  },
+  {
+    address: '0x332730a4f6e03d9c55829435f10360e13cfa41ff',
+    symbol: 'MATIC',
+    name: 'Polygon',
+    logoURI: 'https://raw.githubusercontent.com/elkfinance/tokens/main/logos/avax/0x885ca6663E1E19DAD31c1e08D9958a2b8F538D53/logo.png',
+    decimals: 18
+  },
+  {
+    address: '0x922d641a426dcffaef11680e5358f34d97d112e1',
+    symbol: 'SUSHI',
+    name: 'Sushi',
+    logoURI: 'https://cryptologos.cc/logos/sushiswap-sushi-logo.png',
+    decimals: 18
+  },
+  {
+    address: '0x9A271E3748F59222f5581BaE2540dAa5806b3F77',
+    symbol: 'ZAP',
+    name: 'Zappy',
+    logoURI: 'https://raw.githubusercontent.com/zappy-finance/zappy-tokenlists/main/logos/0x9A271E3748F59222f5581BaE2540dAa5806b3F77/logo.png',
+    decimals: 18
+  },
+  {
+    address: '0xd2504a02fABd7E546e41aD39597c377cA8B0E1Df',
+    symbol: 'CHARM',
+    name: 'Omnidex',
+    logoURI: 'https://gateway.pinata.cloud/ipfs/QmUEJGwPMGBV154hcV8kp65a9TDM6XHJHTz5EFdfW3nDiq',
+    decimals: 18
+  },
+  {
+    address: '0x730d2Fa7dC7642E041bcE231E85b39e9bF4a6a64',
+    symbol: 'KARMA',
+    name: 'Charm Dojo',
+    logoURI: 'https://omnidex.finance/images/tokens/0x730d2Fa7dC7642E041bcE231E85b39e9bF4a6a64.svg',
+    decimals: 18
+  },
+  {
+    address: '0xc6BC7A8dfA0f57Fe7746Ac434c01cD39679b372c',
+    logoURI: 'https://raw.githubusercontent.com/elkfinance/tokens/main/logos/telos/0xc6BC7A8dfA0f57Fe7746Ac434c01cD39679b372c/logo.png',
+    symbol: 'DOUGE',
+    name: 'DougeCoin',
+    decimals: 18
+  },
+  {
+    address: '0xcCf69d549a25d90938B3EEA0D7A2d112c971071B',
+    symbol: 'TM',
+    logoURI: 'https://raw.githubusercontent.com/telosnetwork/images/master/logos_2021/TelosMemeLogo.png',
+    name: 'TM Coin',
+    decimals: 18
+  },
+  {
+    address: '0x6439DA210988b1fD8DAC8b31CD000a7087416824',
+    symbol: 'BEVIL',
+    logoURI: 'https://raw.githubusercontent.com/telosnetwork/images/master/logos_2021/BabyEvilsLogo.png',
+    name: 'BabyEvils',
+    decimals: 18
+  },
+  {
+    address: '0x1aCA60694d12A99fa5DdD1C78493b6eFd7416601',
+    symbol: 'ARIS',
+    logoURI: 'https://i.imgur.com/iYmGhdu.png',
+    name: 'Aristotle',
+    decimals: 9
+  },
+  {
+    address: '0x5C8F2334BD0e7B76e15a7869E31c1F1A654a2B62',
+    symbol: 'DOG',
+    logoURI: 'https://gateway.ipfs.io/ipfs/QmerrZ47zBxoQqkr4gfY53wvoAUqn3JXs6R6VCfE4s9nkK',
+    name: 'Glue Dog',
+    decimals: 18
+  },
+  {
+    address: '0x470Bb4C2499726DC7329A7874E82b9b3578eA891',
+    symbol: 'USDOG',
+    logoURI: 'https://glue.dog/wp-content/uploads/2022/02/stabledog-768x630.png',
+    name: 'Stabledog',
+    decimals: 18
+  },
+  {
+    address: '0xE5dE07ec385B1BD55f6bB02c01860547be9D7C0B',
+    symbol: 'PIG',
+    logoURI: 'https://gateway.ipfs.io/ipfs/QmPThPaz3kjWaLjDAZKP8frpzaVm5Rvi5wCcUbag8QhgRL',
+    name: 'Big Pig',
+    decimals: 18
+  },
+  {
+    address: '0x8b377acebccf930fec65e9ccb693bdb1be3fd3c0',
+    symbol: 'PLOU',
+    logoURI: 'https://raw.githubusercontent.com/Geilogandet/token-list/cf290bf5297be0842ada7ad10f7f70bbaf718c05/Ploutus.png',
+    name: 'Ploutus',
+    decimals: 18
+  },
+  {
+    address: '0x2f15F85a6c346C0a2514Af70075259e503E7137B',
+    symbol: 'DMMY',
+    logoURI: 'https://omnidex.finance/images/tokens/0x2f15F85a6c346C0a2514Af70075259e503E7137B.svg',
+    name: 'dummy☻DAO',
+    decimals: 18
+  },
+  {
+    address: '0xEC0a873cdBE667E5bD68AF47932c948f872032d6',
+    symbol: 'GATe',
+    logoURI: 'https://gat.network/gat-logo-200x200.png',
+    name: 'Game Ace Token Extended',
+    decimals: 18
+  },
+  {
+    address: '0x11fbfdf906d32753fa2a083dbd4fb25c1094c6c4',
+    symbol: 'APISH',
+    logoURI: 'https://apish.me/images/token.png',
+    name: 'APISH ME',
+    decimals: 9
+  },
+  {
+    address: '0xa5E5cf79494643d509A076e3895547086f47a6F1',
+    symbol: 'TSQRL',
+    logoURI: 'https://3hlzh7.dstor.cloud/ipfs/QmbL7uYYp7sZ6URYua1RdWw6MPLR7jnZisMfLbPEhuurKw?filename=TSQRL.png',
+    name: 'T-Squirrel',
+    decimals: 18
+  },
+  {
+    address: '0xE1C110E1B1b4A1deD0cAf3E42BfBdbB7b5d7cE1C',
+    symbol: 'ELK',
+    logoURI: 'https://raw.githubusercontent.com/elkfinance/tokens/main/logos/telos/0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE/logo.png',
+    name: 'ELK',
+    decimals: 18
+  },
+  {
+    address: '0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE',
+    symbol: 'ELK',
+    logoURI: 'https://raw.githubusercontent.com/elkfinance/tokens/main/logos/telos/0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE/logo.png',
+    name: 'ELK',
+    decimals: 18
+  },
+  {
+    address: '0xCC47EB13916a76e262b0EE48A71e3c7953091e7a',
+    symbol: 'SWAP',
+    logoURI: 'https://raw.githubusercontent.com/evm20/tokens/main/swaptoken.svg',
+    name: 'SWAP',
+    decimals: 18
+  },
+  {
+    address: '0x667fd83e24ca1d935d36717d305d54fa0cac991c',
+    symbol: 'BANANA',
+    logoURI: 'https://raw.githubusercontent.com/ApeSwapFinance/apeswap-token-lists/main/assets/BANANA.svg',
+    name: 'ApeSwap Finance Banana',
+    decimals: 18
+  },
+  {
+    address: '0x72397e7A188EFA8e9BbBa5cBEb4a4bC92752A59a',
+    symbol: 'Y365',
+    logoURI: 'https://365year.net/images/logo.png',
+    name: 'Year 365',
+    decimals: 18
+  },
+  {
+    address: '0xa84df7aFbcbCC1106834a5feD9453bd1219B1fb5',
+    symbol: 'Arc',
+    name: 'Archly Arc',
+    logoURI: 'https://archly.fi/tokens/arc-logo.png',
+    decimals: 18
+  },
+  {
+    address: '0x34f94EaDBba78C784431a331EC683ce2efb9F838',
+    symbol: 'X365',
+    logoURI: 'https://365year.net/images/logoX.png',
+    name: 'X365',
+    decimals: 18
+  },
+  {
+    address: '0xE56c325a68b489812081E8A7b60b4017fd2AD280',
+    symbol: 'PE',
+    name: 'Positron',
+    logoURI: 'https://raw.githubusercontent.com/OmniDexFinance/tokenLogo/master/0xE56c325a68b489812081E8A7b60b4017fd2AD280.png',
+    decimals: 4
+  },
+  {
+    address: '0x7e1cfe10949A6086A28C38aA4A43fDeAB34f198A',
+    symbol: 'DECO',
+    name: 'Destiny Coin',
+    logoURI: 'https://api.dstor.cloud/ipfs/QmVx1uSPTW7UQWGbz3ba5Nf7DPVyieEdRnQGHogo7t9Pw6',
+    decimals: 4
+  },
+  {
+    address: '0x173fd7434b8b50df08e3298f173487ebdb35fd14',
+    symbol: 'POPS',
+    name: 'Swapsicle POPS',
+    logoURI:
+      'https://raw.githubusercontent.com/swapsicledex/swapsicle-token-list/master/logos/telos/0x173fd7434B8B50dF08e3298f173487ebDB35FD14/logo.svg',
+    decimals: 18
+  },
+  {
+    address: '0x14e374CEF17d800109710aa2c2D73e50db76d367',
+    symbol: 'sPOPS',
+    name: 'POPSBar',
+    logoURI: 'https://raw.githubusercontent.com/swapsicledex/swapsicle-token-list/master/other/Swapsicle-logo.png',
+    decimals: 18
+  }
+];
 
 const gatechain = [
   {
@@ -2545,5 +2820,6 @@ module.exports = {
   137: matic,
   1: ethereum,
   86: gatechain,
-  97: smartChainTestnet
+  97: smartChainTestnet,
+  40: telos
 };
