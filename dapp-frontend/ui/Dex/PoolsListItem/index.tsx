@@ -24,7 +24,7 @@ export default function UserLPItem({ pair }: any) {
             </div>
             <div className="avatar">
               <div className="w-7 rounded-full">
-                <img src={tokensListingAsDictionary[pair.pair.token1.id].logoURI ?? '/images/placeholder_image.svg'} alt={pair.pair.token1.symbol} />
+                <img src={tokensListingAsDictionary[pair.pair.token1.id]?.logoURI ?? '/images/placeholder_image.svg'} alt={pair.pair.token1.symbol} />
               </div>
             </div>
           </div>
@@ -42,11 +42,7 @@ export default function UserLPItem({ pair }: any) {
                 <div className="avatar">
                   <div className="w-5 rounded-full">
                     <img
-                      src={
-                        tokensListingAsDictionary[pair.pair.token0.id]
-                          ? tokensListingAsDictionary[pair.pair.token0.id].logoURI
-                          : '/images/placeholder_image.svg'
-                      }
+                      src={tokensListingAsDictionary[pair.pair.token0.id]?.logoURI ?? '/images/placeholder_image.svg'}
                       alt={pair.pair.token0.symbol}
                     />
                   </div>
@@ -62,11 +58,7 @@ export default function UserLPItem({ pair }: any) {
                 <div className="avatar">
                   <div className="w-5 rounded-full">
                     <img
-                      src={
-                        tokensListingAsDictionary[pair.pair.token1.id]
-                          ? tokensListingAsDictionary[pair.pair.token1.id].logoURI
-                          : '/images/placeholder_image.svg'
-                      }
+                      src={tokensListingAsDictionary[pair.pair.token1.id]?.logoURI ?? '/images/placeholder_image.svg'}
                       alt={pair.pair.token1.symbol}
                     />
                   </div>
