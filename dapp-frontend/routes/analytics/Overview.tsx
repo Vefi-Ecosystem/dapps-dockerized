@@ -984,7 +984,7 @@ export default function Overview() {
         <div className="flex flex-col lg:flex-row justify-center items-center gap-4 p-4 overflow-auto hidden-scrollbar w-full">
           <div className="flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 w-full lg:w-1/4">
             <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">highest trade volume (24h)</span>
-            {highestVolumeFetchError ? (
+            {highestVolumeFetchError || !highestVolumeData ? (
               <>
                 <div className="avatar">
                   <div className="w-8 rounded-full">
@@ -1020,7 +1020,7 @@ export default function Overview() {
           </div>
           <div className="flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 w-full lg:w-1/4">
             <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">most traded token (24h)</span>
-            {highestTransactionFetchError ? (
+            {highestTransactionFetchError || !highestTransactionData ? (
               <>
                 <div className="avatar">
                   <div className="w-8 rounded-full">
@@ -1056,7 +1056,7 @@ export default function Overview() {
           </div>
           <div className="flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 w-full lg:w-1/4">
             <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">top pair</span>
-            {topPairFetchError ? (
+            {topPairFetchError || !topPairData ? (
               <>
                 <div className="avatar">
                   <div className="w-8 rounded-full">
@@ -1102,7 +1102,7 @@ export default function Overview() {
           </div>
           <div className="flex-col flex justify-center items-center gap-4 border border-[#5d5d5d] rounded-[10px] px-3 py-3 w-full lg:w-1/4">
             <span className="font-Syne font-[400] text-[#fff]/50 text-[0.87em] capitalize">most popular token</span>
-            {mostPopularTokenFetchError ? (
+            {mostPopularTokenFetchError || !mostPopularTokenData ? (
               <>
                 <div className="avatar">
                   <div className="w-8 rounded-full">

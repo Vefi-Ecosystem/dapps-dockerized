@@ -174,7 +174,7 @@ export default function Index() {
             supported chains
           </span>
           <div className="flex justify-center items-center w-full px-1 lg:px-5">
-            <div className="carousel carousel-center px-4 lg:px-8 space-x-3 rounded-box lg:justify-center lg:items-center">
+            <div className="carousel carousel-center px-4 lg:px-8 space-x-3 rounded-box">
               {map(Object.values(chains), (chain, index) => (
                 <div key={index} className="carousel-item flex justify-center gap-2 text-white text-[1em] items-center font-Poppins lg:w-1/5">
                   <div className="avatar">
