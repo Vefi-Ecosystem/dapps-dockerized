@@ -872,7 +872,7 @@ export const useAllMints = (page: number, order: 'desc' | 'asc' = 'desc') => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(FETCH_ALL_MINTS_QUERY, { skip: page * 10, order });
+        const req: any = await dexGQLClient?.request(FETCH_ALL_MINTS_QUERY, { skip: page * 10, order });
         setData(req.mints);
         setIsLoading(false);
       } catch (error: any) {
@@ -894,7 +894,7 @@ export const useAllSwaps = (page: number, order: 'desc' | 'asc' = 'desc') => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(FETCH_ALL_SWAPS_QUERY, { skip: page * 10, order });
+        const req: any = await dexGQLClient?.request(FETCH_ALL_SWAPS_QUERY, { skip: page * 10, order });
         setData(req.swaps);
         setIsLoading(false);
       } catch (error: any) {
@@ -916,7 +916,7 @@ export const useAllBurns = (page: number, order: 'desc' | 'asc' = 'desc') => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(FETCH_ALL_BURNS_QUERY, { skip: page * 10, order });
+        const req: any = await dexGQLClient?.request(FETCH_ALL_BURNS_QUERY, { skip: page * 10, order });
         setData(req.burns);
         setIsLoading(false);
       } catch (error: any) {
@@ -939,7 +939,7 @@ export const useSingleTokenQuery = (id: string) => {
       (async () => {
         try {
           setIsLoading(true);
-          const req = await dexGQLClient?.request(SINGLE_TOKEN_QUERY, { id: id.toLowerCase() });
+          const req: any = await dexGQLClient?.request(SINGLE_TOKEN_QUERY, { id: id.toLowerCase() });
           setData({
             ...req.token,
             txCount: parseInt(req.token.txCount),
@@ -969,7 +969,7 @@ export const useSinglePairQuery = (id: string) => {
       (async () => {
         try {
           setIsLoading(true);
-          const req = await dexGQLClient?.request(SINGLE_PAIR_QUERY, { id: id.toLowerCase() });
+          const req: any = await dexGQLClient?.request(SINGLE_PAIR_QUERY, { id: id.toLowerCase() });
           setData({
             ...req.pair,
             txCount: parseInt(req.pair.txCount),

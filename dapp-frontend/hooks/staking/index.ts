@@ -210,7 +210,7 @@ export const useAllPools = (page: number) => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await poolsGQLClient?.request(ALL_POOLS_QUERY, { skip: page * 10 });
+        const req: any = await poolsGQLClient?.request(ALL_POOLS_QUERY, { skip: page * 10 });
         setData(req.stakingPools);
         setIsLoading(false);
       } catch (error: any) {
@@ -234,7 +234,7 @@ export const useAvailablePools = (page: number) => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await poolsGQLClient?.request(AVAILABLE_POOLS_QUERY, { skip: page * 10 });
+        const req: any = await poolsGQLClient?.request(AVAILABLE_POOLS_QUERY, { skip: page * 10 });
         setData(req.stakingPools);
         setIsLoading(false);
       } catch (error: any) {
@@ -258,7 +258,7 @@ export const useSoldoutPools = (page: number) => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await poolsGQLClient?.request(SOLD_OUT_POOLS_QUERY, { skip: page * 10 });
+        const req: any = await poolsGQLClient?.request(SOLD_OUT_POOLS_QUERY, { skip: page * 10 });
         setData(req.stakingPools);
         setIsLoading(false);
       } catch (error: any) {
@@ -284,7 +284,7 @@ export const useAllAccountPools = (page: number) => {
       (async () => {
         try {
           setIsLoading(true);
-          const req = await poolsGQLClient?.request(ACCOUNT_POOLS_QUERY, { skip: page * 10, account });
+          const req: any = await poolsGQLClient?.request(ACCOUNT_POOLS_QUERY, { skip: page * 10, account });
           setData(req.stakingPools);
           setIsLoading(false);
         } catch (error: any) {
@@ -306,7 +306,7 @@ export const useStakingPoolFactoriesStats = () => {
   useEffect(() => {
     (async () => {
       try {
-        const req = await poolsGQLClient?.request(STATS_QUERY);
+        const req: any = await poolsGQLClient?.request(STATS_QUERY);
         setData(head(req.stakingPoolFactories));
       } catch (error: any) {
         console.error(error);
@@ -326,7 +326,7 @@ export const useSingleStakingPool = (id: string) => {
       (async () => {
         try {
           setIsLoading(true);
-          const req = await poolsGQLClient?.request(SINGLE_STAKING_POOL_QUERY, { id });
+          const req: any = await poolsGQLClient?.request(SINGLE_STAKING_POOL_QUERY, { id });
           setData(req.stakingPool);
           setIsLoading(false);
         } catch (error: any) {
@@ -350,7 +350,7 @@ export const useAccountStakes = () => {
       (async () => {
         try {
           setIsLoading(true);
-          const req = await poolsGQLClient?.request(ACCOUNT_STAKES_QUERY, { account });
+          const req: any = await poolsGQLClient?.request(ACCOUNT_STAKES_QUERY, { account });
           setData(req.stakes);
           setIsLoading(false);
         } catch (error: any) {
@@ -374,7 +374,7 @@ export const useSingleStake = (id: string) => {
       (async () => {
         try {
           setIsLoading(true);
-          const req = await poolsGQLClient?.request(SINGLE_STAKE_QUERY, { id });
+          const req: any = await poolsGQLClient?.request(SINGLE_STAKE_QUERY, { id });
           setData(req.stake);
           setIsLoading(false);
         } catch (error: any) {

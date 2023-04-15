@@ -156,7 +156,7 @@ export const useSinglePair = (id: string) => {
       (async () => {
         try {
           setIsLoading(true);
-          const req = await dexGQLClient?.request(SINGLE_PAIR_QUERY, { id });
+          const req: any = await dexGQLClient?.request(SINGLE_PAIR_QUERY, { id });
           setData(req.pair);
           setIsLoading(false);
         } catch (error: any) {
@@ -181,7 +181,7 @@ export const getLiquidityPositionsOfConnectedAccount = () => {
         try {
           setIsLoading(true);
           const url = currentChain.rpcUrl;
-          const { pairs } = await dexGQLClient.request(ALL_PAIRS_QUERY);
+          const { pairs } = (await dexGQLClient.request(ALL_PAIRS_QUERY)) as any;
           let p: any[] = [];
 
           for (const pair of pairs) {
