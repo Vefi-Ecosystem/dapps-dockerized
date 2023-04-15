@@ -12,7 +12,7 @@ interface ListingModel {
 }
 
 const apiRoot = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_DAPPS_API || 'http://api:5340/api'
+  baseURL: process.env.NEXT_PUBLIC_DAPPS_API || '/api/'
 });
 
 const IMPORTED_TOKENS_KEY = 'imported_tokens';
