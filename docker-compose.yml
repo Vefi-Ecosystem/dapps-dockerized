@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 17000:80
+      - 7889:80
     depends_on:
       - api
       - client
