@@ -17,6 +17,6 @@ COPY web3 /web3/
 COPY *.js /
 COPY *.json /
 RUN npm install --legacy-peer-deps
-RUN npm run build
+RUN yarn build
 EXPOSE 55334
 ENTRYPOINT yarn start -p 55334
