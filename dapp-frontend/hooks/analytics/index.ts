@@ -695,7 +695,7 @@ export const useTopPairs = (page: number) => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(TOP_PAIRS_QUERY, { skip: page * 10 });
+        const req: any = await dexGQLClient?.request(TOP_PAIRS_QUERY, { skip: page * 10 });
         setData(req.pairs);
         setIsLoading(false);
       } catch (error: any) {
@@ -723,7 +723,7 @@ export const useQuasarFactoriesStats = () => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(QUASAR_FACTORIES_STATS_QUERY);
+        const req: any = await dexGQLClient?.request(QUASAR_FACTORIES_STATS_QUERY);
         const d = head(req.quasarFactories) as any;
         setData({
           pairCount: d.pairCount,
@@ -752,7 +752,7 @@ export const useTopTokens = (page: number, orderDir: 'desc' | 'asc' = 'desc') =>
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(TOP_TOKENS_QUERY, { skip: page * 10, orderDir });
+        const req: any = await dexGQLClient?.request(TOP_TOKENS_QUERY, { skip: page * 10, orderDir });
         setData(req.tokens);
         setIsLoading(false);
       } catch (error: any) {
@@ -775,7 +775,7 @@ export const useOverviewChartData = (gap: number) => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(OVERVIEW_CHART_DATA, { date: Math.floor(Date.now() / 1000) - gap });
+        const req: any = await dexGQLClient?.request(OVERVIEW_CHART_DATA, { date: Math.floor(Date.now() / 1000) - gap });
         setData(req.quasarDayDatas);
         setIsLoading(false);
       } catch (error: any) {
@@ -798,7 +798,7 @@ export const useSingleTokenChartData = (gap: number, token: string) => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(SINGLE_TOKEN_CHART_DATA_QUERY, {
+        const req: any = await dexGQLClient?.request(SINGLE_TOKEN_CHART_DATA_QUERY, {
           date: Math.floor(Date.now() / 1000) - gap,
           token: token.toLowerCase()
         });
@@ -824,7 +824,7 @@ export const useSinglePairChartData = (gap: number, id: string) => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(SINGLE_PAIR_CHART_DATA_QUERY, {
+        const req: any = await dexGQLClient?.request(SINGLE_PAIR_CHART_DATA_QUERY, {
           date: Math.floor(Date.now() / 1000) - gap,
           id: id.toLowerCase()
         });
@@ -850,7 +850,7 @@ export const useAllTransactions = (page: number, order: 'desc' | 'asc' = 'desc')
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(FETCH_ALL_TRANSACTIONS_QUERY, { skip: page * 10, order });
+        const req: any = await dexGQLClient?.request(FETCH_ALL_TRANSACTIONS_QUERY, { skip: page * 10, order });
         setData(req.transactions);
         setIsLoading(false);
       } catch (error: any) {
