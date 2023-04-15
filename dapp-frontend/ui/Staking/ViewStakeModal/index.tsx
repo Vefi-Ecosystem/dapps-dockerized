@@ -9,9 +9,9 @@ import { TailSpin } from 'react-loader-spinner';
 import { abi as stakingPoolABI } from 'vefi-token-launchpad-staking/artifacts/contracts/StakingPool.sol/StakingPool.json';
 import { useContract } from '../../../hooks/global';
 import { useNextWithdrawalTime, useSingleStake, useSingleStakingPool, useStakeReward } from '../../../hooks/staking';
-import { useAPIContext } from '../../../contexts/api';
 import Countdown from 'react-countdown';
 import { useWeb3Context } from '../../../contexts/web3';
+import { useListingAsDictionary } from '../../../hooks/api';
 
 type ViewStakeModalProps = {
   isOpen: boolean;
@@ -47,7 +47,7 @@ export default function ViewStakeModal({ isOpen, onClose, selectedStakingPoolID,
   const { isLoading: isStakingPoolLoading, data } = useSingleStakingPool(selectedStakingPoolID);
   const { data: stakeData } = useSingleStake(stakeID);
   const stakeReward = useStakeReward(selectedStakingPoolID);
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const { active } = useWeb3Context();
   const nextWithdrawalTime = useNextWithdrawalTime(selectedStakingPoolID, [isLoading]);
 
@@ -114,11 +114,7 @@ export default function ViewStakeModal({ isOpen, onClose, selectedStakingPoolID,
                             <div className="avatar">
                               <div className="w-6 rounded-full">
                                 <img
-                                  src={
-                                    tokensListingAsDictionary[data?.stakedToken.id]
-                                      ? tokensListingAsDictionary[data?.stakedToken.id].logoURI
-                                      : '/images/placeholder_image.svg'
-                                  }
+                                  src={tokensListingAsDictionary[data?.stakedToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                                   alt={data?.stakedToken.symbol}
                                 />
                               </div>

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import millify from 'millify';
 import { FiPlus, FiTrash2 } from 'react-icons/fi';
 import RemoveLiquidityModal from '../RemoveLiquidityModal';
-import { useAPIContext } from '../../../contexts/api';
 import { useRouter } from 'next/router';
 import { useTokenBalance } from '../../../hooks/wallet';
+import { useListingAsDictionary } from '../../../hooks/api';
 
 export default function UserLPItem({ pair }: any) {
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const { push } = useRouter();
   const [showRemoveLiquidityModal, setShowRemoveLiquidityModal] = useState(false);
   const { balance } = useTokenBalance(pair.pair.id);
@@ -19,26 +19,12 @@ export default function UserLPItem({ pair }: any) {
           <div className="flex justify-center items-center gap-1">
             <div className="avatar">
               <div className="w-7 rounded-full">
-                <img
-                  src={
-                    tokensListingAsDictionary[pair.pair.token0.id]
-                      ? tokensListingAsDictionary[pair.pair.token0.id].logoURI
-                      : '/images/placeholder_image.svg'
-                  }
-                  alt={pair.pair.token0.symbol}
-                />
+                <img src={tokensListingAsDictionary[pair.pair.token0.id]?.logoURI ?? '/images/placeholder_image.svg'} alt={pair.pair.token0.symbol} />
               </div>
             </div>
             <div className="avatar">
               <div className="w-7 rounded-full">
-                <img
-                  src={
-                    tokensListingAsDictionary[pair.pair.token1.id]
-                      ? tokensListingAsDictionary[pair.pair.token1.id].logoURI
-                      : '/images/placeholder_image.svg'
-                  }
-                  alt={pair.pair.token1.symbol}
-                />
+                <img src={tokensListingAsDictionary[pair.pair.token1.id].logoURI ?? '/images/placeholder_image.svg'} alt={pair.pair.token1.symbol} />
               </div>
             </div>
           </div>

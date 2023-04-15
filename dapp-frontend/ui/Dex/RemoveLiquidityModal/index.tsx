@@ -6,7 +6,6 @@ import { abi as routerAbi } from 'quasar-v1-periphery/artifacts/contracts/Quasar
 import { abi as erc20Abi } from 'quasar-v1-core/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
 import useSound from 'use-sound';
 import { useLiquidityValue, useSinglePair } from '../../../hooks/dex';
-import { useAPIContext } from '../../../contexts/api';
 import { useDEXSettingsContext } from '../../../contexts/dex/settings';
 import errorFx from '../../../assets/sounds/error_sound.mp3';
 import successFx from '../../../assets/sounds/success_sound.mp3';
@@ -19,6 +18,7 @@ import { hexValue } from '@ethersproject/bytes';
 import { useWeb3Context } from '../../../contexts/web3';
 import { WETH } from 'quasar-sdk-core';
 import { TailSpin } from 'react-loader-spinner';
+import { useListingAsDictionary } from '../../../hooks/api';
 
 type IRemoveLiquidityModalProps = {
   isVisible: boolean;
@@ -27,7 +27,7 @@ type IRemoveLiquidityModalProps = {
 };
 
 export default function RemoveLiquidityModal({ isVisible, onClose, pair }: IRemoveLiquidityModalProps) {
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const { playSounds, txDeadlineInMins } = useDEXSettingsContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [playSuccess] = useSound(successFx);
@@ -212,11 +212,7 @@ export default function RemoveLiquidityModal({ isVisible, onClose, pair }: IRemo
                           <div className="avatar">
                             <div className="w-10 rounded-xl">
                               <img
-                                src={
-                                  tokensListingAsDictionary[pairData?.token0.id]
-                                    ? tokensListingAsDictionary[pairData?.token0.id].logoURI
-                                    : '/images/placeholder_image.svg'
-                                }
+                                src={tokensListingAsDictionary[pairData?.token0.id]?.logoURI ?? '/images/placeholder_image.svg'}
                                 alt={pairData?.token0.symbol}
                               />
                             </div>
@@ -230,11 +226,7 @@ export default function RemoveLiquidityModal({ isVisible, onClose, pair }: IRemo
                           <div className="avatar">
                             <div className="w-10 rounded-xl">
                               <img
-                                src={
-                                  tokensListingAsDictionary[pairData?.token1.id]
-                                    ? tokensListingAsDictionary[pairData?.token1.id].logoURI
-                                    : '/images/placeholder_image.svg'
-                                }
+                                src={tokensListingAsDictionary[pairData?.token1.id]?.logoURI ?? '/images/placeholder_image.svg'}
                                 alt={pairData?.token1.symbol}
                               />
                             </div>

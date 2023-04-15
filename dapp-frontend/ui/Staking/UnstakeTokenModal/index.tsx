@@ -10,10 +10,10 @@ import { abi as stakingPoolABI } from 'vefi-token-launchpad-staking/artifacts/co
 import { abi as erc20ABI } from 'vefi-token-launchpad-staking/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
 import { useContract } from '../../../hooks/global';
 import { useAmountStakedMinusTax, useSingleStake, useSingleStakingPool, useStakeReward } from '../../../hooks/staking';
-import { useAPIContext } from '../../../contexts/api';
 import Countdown from 'react-countdown';
 import { useWeb3Context } from '../../../contexts/web3';
 import { parseEther, parseUnits } from '@ethersproject/units';
+import { useListingAsDictionary } from '../../../hooks/api';
 
 type UnstakeTokenModalProps = {
   isOpen: boolean;
@@ -51,7 +51,7 @@ export default function UnstakeTokenModal({ isOpen, onClose, selectedStakingPool
   const { data: stakeData } = useSingleStake(stakeID);
   const stakedAmount = useAmountStakedMinusTax(selectedStakingPoolID, [isLoading]);
   const stakeReward = useStakeReward(selectedStakingPoolID);
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const { active } = useWeb3Context();
   const stakedTokenContract = useContract(data?.stakedToken.id, erc20ABI, true);
 
@@ -130,11 +130,7 @@ export default function UnstakeTokenModal({ isOpen, onClose, selectedStakingPool
                             <div className="avatar">
                               <div className="w-6 rounded-full">
                                 <img
-                                  src={
-                                    tokensListingAsDictionary[data?.stakedToken.id]
-                                      ? tokensListingAsDictionary[data?.stakedToken.id].logoURI
-                                      : '/images/placeholder_image.svg'
-                                  }
+                                  src={tokensListingAsDictionary[data?.stakedToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                                   alt={data?.stakedToken.symbol}
                                 />
                               </div>
