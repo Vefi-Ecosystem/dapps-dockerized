@@ -1,0 +1,34 @@
+version: '3.3'
+services:
+  api:
+    container_name: dapps-api
+    hostname: dapps-api
+    build:
+      context: ./dapp-api
+      dockerfile: Dockerfile
+    networks:
+      - dapps
+  client:
+    container_name: dapps-client
+    hostname: dapps-client
+    build:
+      context: ./dapp-frontend
+      dockerfile: Dockerfile
+    networks:
+      - dapps
+  nginx:
+    container_name: dapps-proxy
+    hostname: localhost
+    networks:
+      - dapps
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 17000:80
+    depends_on:
+      - api
+      - client
+networks:
+  dapps:
+    external: false

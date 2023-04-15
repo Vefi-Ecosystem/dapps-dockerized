@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { AddressZero } from '@ethersproject/constants';
 import { parseUnits } from '@ethersproject/units';
-import { ChainId, Fetcher, TokenAmount, WETH } from 'quasar-sdk-core';
+import { Fetcher, TokenAmount, WETH } from 'quasar-sdk-core';
 import { abi as erc20Abi } from 'quasar-v1-core/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
 import { abi as pairAbi } from 'quasar-v1-core/artifacts/contracts/QuasarPair.sol/QuasarPair.json';
 import { abi as factoryAbi } from 'quasar-v1-core/artifacts/contracts/QuasarFactory.sol/QuasarFactory.json';
@@ -10,10 +10,8 @@ import { Interface } from '@ethersproject/abi';
 import { useEffect, useMemo, useState } from 'react';
 import { concat, divide, toString } from 'lodash';
 import { gql } from 'graphql-request';
-import { ListingModel } from '../../api/models/dex';
 import { useWeb3Context } from '../../contexts/web3';
 import rpcCall from '../../api/rpc';
-import chains from '../../assets/chains.json';
 import factories from '../../assets/factories.json';
 import { useGQLContext } from '../../contexts/graphql';
 import { useContract, useCurrentChain } from '../global';
@@ -80,28 +78,6 @@ export const usePairFromFactory = (token1: string, token2: string) => {
   }, [token1, token2, factoryContract]);
 
   return pair;
-};
-
-export const getToken1Price = (tokenA: ListingModel, tokenB: ListingModel, chainId: ChainId) => {
-  const [token1Price, setToken1Price] = useState<string>('0');
-
-  useEffect(() => {
-    if (tokenA && tokenB && tokenA.address && tokenB.address) {
-      (async () => {
-        try {
-          const url = chains[chainId as unknown as keyof typeof chains].rpcUrl;
-          const t0 = tokenA.address === AddressZero ? WETH[chainId] : await Fetcher.fetchTokenData(chainId, tokenA.address, url);
-          const t1 = tokenB.address === AddressZero ? WETH[chainId] : await Fetcher.fetchTokenData(chainId, tokenB.address, url);
-          const pair = await Fetcher.fetchPairData(t0, t1);
-          setToken1Price(pair.priceOf(t1).toSignificant(4));
-        } catch (error: any) {
-          console.error(error);
-        }
-      })();
-    }
-  }, [tokenA, tokenB, chainId]);
-
-  return token1Price;
 };
 
 export const useLiquidityValue = (pair: string, tokenAddress: string, liquidity: number) => {

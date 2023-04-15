@@ -2512,6 +2512,30 @@ const ethereum = [
   }
 ];
 
+const smartChainTestnet = [
+  {
+    name: 'tBNB',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'tBNB',
+    decimals: 18,
+    logoURI: 'https://tokens.pancakeswap.finance/images/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png'
+  },
+  {
+    name: 'Binance USD',
+    address: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
+    symbol: 'BUSD',
+    decimals: 18,
+    logoURI: 'https://tokens.pancakeswap.finance/images/0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56.png'
+  },
+  {
+    name: 'Wrapped tBNB',
+    address: '0x69c5207A60C8e34311E44A2E10afa0CB4dbFC8df',
+    symbol: 'WtBNB',
+    decimals: 18,
+    logoURI: 'https://tokens.pancakeswap.finance/images/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png'
+  }
+];
+
 module.exports = {
   32520: bitgert,
   56: smartchain,
@@ -2520,5 +2544,6 @@ module.exports = {
   888: wanchain,
   137: matic,
   1: ethereum,
-  86: gatechain
+  86: gatechain,
+  97: smartChainTestnet
 };
