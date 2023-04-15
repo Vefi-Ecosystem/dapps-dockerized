@@ -44,25 +44,25 @@ export default function Index() {
             </button>
           </Link>
         </section>
-        <section className="flex justify-center items-center gap-4 w-full overflow-auto p-2 lg:p-5 hidden-scrollbar capitalize">
+        <section className="flex justify-center items-center gap-4 w-full overflow-auto p-4 lg:p-5 hidden-scrollbar capitalize">
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.pairCount)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.pairCount || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">total liquidity pools</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(stakingPoolStats?.poolsCount)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(stakingPoolStats?.poolsCount || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">staking pools created</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.txCount)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.txCount || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">transactions made</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">&#36;{millify(dexFactoryData.totalLiquidityUSD)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">&#36;{millify(dexFactoryData.totalLiquidityUSD || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">total liquidity raised</span>
           </div>
         </section>
-        <section className="flex flex-col w-full justify-center items-center gap-16 p-2 lg:p-5">
+        <section className="flex flex-col w-full justify-center items-center gap-16 p-4 lg:p-5">
           <div className="flex flex-col lg:flex-row justify-evenly items-center gap-12 w-full">
             <div className="flex flex-col justify-start items-center gap-4 w-full lg:w-auto">
               <span className="font-Syne text-[2.5em] lg:text-[4em] capitalize font-[700] text-[#a6b2ec] lg:max-w-[38rem]">
@@ -100,7 +100,7 @@ export default function Index() {
             </div>
           </div>
         </section>
-        <section className="w-full flex flex-col justify-center items-center gap-6">
+        <section className="w-full flex flex-col justify-center items-center gap-6 px-4 py-2">
           <span className="text-white font-Syne capitalize text-[2.5em] lg:text-[3.5em] text-center lg:max-w-[70rem] font-[700]">
             Many-In-One DApp
           </span>
@@ -174,11 +174,11 @@ export default function Index() {
             supported chains
           </span>
           <div className="flex justify-center items-center w-full px-1">
-            <div className="carousel carousel-center p-4 space-x-6 rounded-box">
+            <div className="carousel carousel-center px-4 lg:px-8 space-x-3 rounded-box w-full lg:justify-center lg:items-center">
               {map(Object.values(chains), (chain, index) => (
-                <div key={index} className="carousel-item flex justify-center gap-2 text-white text-[1em] items-center font-Poppins w-auto">
+                <div key={index} className="carousel-item flex justify-center gap-2 text-white text-[1em] items-center font-Poppins lg:w-1/5">
                   <div className="avatar">
-                    <div className="w-8 rounded-full">
+                    <div className="w-10 rounded-full">
                       <img src={chain.logoURI} alt={chain.name} />
                     </div>
                   </div>

@@ -11,7 +11,6 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Moment from 'react-moment';
 import { ResponsiveContainer } from 'recharts';
 import { map, multiply } from 'lodash';
-import { useAPIContext } from '../../contexts/api';
 import { useSingleTokenChartData, useSingleTokenQuery } from '../../hooks/analytics';
 import SquareToggleButton from '../../ui/Button/SquareToggleButton';
 import BarChart from '../../ui/Chart/BarChart';
@@ -20,6 +19,7 @@ import chains from '../../assets/chains.json';
 import { TBody, TCell, THead, TRow, Table } from '../../ui/Table';
 import Pagination from '../../ui/Pagination';
 import { useExplorerLink } from '../../hooks/global';
+import { useListingAsDictionary } from '../../hooks/api';
 
 enum Tabs {
   OVERVIEW = 'overview',
@@ -174,7 +174,7 @@ const OverviewChart = ({ period, token }: { period: ChartPeriod; token: string }
 };
 
 const PairsList = ({ token }: { token: string }) => {
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const { chainId } = useWeb3Context();
   const [page, setPage] = useState<number>(1);
   const { isLoading, data, error } = useSingleTokenQuery(token);
@@ -221,11 +221,7 @@ const PairsList = ({ token }: { token: string }) => {
                               <div className="avatar">
                                 <div className="w-6 rounded-full border border-[#353535]">
                                   <img
-                                    src={
-                                      tokensListingAsDictionary[item.token0.id]
-                                        ? tokensListingAsDictionary[item.token0.id].logoURI
-                                        : '/images/placeholder_image.svg'
-                                    }
+                                    src={tokensListingAsDictionary[item.token0.id]?.logoURI ?? '/images/placeholder_image.svg'}
                                     alt={item.token0.symbol}
                                   />
                                 </div>
@@ -233,11 +229,7 @@ const PairsList = ({ token }: { token: string }) => {
                               <div className="avatar">
                                 <div className="w-6 rounded-full border border-[#353535]">
                                   <img
-                                    src={
-                                      tokensListingAsDictionary[item.token1.id]
-                                        ? tokensListingAsDictionary[item.token1.id].logoURI
-                                        : '/images/placeholder_image.svg'
-                                    }
+                                    src={tokensListingAsDictionary[item.token1.id]?.logoURI ?? '/images/placeholder_image.svg'}
                                     alt={item.token1.symbol}
                                   />
                                 </div>
@@ -266,7 +258,9 @@ const PairsList = ({ token }: { token: string }) => {
                         </TCell>
                         <TCell className="text-center">
                           <Link href={`/dex?tab=swap&inputToken=${item.token0.id}&outputToken=${item.token1.id}`}>
-                            <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">trade</span>
+                            <span className="capitalize font-Syne font-[400] text-[0.75em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
+                              trade
+                            </span>
                           </Link>
                         </TCell>
                       </TRow>
@@ -857,7 +851,7 @@ const useTokenViewRoutes = (tab: Tabs, token: string, period: number = 0) => {
 export default function SingleTokenView() {
   const { query, asPath, push } = useRouter();
   const tab = useMemo(() => (query.tab as Tabs) || Tabs.OVERVIEW, [query.tab]);
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const [chartPeriod, setChartPeriod] = useState(ChartPeriod.H24);
   const { data, isLoading } = useSingleTokenQuery(query.token as string);
   const { chainId } = useWeb3Context();
@@ -879,10 +873,7 @@ export default function SingleTokenView() {
             <div className="flex justify-center items-center gap-3">
               <div className="avatar">
                 <div className="w-14 rounded-full">
-                  <img
-                    src={tokensListingAsDictionary[data.id] ? tokensListingAsDictionary[data.id].logoURI : '/images/placeholder_image.svg'}
-                    alt={data.symbol}
-                  />
+                  <img src={tokensListingAsDictionary[data.id]?.logoURI ?? '/images/placeholder_image.svg'} alt={data.symbol} />
                 </div>
               </div>
               <div className="flex flex-col justify-center items-start">

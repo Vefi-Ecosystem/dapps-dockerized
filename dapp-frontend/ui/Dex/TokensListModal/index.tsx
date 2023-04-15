@@ -2,55 +2,60 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { FiSearch, FiX } from 'react-icons/fi';
-import _ from 'lodash';
+import { filter, includes, map } from 'lodash';
 import { isAddress } from '@ethersproject/address';
-import { Fetcher } from 'quasar-sdk-core';
-import { useAPIContext } from '../../../contexts/api';
-import { ListingModel } from '../../../api/models/dex';
 import TokensListItem from './list';
-import { useWeb3Context } from '../../../contexts/web3';
 import Empty from '../../Empty';
 import { TailSpin } from 'react-loader-spinner';
 import Toast from '../../Toast';
+import { useImportedTokensWithListing } from '../../../hooks/api';
+import { abi as erc20Abi } from 'quasar-v1-core/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
+import { useContract } from '../../../hooks/global';
 
 type ITokensListModalProps = {
   onClose: () => void;
   isVisible: boolean;
-  onTokenSelected: (token: ListingModel) => void;
-  selectedTokens?: Array<ListingModel>;
+  onTokenSelected: (token: string) => void;
+  selectedTokens?: string[];
 };
 
 export default function TokensListModal({ onClose, isVisible, onTokenSelected, selectedTokens }: ITokensListModalProps) {
   const [showToast, setShowToast] = useState<boolean>(false);
   const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
   const [toastMessage, setToastMessage] = useState<string>('');
-  const { tokensListing, importToken } = useAPIContext();
-  const { chainId } = useWeb3Context();
+  const { data: tokensListing, importToken } = useImportedTokensWithListing();
   const [searchValue, setSearchValue] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const tokenContract = useContract(searchValue, erc20Abi);
+
   const displayToast = useCallback((msg: string, toastType: 'success' | 'info' | 'error') => {
     setToastMessage(msg);
     setToastType(toastType);
     setShowToast(true);
   }, []);
+
   const addTokenUsingSearchValue = useCallback(async () => {
     try {
-      setIsLoading(true);
-      const token = await Fetcher.fetchTokenData(chainId || 97, searchValue);
-      importToken({
-        name: token.name as string,
-        logoURI: '/images/placeholder_image.svg',
-        decimals: token.decimals,
-        address: token.address,
-        symbol: token.symbol as string
-      });
-      setIsLoading(false);
-      displayToast(`successfully imported token ${token.symbol}`, 'success');
+      if (tokenContract !== null) {
+        setIsLoading(true);
+        const name = await tokenContract?.name();
+        const decimals = await tokenContract?.decimals();
+        const symbol = await tokenContract?.symbol();
+        importToken({
+          name,
+          logoURI: null as any,
+          decimals,
+          address: tokenContract?.address,
+          symbol
+        });
+        setIsLoading(false);
+        displayToast(`successfully imported token ${symbol}`, 'success');
+      }
     } catch (error: any) {
       setIsLoading(false);
       displayToast(error.message, 'error');
     }
-  }, [chainId, searchValue]);
+  }, [searchValue]);
   return (
     <Transition appear show={isVisible}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -97,13 +102,13 @@ export default function TokensListModal({ onClose, isVisible, onTokenSelected, s
 
                     <div className="flex flex-col justify-start items-start gap-3 w-full overflow-auto max-h-[26rem] py-2 px-1">
                       {searchValue.replace(/\s/g, '').length > 0 &&
-                      _.filter(
+                      filter(
                         tokensListing,
                         (model) =>
                           model.name.toLowerCase().startsWith(searchValue.toLowerCase()) ||
                           model.address.toLowerCase().startsWith(searchValue.toLowerCase())
                       ).length > 0 ? (
-                        _.filter(
+                        filter(
                           tokensListing,
                           (model) =>
                             model.name.toLowerCase().startsWith(searchValue.toLowerCase()) ||
@@ -111,23 +116,23 @@ export default function TokensListModal({ onClose, isVisible, onTokenSelected, s
                         ).map((model, index) => (
                           <div key={index} className="w-full">
                             <TokensListItem
-                              model={model}
-                              disabled={_.includes(selectedTokens, model)}
+                              token={model.address}
+                              disabled={includes(selectedTokens, model.address)}
                               onClick={() => {
-                                onTokenSelected(model);
+                                onTokenSelected(model.address);
                                 onClose();
                               }}
                             />
                           </div>
                         ))
                       ) : searchValue.replace(/\s/g, '').length === 0 ? (
-                        _.map(tokensListing, (model, index) => (
+                        map(tokensListing, (model, index) => (
                           <div key={index} className="w-full">
                             <TokensListItem
-                              model={model}
-                              disabled={_.includes(selectedTokens, model)}
+                              token={model.address}
+                              disabled={includes(selectedTokens, model.address)}
                               onClick={() => {
-                                onTokenSelected(model);
+                                onTokenSelected(model.address);
                                 onClose();
                               }}
                             />

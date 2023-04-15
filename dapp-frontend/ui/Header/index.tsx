@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect, Children, useMemo } from 'react';
+import React, { ReactElement, useState, useEffect, Children } from 'react';
 import { Transition } from '@headlessui/react';
 import Link, { LinkProps } from 'next/link';
 import Image from 'next/image';
@@ -7,11 +7,10 @@ import { FaWallet } from 'react-icons/fa';
 import { RiMenu4Fill } from 'react-icons/ri';
 import { FiX, FiChevronDown, FiLogOut } from 'react-icons/fi';
 import { formatEthAddress } from 'eth-address';
-import _ from 'lodash';
-import { hexValue } from '@ethersproject/bytes';
 import { useWeb3Context } from '../../contexts/web3';
 import ProviderSelectModal from '../ProviderSelectModal';
-import chains from '../../assets/chains.json';
+import { useCurrentChain } from '../../hooks/global';
+import ChainSwitchModal from '../ChainSwitchModal';
 
 type ActiveLinkProps = LinkProps & {
   children: ReactElement;
@@ -55,8 +54,9 @@ const ActiveLink = ({ children, activeClassName, ...props }: ActiveLinkProps) =>
 export default function Header() {
   const [showMobileSidebar, setShowMobileSidebar] = useState<boolean>(false);
   const [showProviderModal, setShowProviderModal] = useState<boolean>(false);
-  const { active, account, error: web3Error, disconnectWallet, chainId, switchChain } = useWeb3Context();
-  const selectedChain = useMemo(() => chains[(chainId as unknown as keyof typeof chains) || 97], [chainId]);
+  const { active, account, error: web3Error, disconnectWallet } = useWeb3Context();
+  const selectedChain = useCurrentChain();
+  const [showChainSwitchModal, setShowChainSwitchModal] = useState<boolean>(false);
   return (
     <>
       {web3Error && (
@@ -108,33 +108,18 @@ export default function Header() {
           </div>
           <div className="flex justify-center items-center gap-2">
             <div className="flex justify-center items-center gap-2 flex-1">
-              <div className="dropdown dropdown-hover">
-                <button
-                  tabIndex={0}
-                  className="hidden md:flex justify-center items-center bg-transparent py-[9px] px-[10px] rounded-[25px] text-[1em] text-white gap-2"
-                >
-                  <div className="avatar">
-                    <div className="w-8 rounded-full">
-                      <img src={selectedChain.logoURI} alt={selectedChain.symbol} />
-                    </div>
+              <button
+                onClick={() => setShowChainSwitchModal(true)}
+                className="hidden md:flex justify-center items-center bg-[#fff]/[.09] py-[9px] px-[10px] rounded-[8px] text-[1em] text-white gap-2"
+              >
+                <div className="avatar">
+                  <div className="w-8 rounded-full">
+                    <img src={selectedChain.logoURI} alt={selectedChain.symbol} />
                   </div>
-                  {selectedChain.name} <FiChevronDown />
-                </button>
-                <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-[#000] w-80 rounded-box text-white">
-                  {_.map(Object.keys(chains), (key, index) => (
-                    <li key={index}>
-                      <a className="gap-2 text-[1em]" onClick={() => switchChain(hexValue(parseInt(key)))}>
-                        <div className="avatar">
-                          <div className="w-8 rounded-full">
-                            <img src={chains[key as keyof typeof chains].logoURI} alt={chains[key as keyof typeof chains].symbol} />
-                          </div>
-                        </div>
-                        {chains[key as keyof typeof chains].name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                </div>
+                {selectedChain.name} <FiChevronDown />
+              </button>
+
               <div className="dropdown dropdown-hover">
                 <button
                   tabIndex={0}
@@ -168,16 +153,16 @@ export default function Header() {
             </div>
             <div className="lg:hidden flex justify-center items-center gap-2">
               {active && (
-                <label
-                  htmlFor="chain-modal"
-                  className="flex justify-center items-center bg-[#fff]/[.09] py-2 px-3 rounded-[5px] text-[18px] text-white"
+                <button
+                  onClick={() => setShowChainSwitchModal(true)}
+                  className="flex justify-center items-center btn btn-sm btn-ghost btn-square py-2 px-3 rounded-[5px] text-[18px] text-white"
                 >
                   <div className="avatar">
                     <div className="w-4 rounded-full">
                       <img src={selectedChain.logoURI} alt={selectedChain.symbol} />
                     </div>
                   </div>
-                </label>
+                </button>
               )}
               <button
                 onClick={() => (!active ? setShowProviderModal(true) : disconnectWallet())}
@@ -231,28 +216,7 @@ export default function Header() {
         </ul>
       </Transition>
       <ProviderSelectModal isOpen={showProviderModal} onClose={() => setShowProviderModal(false)} />
-      <input type="checkbox" id="chain-modal" className="modal-toggle" />
-      <div className="modal modal-bottom">
-        <div className="modal-box relative bg-[#000]">
-          <label htmlFor="chain-modal" className="btn btn-sm btn-circle absolute right-2 top-2">
-            <FiX />
-          </label>
-          <ul className="menu p-2 shadow bg-[#000]/[0.6] rounded-box w-full text-white">
-            {_.map(Object.keys(chains), (key, index) => (
-              <li key={index}>
-                <label htmlFor="chain-modal" className="gap-2" onClick={() => switchChain(hexValue(parseInt(key)))}>
-                  <div className="avatar">
-                    <div className="w-8 rounded-full">
-                      <img src={chains[key as keyof typeof chains].logoURI} alt={chains[key as keyof typeof chains].symbol} />
-                    </div>
-                  </div>
-                  {chains[key as keyof typeof chains].name}
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <ChainSwitchModal isOpen={showChainSwitchModal} onClose={() => setShowChainSwitchModal(false)} />
     </>
   );
 }

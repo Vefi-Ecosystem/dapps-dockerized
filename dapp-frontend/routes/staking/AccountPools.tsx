@@ -6,9 +6,9 @@ import { filter, floor, map, multiply, startsWith, trim } from 'lodash';
 import { TailSpin } from 'react-loader-spinner';
 import CountDown from 'react-countdown';
 import Empty from '../../ui/Empty';
-import { useAPIContext } from '../../contexts/api';
 import Pagination from '../../ui/Pagination';
 import StakeTokenModal from '../../ui/Staking/StakeTokenModal';
+import { useListingAsDictionary } from '../../hooks/api';
 
 const countdownRender = ({ days, hours, minutes, seconds }: any) => (
   <span className="font-Poppins font-[400] text-[1em] capitalize text-[#fff]">
@@ -29,7 +29,7 @@ const StatusLabel = ({ timestamp }: { timestamp: number }) => (
 const All = ({ searchValue = '' }: { searchValue?: string }) => {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useAllAccountPools(page - 1);
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const stats = useStakingPoolFactoriesStats();
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [selectedStakingPool, setSelectedStakingPool] = useState<any>(null);
@@ -89,11 +89,7 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                       <div className="avatar">
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
-                            src={
-                              tokensListingAsDictionary[item.stakedToken.id]
-                                ? tokensListingAsDictionary[item.stakedToken.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[item.stakedToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={item.stakedToken.symbol}
                           />
                         </div>
@@ -107,11 +103,7 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                       <div className="avatar">
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
-                            src={
-                              tokensListingAsDictionary[item.rewardToken.id]
-                                ? tokensListingAsDictionary[item.rewardToken.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[item.rewardToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={item.rewardToken.symbol}
                           />
                         </div>

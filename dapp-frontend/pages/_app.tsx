@@ -10,7 +10,6 @@ import Header from '../ui/Header';
 import Footer from '../ui/Footer';
 import { DEXSettingsContextProvider } from '../contexts/dex/settings';
 import { Web3ContextProvider } from '../contexts/web3';
-import { APIContextProvider } from '../contexts/api';
 import { GQLProvider } from '../contexts/graphql';
 
 function getLibrary(provider: any) {
@@ -35,11 +34,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <Web3ContextProvider>
           <GQLProvider>
             <DEXSettingsContextProvider>
-              <APIContextProvider>
-                <AppContent>
-                  <Component {...pageProps} />
-                </AppContent>
-              </APIContextProvider>
+              <AppContent>
+                <Component {...pageProps} />
+              </AppContent>
             </DEXSettingsContextProvider>
           </GQLProvider>
         </Web3ContextProvider>

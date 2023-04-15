@@ -23,7 +23,6 @@ import {
   useTopPairs,
   useTopTokens
 } from '../../hooks/analytics';
-import { useAPIContext } from '../../contexts/api';
 import SquareToggleButton from '../../ui/Button/SquareToggleButton';
 import { TBody, TCell, THead, TRow, Table } from '../../ui/Table';
 import Pagination from '../../ui/Pagination';
@@ -32,6 +31,7 @@ import { useWeb3Context } from '../../contexts/web3';
 import AreaChart from '../../ui/Chart/AreaChart';
 import { useExplorerLink } from '../../hooks/global';
 import Empty from '../../ui/Empty';
+import { useListingAsDictionary } from '../../hooks/api';
 
 enum Tabs {
   OVERVIEW = 'overview',
@@ -159,7 +159,7 @@ const OverviewChart = ({ period }: { period: ChartPeriod }) => {
 };
 
 const TopPairsList = () => {
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const { chainId } = useWeb3Context();
   const [page, setPage] = useState<number>(1);
   const { isLoading, data, error } = useTopPairs(page - 1);
@@ -207,11 +207,7 @@ const TopPairsList = () => {
                           <div className="avatar">
                             <div className="w-6 rounded-full border border-[#353535]">
                               <img
-                                src={
-                                  tokensListingAsDictionary[item.token0.id]
-                                    ? tokensListingAsDictionary[item.token0.id].logoURI
-                                    : '/images/placeholder_image.svg'
-                                }
+                                src={tokensListingAsDictionary[item.token0.id]?.logoURI ?? '/images/placeholder_image.svg'}
                                 alt={item.token0.symbol}
                               />
                             </div>
@@ -219,11 +215,7 @@ const TopPairsList = () => {
                           <div className="avatar">
                             <div className="w-6 rounded-full border border-[#353535]">
                               <img
-                                src={
-                                  tokensListingAsDictionary[item.token1.id]
-                                    ? tokensListingAsDictionary[item.token1.id].logoURI
-                                    : '/images/placeholder_image.svg'
-                                }
+                                src={tokensListingAsDictionary[item.token1.id]?.logoURI ?? '/images/placeholder_image.svg'}
                                 alt={item.token1.symbol}
                               />
                             </div>
@@ -268,7 +260,7 @@ const TopPairsList = () => {
 };
 
 const TopTokensList = () => {
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const { chainId } = useWeb3Context();
   const [page, setPage] = useState<number>(1);
   const [order, setOrder] = useState<'asc' | 'desc'>('desc');
@@ -321,12 +313,7 @@ const TopTokensList = () => {
                         <div className="flex justify-center items-center gap-1">
                           <div className="avatar">
                             <div className="w-6 rounded-full border border-[#353535]">
-                              <img
-                                src={
-                                  tokensListingAsDictionary[item.id] ? tokensListingAsDictionary[item.id].logoURI : '/images/placeholder_image.svg'
-                                }
-                                alt={item.symbol}
-                              />
+                              <img src={tokensListingAsDictionary[item.id]?.logoURI ?? '/images/placeholder_image.svg'} alt={item.symbol} />
                             </div>
                           </div>
                           <Link href={`/analytics?view=singleToken&token=${item.id.toLowerCase()}`}>
@@ -980,7 +967,7 @@ const useOverviewRoutes = (tab: Tabs, period: number = 0) => {
 export default function Overview() {
   const { query, push, asPath } = useRouter();
   const tab = useMemo(() => (query.tab as Tabs) || Tabs.OVERVIEW, [query.tab]);
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const { isLoading: isHighestVolumeDataLoading, data: highestVolumeData, error: highestVolumeFetchError } = useHighestVolumeToken();
   const {
     isLoading: isHighestTransactionDataLoading,
@@ -1017,11 +1004,7 @@ export default function Overview() {
                     <div className="avatar">
                       <div className="w-8 rounded-full">
                         <img
-                          src={
-                            tokensListingAsDictionary[highestVolumeData.id]
-                              ? tokensListingAsDictionary[highestVolumeData.id].logoURI
-                              : '/images/placeholder_image.svg'
-                          }
+                          src={tokensListingAsDictionary[highestVolumeData.id]?.logoURI ?? '/images/placeholder_image.svg'}
                           alt={highestVolumeData.symbol}
                         />
                       </div>
@@ -1057,11 +1040,7 @@ export default function Overview() {
                     <div className="avatar">
                       <div className="w-8 rounded-full">
                         <img
-                          src={
-                            tokensListingAsDictionary[highestTransactionData.id]
-                              ? tokensListingAsDictionary[highestTransactionData.id].logoURI
-                              : '/images/placeholder_image.svg'
-                          }
+                          src={tokensListingAsDictionary[highestTransactionData.id]?.logoURI ?? '/images/placeholder_image.svg'}
                           alt={highestTransactionData.symbol}
                         />
                       </div>
@@ -1098,11 +1077,7 @@ export default function Overview() {
                       <div className="avatar">
                         <div className="w-8 rounded-full">
                           <img
-                            src={
-                              tokensListingAsDictionary[topPairData.token0.id]
-                                ? tokensListingAsDictionary[topPairData.token0.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[topPairData.token0.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={topPairData.token0.symbol}
                           />
                         </div>
@@ -1110,11 +1085,7 @@ export default function Overview() {
                       <div className="avatar">
                         <div className="w-8 rounded-full">
                           <img
-                            src={
-                              tokensListingAsDictionary[topPairData.token1.id]
-                                ? tokensListingAsDictionary[topPairData.token1.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[topPairData.token1.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={topPairData.token1.symbol}
                           />
                         </div>
@@ -1151,11 +1122,7 @@ export default function Overview() {
                     <div className="avatar">
                       <div className="w-8 rounded-full">
                         <img
-                          src={
-                            tokensListingAsDictionary[mostPopularTokenData.id]
-                              ? tokensListingAsDictionary[mostPopularTokenData.id].logoURI
-                              : '/images/placeholder_image.svg'
-                          }
+                          src={tokensListingAsDictionary[mostPopularTokenData.id]?.logoURI ?? '/images/placeholder_image.svg'}
                           alt={mostPopularTokenData.symbol}
                         />
                       </div>

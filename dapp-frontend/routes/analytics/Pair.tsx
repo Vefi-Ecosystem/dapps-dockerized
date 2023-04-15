@@ -10,7 +10,6 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Moment from 'react-moment';
 import { ResponsiveContainer } from 'recharts';
 import { map, multiply } from 'lodash';
-import { useAPIContext } from '../../contexts/api';
 import { useSinglePairChartData, useSinglePairQuery } from '../../hooks/analytics';
 import SquareToggleButton from '../../ui/Button/SquareToggleButton';
 import BarChart from '../../ui/Chart/BarChart';
@@ -20,6 +19,7 @@ import chains from '../../assets/chains.json';
 import { TBody, TCell, THead, TRow, Table } from '../../ui/Table';
 import Pagination from '../../ui/Pagination';
 import { useExplorerLink } from '../../hooks/global';
+import { useListingAsDictionary } from '../../hooks/api';
 
 enum Tabs {
   OVERVIEW = 'overview',
@@ -689,7 +689,7 @@ const usePairViewRoutes = (tab: Tabs, pair: string, period: number = 0) => {
 export default function PairView() {
   const { query, asPath, push } = useRouter();
   const tab = useMemo(() => (query.tab as Tabs) || Tabs.OVERVIEW, [query.tab]);
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const [chartPeriod, setChartPeriod] = useState(ChartPeriod.H24);
   const { data, isLoading } = useSinglePairQuery(query.pair as string);
   const { chainId } = useWeb3Context();
@@ -712,26 +712,12 @@ export default function PairView() {
               <div className="flex justify-center items-center gap-2">
                 <div className="avatar">
                   <div className="w-6 lg:w-14 rounded-full">
-                    <img
-                      src={
-                        tokensListingAsDictionary[data.token0.id]
-                          ? tokensListingAsDictionary[data.token0.id].logoURI
-                          : '/images/placeholder_image.svg'
-                      }
-                      alt={data.token0.symbol}
-                    />
+                    <img src={tokensListingAsDictionary[data.token0.id]?.logoURI ?? '/images/placeholder_image.svg'} alt={data.token0.symbol} />
                   </div>
                 </div>
                 <div className="avatar">
                   <div className="w-6 lg:w-14 rounded-full">
-                    <img
-                      src={
-                        tokensListingAsDictionary[data.token1.id]
-                          ? tokensListingAsDictionary[data.token1.id].logoURI
-                          : '/images/placeholder_image.svg'
-                      }
-                      alt={data.token1.symbol}
-                    />
+                    <img src={tokensListingAsDictionary[data.token1.id]?.logoURI ?? '/images/placeholder_image.svg'} alt={data.token1.symbol} />
                   </div>
                 </div>
               </div>

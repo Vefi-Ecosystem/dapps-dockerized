@@ -5,7 +5,6 @@ import { useWeb3React } from '@web3-react/core';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import { TorusConnector } from '@web3-react/torus-connector';
-import { formatEther } from '@ethersproject/units';
 import type Web3 from 'web3';
 import { OkxWalletConnector } from '../web3/custom/OkxWalletConnector';
 import chains from '../assets/chains.json';
@@ -16,7 +15,6 @@ type Web3ContextType = {
   chainId: number;
   active: boolean;
   error?: Error;
-  balance?: string;
   connectInjected: () => void;
   connectWalletConnect: () => void;
   connectTorus: () => void;
@@ -48,18 +46,8 @@ const torusConnector = new TorusConnector({
 
 export const Web3ContextProvider = ({ children }: any) => {
   const { library, account, activate, deactivate, active, chainId: web3ChainId, error, setError } = useWeb3React<Web3>();
-  const [balance, setBalance] = useState<string>('0');
   const [chainId, setChainId] = useState<number>(32520);
   const [ethereumProvider, setEthereumProvider] = useState<any>(null);
-
-  const fetchBalance = useCallback(() => {
-    if (!!account) {
-      library?.eth
-        .getBalance(account)
-        .then((val) => setBalance(formatEther(val)))
-        .catch((err) => setError(err));
-    }
-  }, [account, chainId]);
 
   const connectInjected = useCallback(() => {
     activate(injectedConnector, setError, true)
@@ -162,12 +150,6 @@ export const Web3ContextProvider = ({ children }: any) => {
   }, []);
 
   useEffect(() => {
-    if (active && !!account) {
-      fetchBalance();
-    }
-  }, [active, account]);
-
-  useEffect(() => {
     if (active && web3ChainId) {
       setChainId(web3ChainId);
     }
@@ -177,7 +159,6 @@ export const Web3ContextProvider = ({ children }: any) => {
     <Web3Context.Provider
       value={{
         library,
-        balance,
         account,
         active,
         connectInjected,

@@ -8,7 +8,7 @@ import { IoMdRefreshCircle } from 'react-icons/io';
 import { MdArrowDownward } from 'react-icons/md';
 import { AddressZero } from '@ethersproject/constants';
 import { parseEther, parseUnits } from '@ethersproject/units';
-import { multiply, toLower, find } from 'lodash';
+import { multiply, toLower, get, map } from 'lodash';
 import assert from 'assert';
 import { WETH, Fetcher, Trade, TokenAmount, Router, Percent, ETHER, CurrencyAmount } from 'quasar-sdk-core';
 import JSBI from 'jsbi';
@@ -17,10 +17,8 @@ import { abi as routerAbi } from 'quasar-v1-periphery/artifacts/contracts/Quasar
 import useSound from 'use-sound';
 import SwapSettingsModal from '../../ui/Dex/SwapSettingsModal';
 import TokensListModal from '../../ui/Dex/TokensListModal';
-import { ListingModel } from '../../api/models/dex';
-import { useAPIContext } from '../../contexts/api';
 import { useWeb3Context } from '../../contexts/web3';
-import { computePair, quote } from '../../hooks/dex';
+import { usePairFromFactory, quote } from '../../hooks/dex';
 import routers from '../../assets/routers.json';
 import { useDEXSettingsContext } from '../../contexts/dex/settings';
 import successFx from '../../assets/sounds/success_sound.mp3';
@@ -29,6 +27,7 @@ import TradeCard from '../../ui/Dex/Card';
 import { useEtherBalance, useTokenBalance } from '../../hooks/wallet';
 import { useContract } from '../../hooks/global';
 import Toast from '../../ui/Toast';
+import { useImportedTokensWithListing, useTokenDetailsFromListing, useTokenImageURI } from '../../hooks/api';
 
 export default function Swap() {
   const { reload, query } = useRouter();
@@ -41,28 +40,33 @@ export default function Swap() {
   const [isFirstTokensListModalVisible, setIsFirstTokensListModalVisible] = useState<boolean>(false);
   const [isSecondTokensListModalVisible, setIsSecondTokensListModalVisible] = useState<boolean>(false);
   const [isSwapLoading, setIsSwapLoading] = useState<boolean>(false);
-  const { tokensListing } = useAPIContext();
+  const { data: tokensListing } = useImportedTokensWithListing();
   const { chainId, active, account } = useWeb3Context();
   const { txDeadlineInMins, slippageTolerance, gasPrice, playSounds } = useDEXSettingsContext();
-  const [firstSelectedToken, setFirstSelectedToken] = useState<ListingModel>({} as ListingModel);
-  const [secondSelectedToken, setSecondSelectedToken] = useState<ListingModel>({} as ListingModel);
-  const { error: pairError } = computePair(firstSelectedToken, secondSelectedToken);
+  const [firstSelectedToken, setFirstSelectedToken] = useState('');
+  const [secondSelectedToken, setSecondSelectedToken] = useState('');
+
+  const firstSelectedTokenDetails = useTokenDetailsFromListing(firstSelectedToken);
+  const secondSelectedTokenDetails = useTokenDetailsFromListing(secondSelectedToken);
+  const pair = usePairFromFactory(firstSelectedToken, secondSelectedToken);
   const { balance: balance1 } =
-    firstSelectedToken.address === AddressZero ? useEtherBalance([isSwapLoading]) : useTokenBalance(firstSelectedToken.address, [isSwapLoading]);
+    firstSelectedToken === AddressZero ? useEtherBalance([isSwapLoading]) : useTokenBalance(firstSelectedToken, [isSwapLoading]);
   const { balance: balance2 } =
-    secondSelectedToken.address === AddressZero ? useEtherBalance([isSwapLoading]) : useTokenBalance(secondSelectedToken.address, [isSwapLoading]);
+    secondSelectedToken === AddressZero ? useEtherBalance([isSwapLoading]) : useTokenBalance(secondSelectedToken, [isSwapLoading]);
   const routerContract = useContract(routers, routerAbi, true);
-  const t1Contract = useContract(firstSelectedToken.address, erc20Abi, true);
-  const t2Contract = useContract(secondSelectedToken.address, erc20Abi, true);
-  const outputAmount = quote(firstSelectedToken.address, secondSelectedToken.address, val1);
-  const inputAmount = quote(secondSelectedToken.address, firstSelectedToken.address, val2);
+  const t1Contract = useContract(firstSelectedToken, erc20Abi, true);
+  const t2Contract = useContract(secondSelectedToken, erc20Abi, true);
+  const outputAmount = quote(firstSelectedToken, secondSelectedToken, val1);
+  const inputAmount = quote(secondSelectedToken, firstSelectedToken, val2);
   const [playSuccess] = useSound(successFx);
   const [playError] = useSound(errorFx);
+
   const displayToast = useCallback((msg: string, toastType: 'success' | 'info' | 'error') => {
     setToastMessage(msg);
     setToastType(toastType);
     setShowToast(true);
   }, []);
+
   const switchSelectedTokens = useCallback(() => {
     const token1 = firstSelectedToken;
     const token2 = secondSelectedToken;
@@ -73,7 +77,7 @@ export default function Swap() {
   const swapTokens = useCallback(async () => {
     try {
       setIsSwapLoading(true);
-      assert.notEqual(toLower(firstSelectedToken.address), toLower(secondSelectedToken.address), 'Identical tokens');
+      assert.notEqual(toLower(firstSelectedToken), toLower(secondSelectedToken), 'Identical tokens');
       const value0 = (t1Contract ? parseUnits(val1.toString(), await t1Contract.decimals()) : parseEther(val1.toString())).toHexString();
 
       if (t1Contract) {
@@ -201,13 +205,13 @@ export default function Swap() {
     account,
     chainId,
     displayToast,
-    firstSelectedToken.address,
+    firstSelectedToken,
     gasPrice,
     playError,
     playSounds,
     playSuccess,
     routerContract,
-    secondSelectedToken.address,
+    secondSelectedToken,
     slippageTolerance,
     t1Contract,
     t2Contract,
@@ -215,33 +219,49 @@ export default function Swap() {
     val1
   ]);
 
-  useEffect(() => {
-    if (tokensListing.length >= 2) {
-      if (query.inputToken)
-        if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.inputToken as string).toLowerCase())) {
-          setFirstSelectedToken(
-            find(tokensListing, (model) => model.address.toLowerCase() === (query.inputToken as string).toLowerCase()) as ListingModel
-          );
-        } else setFirstSelectedToken(tokensListing[0]);
-      else setFirstSelectedToken(tokensListing[0]);
+  // useEffect(() => {
+  //   if (tokensListing.length >= 2) {
+  //     if (query.inputToken)
+  //       if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.inputToken as string).toLowerCase())) {
+  //         setFirstSelectedToken(query.inputToken as string);
+  //       } else setFirstSelectedToken(tokensListing[0].address);
+  //     else setFirstSelectedToken(tokensListing[0].address);
 
-      if (query.outputToken)
-        if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.outputToken as string).toLowerCase())) {
-          setSecondSelectedToken(
-            find(tokensListing, (model) => model.address.toLowerCase() === (query.outputToken as string).toLowerCase()) as ListingModel
-          );
-        } else setSecondSelectedToken(tokensListing[1]);
-      else setSecondSelectedToken(tokensListing[1]);
-    }
-  }, [query.inputToken, query.outputToken, tokensListing]);
+  //     if (query.outputToken)
+  //       if (tokensListing.map((model) => model.address.toLowerCase()).includes((query.outputToken as string).toLowerCase())) {
+  //         setSecondSelectedToken(query.outputToken as string);
+  //       } else setSecondSelectedToken(tokensListing[1].address);
+  //     else setSecondSelectedToken(tokensListing[1].address);
+  //   }
+  // }, [query.inputToken, query.outputToken, tokensListing]);
 
   useEffect(() => {
     setVal2(outputAmount);
   }, [outputAmount]);
 
-  // useEffect(() => {
-  //   setVal1(inputAmount);
-  // }, [inputAmount]);
+  useEffect(() => {
+    setVal1(inputAmount);
+  }, [inputAmount]);
+
+  useEffect(() => {
+    if (tokensListing.length > 1) {
+      setFirstSelectedToken(
+        query.inputToken && map(tokensListing, (token) => toLower(token.address)).includes(toLower(query.inputToken as string))
+          ? (query.inputToken as string)
+          : get(tokensListing[0], 'address')
+      );
+    }
+  }, [query.inputToken, tokensListing]);
+
+  useEffect(() => {
+    if (tokensListing.length > 1) {
+      setSecondSelectedToken(
+        query.outputToken && map(tokensListing, (token) => toLower(token.address)).includes(toLower(query.outputToken as string))
+          ? (query.outputToken as string)
+          : get(tokensListing[1], 'address')
+      );
+    }
+  }, [query.outputToken, tokensListing]);
 
   return (
     <>
@@ -276,10 +296,10 @@ export default function Swap() {
                     >
                       <div className="avatar">
                         <div className="w-8 rounded-full">
-                          <img src={firstSelectedToken.logoURI} alt={firstSelectedToken.name} />
+                          <img src={useTokenImageURI(firstSelectedToken)} alt={firstSelectedTokenDetails?.name} />
                         </div>
                       </div>
-                      <span className="text-white uppercase font-[700] text-[1em] font-Syne">{firstSelectedToken.symbol}</span>
+                      <span className="text-white uppercase font-[700] text-[1em] font-Syne">{firstSelectedTokenDetails?.symbol}</span>
                       <FiChevronDown className="text-white" />
                     </div>
 
@@ -334,10 +354,10 @@ export default function Swap() {
                     >
                       <div className="avatar">
                         <div className="w-8 rounded-full">
-                          <img src={secondSelectedToken.logoURI} alt={secondSelectedToken.name} />
+                          <img src={useTokenImageURI(secondSelectedToken)} alt={secondSelectedTokenDetails?.name} />
                         </div>
                       </div>
-                      <span className="text-white uppercase font-[700] text-[1em] font-Syne">{secondSelectedToken.symbol}</span>
+                      <span className="text-white uppercase font-[700] text-[1em] font-Syne">{secondSelectedTokenDetails?.symbol}</span>
                       <FiChevronDown className="text-white" />
                     </div>
 
@@ -351,31 +371,31 @@ export default function Swap() {
                 </div>
               </div>
               <div className="flex justify-center w-full items-center my-2 px-2 py-2">
-                {!pairError ? (
+                {pair !== AddressZero ? (
                   <div className="flex justify-start w-full items-start flex-col gap-2 px-3 py-2 font-Poppins">
                     <span className="text-[#d0d0d0] text-[0.75em] font-[400]">Slippage Tolerance: {slippageTolerance}%</span>
                     <div className="flex justify-between w-full items-center font-poppins gap-3">
                       <span className="text-white font-[300]">
-                        {val1} {firstSelectedToken.symbol}
+                        {val1} {firstSelectedTokenDetails?.symbol}
                       </span>
                       <AiOutlineSwap className="text-[#a6b2ec] font-[400] text-[1.9em]" />
                       <span className="text-white font-[300]">
-                        {outputAmount} {secondSelectedToken.symbol}
+                        {outputAmount} {secondSelectedTokenDetails?.symbol}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <span className="text-red-400 font-Poppins text-[15px]">An error occured</span>
+                  <span className="text-red-400 font-Poppins text-[15px] capitalize">pair doesn&apos;t exist</span>
                 )}
               </div>
               <div className="flex justify-center gap-2 items-center w-full flex-col px-2 py-4">
                 <button
                   onClick={swapTokens}
-                  disabled={!!pairError || isSwapLoading || val1 <= 0 || val1 > balance1 || !active}
+                  disabled={pair === AddressZero || isSwapLoading || val1 <= 0 || val1 > balance1 || !active}
                   className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                 >
                   <span className="font-Syne">
-                    {!active ? 'Wallet not connected' : val1 > balance1 ? `Insufficient ${firstSelectedToken.symbol} balance` : 'Swap'}
+                    {!active ? 'Wallet not connected' : val1 > balance1 ? `Insufficient ${firstSelectedTokenDetails?.symbol} balance` : 'Swap'}
                   </span>
                   <TailSpin color="#dcdcdc" visible={isSwapLoading} width={20} height={20} />
                 </button>

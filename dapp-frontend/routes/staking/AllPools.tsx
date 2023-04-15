@@ -7,9 +7,9 @@ import { TailSpin } from 'react-loader-spinner';
 import { useRouter } from 'next/router';
 import CountDown from 'react-countdown';
 import Empty from '../../ui/Empty';
-import { useAPIContext } from '../../contexts/api';
 import Pagination from '../../ui/Pagination';
 import StakeTokenModal from '../../ui/Staking/StakeTokenModal';
+import { useListingAsDictionary } from '../../hooks/api';
 
 enum SubRoutes {
   ALL = 'all',
@@ -47,7 +47,7 @@ const StatusLabel = ({ timestamp }: { timestamp: number }) => (
 const All = ({ searchValue = '' }: { searchValue?: string }) => {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useAllPools(page - 1);
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const stats = useStakingPoolFactoriesStats();
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [selectedStakingPool, setSelectedStakingPool] = useState<any>(null);
@@ -107,11 +107,7 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                       <div className="avatar">
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
-                            src={
-                              tokensListingAsDictionary[item.stakedToken.id]
-                                ? tokensListingAsDictionary[item.stakedToken.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[item.stakedToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={item.stakedToken.symbol}
                           />
                         </div>
@@ -125,11 +121,7 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
                       <div className="avatar">
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
-                            src={
-                              tokensListingAsDictionary[item.rewardToken.id]
-                                ? tokensListingAsDictionary[item.rewardToken.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[item.rewardToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={item.rewardToken.symbol}
                           />
                         </div>
@@ -187,7 +179,7 @@ const All = ({ searchValue = '' }: { searchValue?: string }) => {
 const Available = ({ searchValue = '' }: { searchValue?: string }) => {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useAvailablePools(page - 1);
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const stats = useStakingPoolFactoriesStats();
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [selectedStakingPool, setSelectedStakingPool] = useState<any>(null);
@@ -247,11 +239,7 @@ const Available = ({ searchValue = '' }: { searchValue?: string }) => {
                       <div className="avatar">
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
-                            src={
-                              tokensListingAsDictionary[item.stakedToken.id]
-                                ? tokensListingAsDictionary[item.stakedToken.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[item.stakedToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={item.stakedToken.symbol}
                           />
                         </div>
@@ -265,11 +253,7 @@ const Available = ({ searchValue = '' }: { searchValue?: string }) => {
                       <div className="avatar">
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
-                            src={
-                              tokensListingAsDictionary[item.rewardToken.id]
-                                ? tokensListingAsDictionary[item.rewardToken.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[item.rewardToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={item.rewardToken.symbol}
                           />
                         </div>
@@ -327,7 +311,7 @@ const Available = ({ searchValue = '' }: { searchValue?: string }) => {
 const SoldOut = ({ searchValue = '' }: { searchValue?: string }) => {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useSoldoutPools(page - 1);
-  const { tokensListingAsDictionary } = useAPIContext();
+  const tokensListingAsDictionary = useListingAsDictionary();
   const stats = useStakingPoolFactoriesStats();
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [selectedStakingPool, setSelectedStakingPool] = useState<any>(null);
@@ -387,11 +371,7 @@ const SoldOut = ({ searchValue = '' }: { searchValue?: string }) => {
                       <div className="avatar">
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
-                            src={
-                              tokensListingAsDictionary[item.stakedToken.id]
-                                ? tokensListingAsDictionary[item.stakedToken.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[item.stakedToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={item.stakedToken.symbol}
                           />
                         </div>
@@ -405,11 +385,7 @@ const SoldOut = ({ searchValue = '' }: { searchValue?: string }) => {
                       <div className="avatar">
                         <div className="w-6 rounded-full border border-[#353535]">
                           <img
-                            src={
-                              tokensListingAsDictionary[item.rewardToken.id]
-                                ? tokensListingAsDictionary[item.rewardToken.id].logoURI
-                                : '/images/placeholder_image.svg'
-                            }
+                            src={tokensListingAsDictionary[item.rewardToken.id]?.logoURI ?? '/images/placeholder_image.svg'}
                             alt={item.rewardToken.symbol}
                           />
                         </div>

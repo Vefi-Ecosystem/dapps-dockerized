@@ -2,12 +2,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { AddressZero } from '@ethersproject/constants';
 import { parseUnits } from '@ethersproject/units';
-import { ChainId, Fetcher, Pair, TokenAmount, WETH } from 'quasar-sdk-core';
+import { ChainId, Fetcher, TokenAmount, WETH } from 'quasar-sdk-core';
 import { abi as erc20Abi } from 'quasar-v1-core/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
 import { abi as pairAbi } from 'quasar-v1-core/artifacts/contracts/QuasarPair.sol/QuasarPair.json';
 import { abi as factoryAbi } from 'quasar-v1-core/artifacts/contracts/QuasarFactory.sol/QuasarFactory.json';
 import { Interface } from '@ethersproject/abi';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { concat, divide, toString } from 'lodash';
 import { gql } from 'graphql-request';
 import { ListingModel } from '../../api/models/dex';
@@ -58,32 +58,28 @@ const ALL_PAIRS_QUERY = gql`
   }
 `;
 
-export const computePair = (token1: ListingModel, token2: ListingModel) => {
+export const usePairFromFactory = (token1: string, token2: string) => {
   const [pair, setPair] = useState<string>(AddressZero);
-  const [error, setError] = useState<Error | undefined>(undefined);
-  const currentChain = useCurrentChain();
+  const factoryContract = useContract(factories, factoryAbi);
   const { chainId } = useWeb3Context();
+  const weth = useMemo(() => WETH[chainId as keyof typeof WETH], [chainId]);
 
   useEffect(() => {
-    if (token1 && token2 && token1.address && token2.address) {
+    if (factoryContract) {
       (async () => {
         try {
-          const url = currentChain.rpcUrl;
-          const tokenA =
-            token1.address === AddressZero ? WETH[chainId as keyof typeof WETH] : await Fetcher.fetchTokenData(chainId, token1.address, url);
-          const tokenB =
-            token2.address === AddressZero ? WETH[chainId as keyof typeof WETH] : await Fetcher.fetchTokenData(chainId, token2.address, url);
-          const address = Pair.getAddress(tokenA, tokenB);
-          setPair(address);
-          setError(undefined);
+          const firstTokenAddress = token1 === AddressZero ? weth.address : token1;
+          const secondTokenAddress = token2 === AddressZero ? weth.address : token2;
+          const pairFromFactory = await factoryContract.getPair(firstTokenAddress, secondTokenAddress);
+          setPair(pairFromFactory);
         } catch (error: any) {
-          setError(error);
+          console.error(error);
         }
       })();
     }
-  }, [token1, token2, chainId]);
+  }, [token1, token2, factoryContract]);
 
-  return { pair, error };
+  return pair;
 };
 
 export const getToken1Price = (tokenA: ListingModel, tokenB: ListingModel, chainId: ChainId) => {
