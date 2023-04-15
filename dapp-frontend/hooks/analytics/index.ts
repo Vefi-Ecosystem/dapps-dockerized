@@ -602,7 +602,7 @@ export const useHighestVolumeToken = () => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(HIGHEST_VOLUME_QUERY, { date: Math.floor(Date.now() / 1000) - 3600 * 24 });
+        const req: any = await dexGQLClient?.request(HIGHEST_VOLUME_QUERY, { date: Math.floor(Date.now() / 1000) - 3600 * 24 });
         setData((head(req.tokenDayDatas) as any).token);
         setIsLoading(false);
       } catch (error: any) {
@@ -626,7 +626,7 @@ export const useHighestTransactionToken = () => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(TRANSACTION_COUNT_QUERY, { date: Math.floor(Date.now() / 1000) - 3600 * 24 });
+        const req: any = await dexGQLClient?.request(TRANSACTION_COUNT_QUERY, { date: Math.floor(Date.now() / 1000) - 3600 * 24 });
         setData((head(req.tokenDayDatas) as any).token);
         setIsLoading(false);
       } catch (error: any) {
@@ -649,7 +649,7 @@ export const useTopPair = () => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(PAIRS_QUERY);
+        const req: any = await dexGQLClient?.request(PAIRS_QUERY);
         setData(head(req.pairs) as any);
         setIsLoading(false);
       } catch (error: any) {
@@ -672,7 +672,7 @@ export const useMostPopularToken = () => {
     (async () => {
       try {
         setIsLoading(true);
-        const req = await dexGQLClient?.request(TOKENS_QUERY);
+        const req: any = await dexGQLClient?.request(TOKENS_QUERY);
         setData(head(req.tokens) as any);
         setIsLoading(false);
       } catch (error: any) {
