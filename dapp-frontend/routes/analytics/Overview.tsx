@@ -742,7 +742,7 @@ const TransactionsList = () => {
                       </a>
                     </TCell>
                     <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
-                      <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.transaction.id)}>
+                      <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.transaction.id)}>
                         <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
                           view transaction
                         </span>
@@ -857,7 +857,7 @@ const TransactionsList = () => {
                       </a>
                     </TCell>
                     <TCell className="text-center py-2 text-[#fff] font-Poppins text-[0.5em] lg:text-[0.85em] font-[400]">
-                      <a target="_blank" rel="noreferrer" href={useExplorerLink('address', item.transaction.id)}>
+                      <a target="_blank" rel="noreferrer" href={useExplorerLink('tx', item.transaction.id)}>
                         <span className="capitalize font-Syne font-[400] text-[0.5em] lg:text-[0.85em] text-[#6093df] cursor-pointer">
                           view transaction
                         </span>
