@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import React from 'react';
-import LaunchPadCard from '../components/Card/LaunchpadCard';
+import LaunchPadCard from '../ui/Launchpad/LaunchpadCard';
 
 export default function Launchpad() {
   return (
