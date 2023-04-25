@@ -1,4 +1,5 @@
 import '../styles/global.css';
+import '../public/fonts/stylesheet.css';
 import 'react-toastify/dist/ReactToastify.css';
 import 'moment';
 import 'moment-timezone';
