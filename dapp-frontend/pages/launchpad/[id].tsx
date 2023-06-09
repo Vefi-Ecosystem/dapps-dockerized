@@ -8,7 +8,7 @@ export default function Index() {
   return (
     <>
       <Head>
-        <title>Vefi DApps | Homepage</title>
+        <title>Vefi DApps | Info Page</title>
       </Head>
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row w-full py-10">
