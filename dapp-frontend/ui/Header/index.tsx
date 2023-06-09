@@ -85,11 +85,11 @@ export default function Header() {
                 <span className="text-white text-[1em] font-[400]">Analytics</span>
               </ActiveLink>
             </div>
-            {/* <div className="px-[23px] cursor-pointer">
+            <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#105dcf]" href="/launchpad">
                 <span className="text-white text-[1em] font-[400]">Launchpad</span>
               </ActiveLink>
-            </div> */}
+            </div>
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#105dcf]" href="/staking">
                 <span className="text-white text-[1em] font-[400]">Staking Pools</span>
