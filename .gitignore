@@ -1,2 +1,4 @@
 *.key
 *.crt
+/node_modules
+node_modules
