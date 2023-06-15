@@ -1,9 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-import { FiChevronDown } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 export default function Bridge() {
+  const [show, setShow] = useState<boolean>(false);
+  const [tokenInfo, setTokenInfo] = useState({
+    fromToken: 'Select a token',
+    fromNetwork: 'Select a network',
+    fromTokenImg: '/images/wallet.png',
+    fromNetworkImg: '/images/wallet.png',
+    toToken: 'Select a token',
+    toTokenImg: '/images/wallet.png',
+    toNetworkImg: '/images/wallet.png',
+    toNetwork: 'Select a network'
+  });
+
+  const [toNetworkBtn, setToNetworkBtn] = useState<boolean>(false);
+
+  const token = [
+    {
+      id: 1,
+      name: 'Wade Cooper',
+      avatar: '/images/wallet.png'
+    },
+    {
+      id: 2,
+      name: 'Arlene Mccoy',
+      avatar: '/images/wallet.png'
+    },
+    {
+      id: 3,
+      name: 'Devon Webb',
+      avatar: '/images/wallet.png'
+    },
+    {
+      id: 4,
+      name: 'Tom Cook',
+      avatar: '/images/wallet.png'
+    },
+    {
+      id: 5,
+      name: 'Tanya Fox',
+      avatar: '/images/wallet.png'
+    },
+    {
+      id: 6,
+      name: 'Hellen Schmidt',
+      avatar: '/images/wallet.png'
+    },
+    {
+      id: 7,
+      name: 'Caroline Schultz',
+      avatar: '/images/wallet.png'
+    },
+    {
+      id: 8,
+      name: 'Mason Heaney',
+      avatar: '/images/wallet.png'
+    }
+  ];
   return (
     <>
       <Head>
@@ -20,28 +76,59 @@ export default function Bridge() {
               <Image src="/images/setting.png" alt="wallet" width={28} height={28} />
             </div>
           </div>
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col relative">
             <span className="my-3 font-Syne text-sm">From</span>
-            <div className="flex justify-between gap-5 bg-[rgba(255,255,255,0.07)] w-full px-5 py-1 rounded-[10px] shadow-md">
+            <div className="flex justify-between gap-5 bg-[rgba(255,255,255,0.07)] w-full px-5 py-1 rounded-[10px] shadow-md ">
               <div className="">
-                <span className="text-sm font-Syne">Token</span>
-                <div className="flex items-center gap-2 py-2">
-                  <Image src="/images/wallet.png" alt="wallet" width={28} height={28} />
+                <div
+                  className="flex items-center gap-2 py-2 cursor-pointer"
+                  onClick={() => {
+                    setShow(!show);
+                    setToNetworkBtn(false);
+                  }}
+                >
+                  <Image src={tokenInfo.fromTokenImg} alt="wallet" width={28} height={28} />
                   <span className="text-sm font-Syne flex items-center gap-1">
-                    BTC <FiChevronDown />
+                    {tokenInfo.fromToken} {show ? <FiChevronUp /> : <FiChevronDown />}
                   </span>
                 </div>
               </div>
               <div className="">
-                <span className="text-sm font-Syne">Network</span>
-                <div className="flex items-center gap-2 py-2">
-                  <Image src="/images/wallet.png" alt="wallet" width={28} height={28} />
+                <div
+                  className="flex items-center gap-2 py-2 cursor-pointer"
+                  onClick={() => {
+                    setShow(!show);
+                    setToNetworkBtn(!toNetworkBtn);
+                  }}
+                >
+                  <Image src={tokenInfo.fromNetworkImg} alt="wallet" width={28} height={28} />
                   <span className="text-sm font-Syne flex items-center gap-1">
-                    BTC <FiChevronDown />
+                    {tokenInfo.fromNetwork} <FiChevronDown />
                   </span>
                 </div>
               </div>
             </div>
+            {show && (
+              <div className="h-[300px] w-full bg-[rgba(0,0,0,1)] absolute z-10 top-[100px] rounded-[5px] p-3 overflow-y-scroll">
+                {token.map((item) => (
+                  <div className="flex justify-between w-full p-2 mb-1 hover:bg-[#1a1a1a] items-center cursor-pointer rounded-sm" key={item.id}>
+                    <div
+                      className="flex gap-2 items-center font-Syne font-[700]"
+                      onClick={() => {
+                        toNetworkBtn
+                          ? setTokenInfo({ ...tokenInfo, fromNetwork: item.name, fromNetworkImg: item.avatar })
+                          : setTokenInfo({ ...tokenInfo, fromToken: item.name, fromTokenImg: item.avatar });
+
+                        setShow(!show);
+                      }}
+                    >
+                      <Image src={item.avatar} alt="eth" width={30} height={30} />
+                      <h1 className="text-sm">{item.name}</h1>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="flex justify-center items-center py-5">
             <Image src="/images/toggle.png" alt="wallet" width={20} height={20} />
@@ -50,20 +137,18 @@ export default function Bridge() {
             <span className="font-Syne text-sm">To</span>
             <div className="flex justify-between gap-5 bg-[rgba(255,255,255,0.07)] w-full px-5 py-1 rounded-[10px] shadow-md">
               <div className="">
-                <span className="text-sm font-Syne">Token</span>
                 <div className="flex items-center gap-2 py-2">
-                  <Image src="/images/wallet.png" alt="wallet" width={28} height={28} />
+                  <Image src={tokenInfo.toTokenImg} alt="wallet" width={28} height={28} />
                   <span className="text-sm font-Syne flex items-center gap-1">
-                    BTC <FiChevronDown />
+                    {tokenInfo.toToken} <FiChevronDown />
                   </span>
                 </div>
               </div>
               <div className="">
-                <span className="text-sm font-Syne">Network</span>
                 <div className="flex items-center gap-2 py-2">
-                  <Image src="/images/wallet.png" alt="wallet" width={28} height={28} />
+                  <Image src={tokenInfo.toNetworkImg} alt="wallet" width={28} height={28} />
                   <span className="text-sm font-Syne flex items-center gap-1">
-                    BTC <FiChevronDown />
+                    {tokenInfo.toNetwork} <FiChevronDown />
                   </span>
                 </div>
               </div>
