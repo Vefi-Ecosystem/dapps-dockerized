@@ -20,6 +20,7 @@
     "@ethersproject/units": "^5.7.0",
     "@headlessui/react": "^1.7.0",
     "@layerzerolabs/stargate-ui": "^0.0.26",
+    "@layerzerolabs/ui-core": "^0.1.0",
     "@web3-react/abstract-connector": "^6.0.7",
     "@web3-react/core": "^6.1.9",
     "@web3-react/injected-connector": "^6.0.7",
