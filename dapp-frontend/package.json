@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "export NODE_ENV=production && next build",
     "start": "next start",
     "lint:fix": "npx eslint --fix ."
   },
