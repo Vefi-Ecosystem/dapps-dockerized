@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import type { NextPage } from 'next';
 import WidgetType from '@layerzerolabs/stargate-ui';
