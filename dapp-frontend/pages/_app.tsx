@@ -12,6 +12,7 @@ import Footer from '../ui/Footer';
 import { DEXSettingsContextProvider } from '../contexts/dex/settings';
 import { Web3ContextProvider } from '../contexts/web3';
 import { GQLProvider } from '../contexts/graphql';
+import Script from 'next/script';
 
 function getLibrary(provider: any) {
   return new Web3(provider);
@@ -37,6 +38,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <DEXSettingsContextProvider>
               <AppContent>
                 <Component {...pageProps} />
+                <Script src="https://unpkg.com/@layerzerolabs/stargate-ui@latest/element.js" defer />
               </AppContent>
             </DEXSettingsContextProvider>
           </GQLProvider>
