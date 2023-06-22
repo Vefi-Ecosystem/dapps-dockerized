@@ -20,5 +20,6 @@ module.exports = withPWA({
       }
     });
     return config;
-  }
+  },
+  target: 'serverless'
 });
