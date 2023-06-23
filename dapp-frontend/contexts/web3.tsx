@@ -8,6 +8,7 @@ import { TorusConnector } from '@web3-react/torus-connector';
 import type Web3 from 'web3';
 import { OkxWalletConnector } from '../web3/custom/OkxWalletConnector';
 import chains from '../assets/chains.json';
+import { useRouter } from 'next/router';
 
 type Web3ContextType = {
   account?: string | null;
@@ -48,6 +49,15 @@ export const Web3ContextProvider = ({ children }: any) => {
   const { library, account, activate, deactivate, active, chainId: web3ChainId, error, setError } = useWeb3React<Web3>();
   const [chainId, setChainId] = useState<number>(32520);
   const [ethereumProvider, setEthereumProvider] = useState<any>(null);
+
+  const router = useRouter();
+
+  const routeCheck = () => {
+    const currentLink = router.pathname;
+    if (currentLink.includes('bridge')) {
+      router.reload()
+    }
+  }
 
   const connectInjected = useCallback(() => {
     activate(injectedConnector, setError, true)
@@ -95,8 +105,10 @@ export const Web3ContextProvider = ({ children }: any) => {
               params: [{ chainId: chain }]
             });
             setChainId(parseInt(chain));
+            routeCheck()
           } else {
             setChainId(parseInt(chain));
+            routeCheck()
           }
         } catch (error: any) {
           if (error.code === 4902 || error.code === -32603) {
@@ -120,6 +132,7 @@ export const Web3ContextProvider = ({ children }: any) => {
         }
       } else {
         setChainId(parseInt(chain));
+        routeCheck()
       }
     },
     [active, ethereumProvider]
