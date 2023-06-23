@@ -104,7 +104,7 @@ export default function Header() {
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#105dcf]" href="/bridge">
                 <span className="text-white text-[1em] font-[400]">Bridge</span>
               </ActiveLink>
-            </div> 
+            </div>
           </div>
           <div className="flex justify-center items-center gap-2">
             <div className="flex justify-center items-center gap-2 flex-1">
@@ -211,6 +211,16 @@ export default function Header() {
           <li>
             <ActiveLink activeClassName="active" href="/staking">
               <span className="capitalize">staking pools</span>
+            </ActiveLink>
+          </li>
+          <li>
+            <ActiveLink activeClassName="active" href="/launchpad">
+              <span className="capitalize">Lauchpad</span>
+            </ActiveLink>
+          </li>
+          <li>
+            <ActiveLink activeClassName="active" href="/bridge">
+              <span className="capitalize">Bridge</span>
             </ActiveLink>
           </li>
         </ul>
