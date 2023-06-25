@@ -42,8 +42,17 @@
 .hidden-scrollbar::-webkit-scrollbar {
   display: none;
 }
-
+.MuiScopedCssBaseline-root {
+  background: transparent !important;
+}
 .hidden-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+.scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scroll::-webkit-scrollbar {
+  display: none;
 }

@@ -55,9 +55,9 @@ export const Web3ContextProvider = ({ children }: any) => {
   const routeCheck = () => {
     const currentLink = router.pathname;
     if (currentLink.includes('bridge')) {
-      router.reload()
+      router.reload();
     }
-  }
+  };
 
   const connectInjected = useCallback(() => {
     activate(injectedConnector, setError, true)
@@ -105,10 +105,10 @@ export const Web3ContextProvider = ({ children }: any) => {
               params: [{ chainId: chain }]
             });
             setChainId(parseInt(chain));
-            routeCheck()
+            routeCheck();
           } else {
             setChainId(parseInt(chain));
-            routeCheck()
+            routeCheck();
           }
         } catch (error: any) {
           if (error.code === 4902 || error.code === -32603) {
@@ -132,7 +132,7 @@ export const Web3ContextProvider = ({ children }: any) => {
         }
       } else {
         setChainId(parseInt(chain));
-        routeCheck()
+        routeCheck();
       }
     },
     [active, ethereumProvider]
