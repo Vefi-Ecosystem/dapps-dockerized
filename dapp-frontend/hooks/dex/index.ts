@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { AddressZero } from '@ethersproject/constants';
 import { parseUnits } from '@ethersproject/units';
-import { Fetcher, TokenAmount, WETH } from 'quasar-sdk-core';
+import { Fetcher, TokenAmount, WETH } from 'quasar-sdk-sub-core';
 import { abi as erc20Abi } from 'quasar-v1-core/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
 import { abi as pairAbi } from 'quasar-v1-core/artifacts/contracts/QuasarPair.sol/QuasarPair.json';
 import { abi as factoryAbi } from 'quasar-v1-core/artifacts/contracts/QuasarFactory.sol/QuasarFactory.json';
