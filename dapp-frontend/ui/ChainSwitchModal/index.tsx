@@ -44,7 +44,7 @@ export default function ChainSwitchModal({ isOpen = false, onClose }: ChainSwitc
                   <ul tabIndex={0} className="menu p-2 bg-transparent w-full text-white font-Syne overflow-auto">
                     {map(Object.keys(chains), (key: keyof typeof chains, index: number) => (
                       <li key={index}>
-                        <a className="gap-2 text-[1em]" onClick={() => switchChain(hexValue(parseInt(key)))}>
+                        <a className="gap-2 text-[1em]" onClick={() => switchChain(hexValue(parseInt(key)))} onMouseDown={onClose}>
                           <div className="avatar">
                             <div className="w-8 rounded-full">
                               <img src={chains[key].logoURI} alt={chains[key].symbol} />
