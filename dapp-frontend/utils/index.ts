@@ -2,7 +2,6 @@ import { isAddress } from '@ethersproject/address';
 import { AddressZero } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Web3Provider } from '@ethersproject/providers';
-import { ChangeEvent } from 'react';
 import type Web3 from 'web3';
 
 export async function addToMetamask(address: string, symbol: string, decimals: number, image?: string) {
@@ -32,6 +31,5 @@ export function getPair(address1: string, address2: string) {
 
 export function sanitizeInput(e: any) {
   const result = e?.target?.value.replace(/[^a-z0-9]/gi, '');
-  console.log(result);
   return result;
 }

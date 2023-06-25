@@ -10,7 +10,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { parseEther, parseUnits } from '@ethersproject/units';
 import { multiply, toLower, get, map } from 'lodash';
 import assert from 'assert';
-import { WETH, Fetcher, Trade, TokenAmount, Router, Percent, ETHER, CurrencyAmount } from 'quasar-sdk-core';
+import { WETH, Fetcher, Trade, TokenAmount, Router, Percent, ETHER, CurrencyAmount } from 'quasar-sdk-sub-core';
 import JSBI from 'jsbi';
 import { abi as erc20Abi } from 'quasar-v1-core/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
 import { abi as routerAbi } from 'quasar-v1-periphery/artifacts/contracts/QuasarRouter02.sol/QuasarRouter02.json';
@@ -198,6 +198,7 @@ export default function Swap() {
       if (playSounds) playSuccess();
     } catch (error: any) {
       setIsSwapLoading(false);
+      console.log("Swap Failedddd", error)
       displayToast('transaction execution failed', 'error');
       if (playSounds) playError();
     }

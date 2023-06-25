@@ -213,6 +213,16 @@ export default function Header() {
               <span className="capitalize">staking pools</span>
             </ActiveLink>
           </li>
+          <li>
+            <ActiveLink activeClassName="active" href="/launchpad">
+              <span className="capitalize">Lauchpad</span>
+            </ActiveLink>
+          </li>
+          <li>
+            <ActiveLink activeClassName="active" href="/bridge">
+              <span className="capitalize">Bridge</span>
+            </ActiveLink>
+          </li>
         </ul>
       </Transition>
       <ProviderSelectModal isOpen={showProviderModal} onClose={() => setShowProviderModal(false)} />

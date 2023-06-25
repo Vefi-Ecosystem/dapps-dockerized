@@ -16,7 +16,7 @@ import { parseEther, parseUnits } from '@ethersproject/units';
 import Toast from '../../Toast';
 import { hexValue } from '@ethersproject/bytes';
 import { useWeb3Context } from '../../../contexts/web3';
-import { WETH } from 'quasar-sdk-core';
+import { WETH } from 'quasar-sdk-sub-core';
 import { TailSpin } from 'react-loader-spinner';
 import { useListingAsDictionary } from '../../../hooks/api';
 
