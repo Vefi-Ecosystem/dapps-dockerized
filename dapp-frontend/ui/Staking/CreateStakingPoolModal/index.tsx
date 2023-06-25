@@ -347,6 +347,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="Enter APY"
                               name="apy"
+                              min={0}
                               onChange={(e) => setDataValue('valueAsNumber', e, 0)}
                             />
                           </div>
@@ -358,6 +359,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="Enter Incurred Tax"
                               name="tax"
+                              min={0}
                               onChange={(e) => setDataValue('valueAsNumber', e, 0)}
                             />
                           </div>
@@ -387,7 +389,8 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                                 className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                                 placeholder="Enter Intervals"
                                 name="withdrawalIntervals"
-                                onChange={(e) => setDataValue('valueAsNumber', e, 0)}
+                                min={1}
+                                onChange={(e) => setDataValue('valueAsNumber', e, 1)}
                               />
                               <div className="dropdown dropdown-bottom">
                                 <label
@@ -420,6 +423,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="Enter Initial Amount"
                               name="initialAmount"
+                              min={0}
                               onChange={(e) => setDataValue('valueAsNumber', e, 0)}
                             />
                           </div>
@@ -430,6 +434,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="How Many Days Should This Pool Last?"
                               name="daysToLast"
+                              min={1}
                               onChange={(e) => setDataValue('valueAsNumber', e, 365)}
                             />
                           </div>
