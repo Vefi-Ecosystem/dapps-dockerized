@@ -112,8 +112,8 @@ export default function MultiSig() {
                       </div>
                       <div className="flex flex-col py-3">
                         <h2 className="text-[#AEAEAE] font-Syne font-[400]">Demo Account</h2>
-                        <p>This account is a demo account</p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full">
+                        <p className="text-[rgba(255,255,255,0.4)]">This account is a demo account</p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full pt-2">
                           <div className="bg-[#141414] p-5 rounded-[15px] ">
                             <div className="flex items-center gap-2">
                               <img src="/images/crypto_logo.png" alt="crypto logo" />
