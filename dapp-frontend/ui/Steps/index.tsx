@@ -5,6 +5,7 @@ type StepProps = {
   isActive?: boolean;
   label?: string;
   title?: string;
+  desc?: string;
 };
 
 export const Step = ({ isActive, label }: StepProps) => (
@@ -27,14 +28,15 @@ export const Steps = ({ activeStep = 0, children }: StepsProps) => {
 
   useEffect(() => {
     forEach(childrenArray, (elem, index) => {
-      if ((elem as ReactElement<any>).type !== Step) throw new Error(`Invalid child. Only chid of type 'Step' is allowed. Element at index ${index}`);
+      if ((elem as ReactElement<any>)?.type !== Step)
+        throw new Error(`Invalid child. Only chid of type 'Step' is allowed. Element at index ${index}`);
     });
   }, [childrenArray]);
 
   return (
-    <div className="flex justify-evenly items-center gap-4 w-full">
+    <div className="flex justify-evenly  gap-4 w-full">
       {map(childrenArray, (elem, index) => (
-        <div className={`flex flex-col justify-center items-center gap-2 ${index < childrenArray.length - 1 ? 'flex-1' : ''}`} key={index}>
+        <div className={`flex flex-col  gap-2 ${index < childrenArray.length - 1 ? 'flex-1' : ''}`} key={index}>
           <div className="flex justify-start items-center gap-2 w-full">
             {cloneElement(elem as ReactElement, {
               isActive: index === activeStep,
@@ -49,12 +51,15 @@ export const Steps = ({ activeStep = 0, children }: StepsProps) => {
             )}
           </div>
           {(elem as ReactElement<any>).props.title && (
-            <div className="flex justify-start items-center w-full">
+            <div className="flex justify-start  w-full flex-col text-left">
               <span
                 className={`font-Syne font-[500] ${index === activeStep ? 'text-[#fff]' : 'text-[#aeaeae]'} text-[0.5em] lg:text-[0.9em] capitalize `}
               >
                 {(elem as ReactElement<any>).props.title}
               </span>
+              <p className={`text-[10px] font-Kinn ${index === activeStep && 'text-[rgba(255,255,255,0.8)]'}`}>
+                {(elem as ReactElement<any>).props.desc}
+              </p>
             </div>
           )}
         </div>
