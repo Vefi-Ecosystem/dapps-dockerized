@@ -17,6 +17,7 @@ import chains from '../../../assets/chains.json';
 import { useWeb3Context } from '../../../contexts/web3';
 import millify from 'millify';
 import { TailSpin } from 'react-loader-spinner';
+import { sanitizeInput } from '../../../utils';
 
 type CreateStakingPoolModalProps = {
   isOpen: boolean;
@@ -55,7 +56,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
     (key: string, e: ChangeEvent<HTMLInputElement>, plholder?: string | number) =>
       setPoolCreationData((d) => ({
         ...d,
-        [e.target.name]: e.target[key as keyof typeof e.target] || plholder || d[e.target.name as keyof typeof poolCreationData]
+        [e.target.name]: e.target[key as keyof typeof e.target] || plholder
       })),
     []
   );
@@ -268,7 +269,8 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                                 onClick={() => {
                                   if (activeStep < 2) setActiveStep((step) => step + 1);
                                 }}
-                                className="capitalize font-Inter font-[500] border border-[#105dcf] text-[0.5em] lg:text-[0.85em] bg-[#105dcf] text-[#fff] rounded-[8px] lg:px-4 px-1 lg:py-2 py-1 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)]"
+                                disabled={!poolCreationData.rewardTokenAddress || !poolCreationData.stakeTokenAddress}
+                                className="capitalize font-Inter font-[500] border border-[#105dcf] text-[0.5em] lg:text-[0.85em] bg-[#105dcf] text-[#fff] rounded-[8px] lg:px-4 px-1 lg:py-2 py-1 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)] disabled:cursor-not-allowed"
                               >
                                 next
                               </button>
@@ -302,7 +304,13 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="Enter Address"
                               name="stakeTokenAddress"
-                              onChange={(e) => setDataValue('value', e, AddressZero)}
+                              onChange={(e) => setDataValue('value', e)}
+                              onKeyUp={(e) =>
+                                setPoolCreationData({
+                                  ...poolCreationData,
+                                  stakeTokenAddress: sanitizeInput(e)
+                                })
+                              }
                             />
                           </div>
                           <div className="flex flex-col justify-center items-start w-full gap-1">
@@ -313,7 +321,13 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="Enter Address"
                               name="rewardTokenAddress"
-                              onChange={(e) => setDataValue('value', e, AddressZero)}
+                              onChange={(e) => setDataValue('value', e)}
+                              onKeyUp={(e) =>
+                                setPoolCreationData({
+                                  ...poolCreationData,
+                                  rewardTokenAddress: sanitizeInput(e)
+                                })
+                              }
                             />
                           </div>
                         </div>
@@ -333,6 +347,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="Enter APY"
                               name="apy"
+                              min={0}
                               onChange={(e) => setDataValue('valueAsNumber', e, 0)}
                             />
                           </div>
@@ -344,6 +359,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="Enter Incurred Tax"
                               name="tax"
+                              min={0}
                               onChange={(e) => setDataValue('valueAsNumber', e, 0)}
                             />
                           </div>
@@ -354,7 +370,14 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="Enter Tax Recipient"
                               name="taxRecipient"
-                              onChange={(e) => setDataValue('value', e, AddressZero)}
+                              value={poolCreationData.taxRecipient}
+                              onChange={(e) => setDataValue('value', e)}
+                              onKeyUp={(e) =>
+                                setPoolCreationData({
+                                  ...poolCreationData,
+                                  taxRecipient: sanitizeInput(e)
+                                })
+                              }
                             />
                           </div>
                           <div className="flex flex-col justify-center items-start w-full gap-1">
@@ -366,7 +389,8 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                                 className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                                 placeholder="Enter Intervals"
                                 name="withdrawalIntervals"
-                                onChange={(e) => setDataValue('valueAsNumber', e, 0)}
+                                min={1}
+                                onChange={(e) => setDataValue('valueAsNumber', e, 1)}
                               />
                               <div className="dropdown dropdown-bottom">
                                 <label
@@ -399,6 +423,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="Enter Initial Amount"
                               name="initialAmount"
+                              min={0}
                               onChange={(e) => setDataValue('valueAsNumber', e, 0)}
                             />
                           </div>
@@ -409,6 +434,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               className="font-Syne bg-[#fff]/[.07] w-full rounded-[8px] px-2 py-3 text-[#aeaeae] outline-0"
                               placeholder="How Many Days Should This Pool Last?"
                               name="daysToLast"
+                              min={1}
                               onChange={(e) => setDataValue('valueAsNumber', e, 365)}
                             />
                           </div>

@@ -28,3 +28,8 @@ export function getContract(address: string, ABI: any, library: Web3, account?: 
 export function getPair(address1: string, address2: string) {
   if (!isAddress(address1) || !isAddress(address2)) throw new Error('Invalid address');
 }
+
+export function sanitizeInput(e: any) {
+  const result = e?.target?.value.replace(/[^a-z0-9]/gi, '');
+  return result;
+}
