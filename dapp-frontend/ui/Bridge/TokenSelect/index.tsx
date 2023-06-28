@@ -19,9 +19,6 @@ const TokenSelect = (
     const { isLoading } = useGetBridgeTokenList(chainId);
 
     const [searchValue, setSearchValue] = useState<string>('');
-    const [showToast, setShowToast] = useState<boolean>(false);
-    const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
-    const [toastMessage, setToastMessage] = useState<string>('');
 
     useEffect(() => { }, [searchValue])
 
