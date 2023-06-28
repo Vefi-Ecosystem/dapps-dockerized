@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useGetBridgeTokenList } from "../../../hooks/api/bridge";
-import { useWeb3Context } from "../../../contexts/web3";
 import { Dialog, Transition } from '@headlessui/react';
 import { AiOutlineSearch, AiOutlineCloseCircle } from 'react-icons/ai';
-import Image from 'next/image';
 import { TailSpin } from 'react-loader-spinner';
 
 type TokenSelectProps = {
@@ -16,7 +14,7 @@ type TokenSelectProps = {
 }
 
 const TokenSelect = (
-    { chainId, onClose, isVisible,tokenList }: TokenSelectProps
+    { chainId, onClose, isVisible, tokenList, onTokenSelected }: TokenSelectProps
 ) => {
     const { isLoading } = useGetBridgeTokenList(chainId);
 
@@ -48,7 +46,9 @@ const TokenSelect = (
                                 const isVisible = token?.name?.toLowerCase().startsWith(searchValue.toLowerCase()) || token?.address?.toLowerCase().startsWith(searchValue.toLowerCase());
 
                                 return (
-                                    <div className={`flex justify-between gap-5 w-full py-2 rounded-md shadow-md cursor-pointer hover:bg-[#404ebd] ${!isVisible ? 'hidden' : ''}`} key={index}>
+                                    <div className={`flex justify-between gap-5 w-full py-2 rounded-md shadow-md cursor-pointer hover:bg-[#404ebd] ${!isVisible ? 'hidden' : ''}`} key={index} 
+                                        onClick={() => onTokenSelected(token)}
+                                    >
                                         <div className='flex justify-between w-full gap-2 px-2'>
                                             <div className='flex items-center w-full gap-2'>
                                                 <img src={token?.logoUrl} alt={token.name} className='h-[30px] w-[30px] bg-transparent rounded-full' />
