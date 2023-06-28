@@ -25,3 +25,32 @@ export const useGetBridgeTokenList = (chainId: number) => {
 
     return { isLoading, chainTokenList };
 }
+
+export const useGetBridgeChainList = () => {
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [chainList, setChainList] = useState<any[] | null>([{}]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                setIsLoading(true);
+                const { data } = await axios.get<Record<string, any>>('https://bridgeapi.anyswap.exchange/data/bridgeChainInfo');
+                let chains: any[] = [];
+                Object.entries(data).forEach(([key, value]: any) => {
+                    const { name, symbol, rpc, explorer, explorer_cn, address, logoUrl, networkType, destChain } = value;
+                    const network = {
+                        chainId: key, name, symbol, rpc, explorer, explorer_cn, address, logoUrl, networkType, destChain
+                    }
+                    chains.push(network)
+                })
+                setChainList(chains);
+                setIsLoading(false);
+            } catch (error) {
+                console.log(error);
+                setIsLoading(false);
+            }
+        })
+    }, [])
+
+    return { isLoading, chainList };
+}
