@@ -21,5 +21,8 @@ module.exports = withPWA({
     });
     return config;
   },
-  target: 'serverless'
+  target: 'serverless',
+  images: {
+    domains: ["*"]
+  }
 });
