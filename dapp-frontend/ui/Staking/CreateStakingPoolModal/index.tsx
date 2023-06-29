@@ -21,7 +21,6 @@ import { sanitizeInput } from '../../../utils';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { exitCode } from 'process';
 
 type CreateStakingPoolModalProps = {
   isOpen: boolean;

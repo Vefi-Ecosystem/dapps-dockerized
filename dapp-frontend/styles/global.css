@@ -45,6 +45,7 @@
 .MuiScopedCssBaseline-root {
   background: transparent !important;
 }
+
 .hidden-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
