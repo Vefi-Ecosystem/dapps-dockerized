@@ -23,6 +23,6 @@ module.exports = withPWA({
   },
   target: 'serverless',
   images: {
-    domains: ['assets.coingecko.com','i.imgur.com']
+    domains: ["*"]
   }
 });
