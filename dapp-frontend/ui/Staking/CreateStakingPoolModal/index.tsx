@@ -441,6 +441,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               placeholder="How Many Days Should This Pool Last?"
                               name="daysToLast"
                               min={1}
+                              value={1}
                               onChange={(e) => setDataValue('valueAsNumber', e, 365)}
                             />
                           </div>
