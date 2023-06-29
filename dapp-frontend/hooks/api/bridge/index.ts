@@ -34,8 +34,11 @@ export const useGetBridgeChainList = () => {
         (async () => {
             try {
                 setIsLoading(true);
-                const { data } = await axios.get<Record<string, any>>('https://bridgeapi.anyswap.exchange/data/bridgeChainInfo');
-                let chains: any[] = [];
+                const response = await fetch('https://bridgeapi.anyswap.exchange/data/bridgechaininfo')
+
+                const data = await response.json()
+
+                let chains: any[] = []
                 Object.entries(data).forEach(([key, value]: any) => {
                     const { name, symbol, rpc, explorer, explorer_cn, logoUrl, networkType, destChain } = value;
                     const network = {
@@ -45,6 +48,7 @@ export const useGetBridgeChainList = () => {
                 })
                 setChainList(chains);
                 setIsLoading(false);
+                console.log(chains);
             } catch (error) {
                 console.log(error);
                 setIsLoading(false);
