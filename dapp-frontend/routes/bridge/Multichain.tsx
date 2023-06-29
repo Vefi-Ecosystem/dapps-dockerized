@@ -101,7 +101,7 @@ export default function Multichain() {
                                     className="flex items-center gap-2 py-2 cursor-pointer"
                                     onClick={() => setShowFromTokenModal(true)}
                                 >
-                                    <Image src={tokenInfo.fromTokenImg} alt="wallet" width={28} height={28} className={`${tokenInfo.fromTokenImg !== "/images/wallet.png" ? "rounded-full" : ""}`} />
+                                    <img src={tokenInfo.fromTokenImg} alt="wallet" width={28} height={28} className={`${tokenInfo.fromTokenImg !== "/images/wallet.png" ? "rounded-full" : ""}`} />
                                     <span className="text-sm font-Syne flex items-center gap-1">
                                         {tokenInfo.fromToken} {showFromTokenModal ? <FiChevronUp /> : <FiChevronDown />}
                                     </span>
@@ -112,7 +112,7 @@ export default function Multichain() {
                                     className="flex items-center gap-2 py-2 cursor-pointer"
                                     onClick={() => setShowFromNetworkModal(true)}
                                 >
-                                    <Image src={tokenInfo.fromNetworkImg} alt="wallet" width={28} height={28} />
+                                    <img src={tokenInfo.fromNetworkImg} alt="wallet" width={28} height={28} />
                                     <span className="text-sm font-Syne flex items-center gap-1">
                                         {tokenInfo.fromNetwork} <FiChevronDown />
                                     </span>
@@ -129,7 +129,7 @@ export default function Multichain() {
                             <div className="">
                                 <div className="flex items-center gap-2 py-2 cursor-pointer"
                                     onClick={() => setShowTokenModal(true)}>
-                                    <Image src={tokenInfo.toTokenImg} alt="wallet" width={28} height={28} className={`${tokenInfo.toTokenImg !== "/images/wallet.png" ? "rounded-full" : ""}`} />
+                                    <img src={tokenInfo.toTokenImg} alt="wallet" width={28} height={28} className={`${tokenInfo.toTokenImg !== "/images/wallet.png" ? "rounded-full" : ""}`} />
                                     <span className="text-sm font-Syne flex items-center gap-1">
                                         {tokenInfo.toToken} {showToTokenModal ? <FiChevronUp /> : <FiChevronDown />}
                                     </span>
@@ -137,7 +137,7 @@ export default function Multichain() {
                             </div>
                             <div className="">
                                 <div className="flex items-center gap-2 py-2">
-                                    <Image src={tokenInfo.toNetworkImg} alt="wallet" width={28} height={28} />
+                                    <img src={tokenInfo.toNetworkImg} alt="wallet" width={28} height={28} />
                                     <span className="text-sm font-Syne flex items-center gap-1">
                                         {tokenInfo.toNetwork} <FiChevronDown />
                                     </span>
