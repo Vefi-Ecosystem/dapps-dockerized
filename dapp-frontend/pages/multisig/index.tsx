@@ -2,9 +2,11 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { Step, Steps } from '../../ui/Steps';
 import { FiPlus } from 'react-icons/fi';
+import { useMultiSigFormContext } from '../../contexts/multisig/multiSigForm';
 
 export default function MultiSig() {
   const [activeStep, setActiveStep] = useState<number>(0);
+  const { inputForm,setInputForm} = useMultiSigFormContext()
   return (
     <>
       <Head>
@@ -56,6 +58,7 @@ export default function MultiSig() {
                           type="text"
                           name=""
                           id=""
+                          value={inputForm}
                           placeholder="Enter Name"
                           className="bg-[#191919] border-0 outline-none p-2 text-white font-Syne rounded"
                         />
