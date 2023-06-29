@@ -3,6 +3,7 @@ import { useGetBridgeTokenList } from "../../../hooks/api/bridge";
 import { Dialog, Transition } from '@headlessui/react';
 import { AiOutlineSearch, AiOutlineCloseCircle } from 'react-icons/ai';
 import { TailSpin } from 'react-loader-spinner';
+import Image from 'next/image';
 
 type TokenSelectProps = {
     chainId: number;
@@ -48,7 +49,7 @@ const TokenSelect = (
                                     >
                                         <div className='flex justify-between w-full gap-2 px-2'>
                                             <div className='flex items-center w-full gap-2'>
-                                                <img src={token?.logoUrl} alt={token.name} className='h-[30px] w-[30px] bg-transparent rounded-full' />
+                                                <Image src={token?.logoUrl} alt={token.name} width={30} height={30} className='h-[30px] w-[30px] bg-transparent rounded-full' />
                                                 <div>
                                                     <p className="text-[15px] text-white font-Syne font-[700]">{token.name}</p>
                                                     <p className="text-[12px] text-[#8e8e8e] font-Syne font-[400]">{token.symbol}</p>
