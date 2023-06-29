@@ -54,7 +54,7 @@ export const Web3ContextProvider = ({ children }: any) => {
 
   const routeCheck = () => {
     const currentLink = router.pathname;
-    if (currentLink.includes('bridge')) {
+    if (currentLink.includes('stargate')) {
       router.reload();
     }
   };

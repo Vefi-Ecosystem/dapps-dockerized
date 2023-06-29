@@ -195,11 +195,13 @@ export default function Swap() {
 
       setIsSwapLoading(false);
       displayToast('transaction executed', 'success');
+      clearFields();
       if (playSounds) playSuccess();
     } catch (error: any) {
       setIsSwapLoading(false);
       console.log("Swap Failedddd", error)
       displayToast('transaction execution failed', 'error');
+      clearFields();
       if (playSounds) playError();
     }
   }, [
@@ -263,6 +265,11 @@ export default function Swap() {
       );
     }
   }, [query.outputToken, tokensListing]);
+  
+  const clearFields = () =>{
+    setVal1(0.0);
+    setVal2(0.0);
+  }
 
   return (
     <>

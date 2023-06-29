@@ -6,6 +6,16 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { useWeb3Context } from '../../contexts/web3';
 import chains from '../../assets/chains.json';
 import { JsonRpcProvider } from '@ethersproject/providers';
+import { formatUnits } from '@ethersproject/units';
+
+
+function approximate(value: string, decimals: number) {
+  let convertedValue = parseFloat(value);
+  let powerOfTen = 10 ** decimals;
+  let approximatedValue = Math.floor(convertedValue * powerOfTen) / powerOfTen;
+  return approximatedValue.toFixed(decimals);
+}
+
 
 export const useTokenBalance = (address: string, deps: any[] = []) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,9 +30,9 @@ export const useTokenBalance = (address: string, deps: any[] = []) => {
         try {
           setIsLoading(true);
           const decimals: number = (await contract?.decimals()) || 0;
-          const balanceBigNumber: BigNumber = (await contract?.balanceOf(account)) || BigNumber.from(0);
-          const bal = balanceBigNumber.gt(0) ? balanceBigNumber.div('0x'.concat(Math.pow(10, decimals).toString(16))).toNumber() : 0;
-          setBalance(bal);
+          const bal = (await contract?.balanceOf(account)) || BigNumber.from(0);
+          const formattedBalance = approximate(formatUnits(bal, decimals), 6);
+          setBalance(parseFloat(formattedBalance));
           setIsLoading(false);
         } catch (error: any) {
           setIsLoading(false);
@@ -50,8 +60,9 @@ export const useEtherBalance = (deps: any[] = []) => {
       (async () => {
         try {
           setIsLoading(true);
-          const bal = (await new JsonRpcProvider(url, chainId).getBalance(account as string)).div(`0x${(10 ** 18).toString(16)}`).toNumber();
-          setBalance(bal);
+          const bal = await new JsonRpcProvider(url, chainId).getBalance(account as string)
+          const formattedBalance = approximate(formatUnits(bal, 18), 6);
+          setBalance(parseFloat(formattedBalance));
           setIsLoading(false);
         } catch (error: any) {
           setIsLoading(false);
