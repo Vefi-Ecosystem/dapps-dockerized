@@ -34,6 +34,12 @@ const Bridge = () => {
     const RenderedChild = useBridgeSubRoutes(query.tab as Route);
     const route = useMemo(() => (query.tab as Route) || Route.STARGATE, [query.tab]);
 
+    useEffect(() => {
+        if (!query.tab) {
+            push(`/bridge?tab=${Route.STARGATE}`);
+        }
+    },[])
+
     return (
         <>
             <Head>
