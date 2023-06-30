@@ -2,49 +2,66 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { useGetBridgeTokenList, useGetBridgeChainList } from '../../hooks/api/bridge';
+import { useGetBridgeTokenList } from '../../hooks/api/bridge';
 import { useWeb3Context } from '../../contexts/web3';
 import TokenSelect from '../../ui/Bridge/TokenSelect';
 import BridgeSelect from '../../ui/Bridge/BridgeSelect';
+import SwapSettingsModal from '../../ui/Dex/SwapSettingsModal';
+import { useCurrentChain } from '../../hooks/global';
+import { ToastContainer, toast } from 'react-toastify';
+import { hexValue } from '@ethersproject/bytes';
+
 
 export default function Multichain() {
-    const [show, setShow] = useState<boolean>(false);
+    const selectedChain = useCurrentChain();
+    const { chainId, switchChain } = useWeb3Context();
     const [tokenInfo, setTokenInfo] = useState({
         fromToken: 'Token',
-        fromNetwork: 'Network',
+        fromNetwork: selectedChain.name,
         fromTokenImg: '/images/wallet.png',
-        fromNetworkImg: '/images/wallet.png',
+        fromNetworkImg: selectedChain.logoURI,
         toToken: 'Token',
         toTokenImg: '/images/wallet.png',
         toNetworkImg: '/images/wallet.png',
         toNetwork: 'Network',
-        destinationAddress: '',
     });
     const [showDestinationAddress, setShowDestinationAddress] = useState<boolean>(false);
 
     // Token Selection State
-    const [selectedFromToken, setSelectedFromToken] = useState<any>({});
-    const [selectedToToken, setSelectedToToken] = useState<any>({});
-    const [selectedFromNetwork, setSelectedFromNetwork] = useState<any>({});
-    const [selectedToNetwork, setSelectedToNetwork] = useState<any>({});
+    const [selectedFromToken, setSelectedFromToken] = useState<any>();
+    const [selectedToToken, setSelectedToToken] = useState<any>();
+    const [selectedFromNetwork, setSelectedFromNetwork] = useState<any>({
+        chain: {
+            name: selectedChain.name,
+            logoURI: selectedChain.logoURI
+        },
+        connect: hexValue(chainId),
+        chainId: "1"
+    });
+    const [selectedToNetwork, setSelectedToNetwork] = useState<any>({
+        chain: {
+            name: selectedChain.name,
+            logoURI: selectedChain.logoURI
+        },
+        connect: null,
+        chainId: "1"
+    });
 
     // Token Selection Modal State
     const [showFromTokenModal, setShowFromTokenModal] = useState<boolean>(false);
-    const [showToTokenModal, setShowTokenModal] = useState<boolean>(false);
+    const [showToTokenModal, setShowToTokenModal] = useState<boolean>(false);
     const [showFromNetworkModal, setShowFromNetworkModal] = useState<boolean>(false);
     const [showToNetworkModal, setShowToNetworkModal] = useState<boolean>(false);
 
 
     const [destinationAddress, setDestinationAddress] = useState<string>('');
     const [toNetworkBtn, setToNetworkBtn] = useState<boolean>(false);
-    const { chainId } = useWeb3Context();
+    const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false);
+
 
     // Getting Bridge Token List
-    const { chainTokenList } = useGetBridgeTokenList(chainId);
-    // Getting Bridge Chain List
-    const { chainList } = useGetBridgeChainList();
-
-    useEffect(() => { }, [chainId])
+    const { chainTokenList: fromTokenList } = useGetBridgeTokenList(chainId);
+    const { chainTokenList: toTokenList } = useGetBridgeTokenList(selectedToNetwork.chainId);
 
     const handleFromTokenSelect = (token: any) => {
         setSelectedFromToken(token)
@@ -63,17 +80,69 @@ export default function Multichain() {
             toToken: token.name,
             toTokenImg: token.logoUrl,
         })
-        setShowTokenModal(false)
+        setShowToTokenModal(false)
+        console.log(selectedToToken)
     }
 
+
     const handleFromNetworkSelect = (network: any) => {
-        setSelectedFromNetwork(network)
+        setSelectedFromNetwork((prevState: any) => ({ ...prevState, chain: network.chain, connect: network.connect, chainId: network.chainId }))
+        setTokenInfo((prevState: any) => ({ ...prevState, fromToken: 'Token', fromTokenImg: '/images/wallet.png' }))
         setTokenInfo({
             ...tokenInfo,
-            fromNetwork: network.name,
-            fromNetworkImg: network.logoUrl,
+            fromNetwork: network.chain.name,
+            fromNetworkImg: network.chain.logoURI,
         })
+        switchChain(network.connect)
         setShowFromNetworkModal(false)
+    }
+
+    const handleToNetworkSelect = (network: any) => {
+        if (network.chainId === chainId) {
+            toast.error('Transfer between same networks is unsupported');
+            return;
+        }
+        setSelectedToNetwork((prevState: any) => ({ ...prevState, chain: network.chain, connect: network.connect, chainId: network.chainId }))
+        setTokenInfo((prevState: any) => ({ ...prevState, toToken: 'Token', toTokenImg: '/images/wallet.png' }))
+        setTokenInfo({
+            ...tokenInfo,
+            toNetwork: network.chain.name,
+            toNetworkImg: network.chain.logoURI,
+        })
+        setShowToNetworkModal(false)
+    }
+
+    const handleSwitch = () => {
+        console.log(selectedToNetwork.connect, selectedFromNetwork.connect)
+        if (!selectedToNetwork.connect) {
+            toast.error('Please select to network');
+            return;
+        }
+
+        if (!selectedToToken || !selectedFromToken) {
+            toast.error('Please select tokens');
+            return;
+        }
+
+        // Switch Chains
+        switchChain(selectedToNetwork.connect)
+        setSelectedFromNetwork((prevState: any) => ({ ...prevState, chain: selectedToNetwork.chain, connect: selectedToNetwork.connect, chainId: selectedToNetwork.chainId }))
+        setSelectedToNetwork((prevState: any) => ({ ...prevState, chain: selectedFromNetwork.chain, connect: selectedFromNetwork.connect, chainId: selectedFromNetwork.chainId }))
+
+        // Switch Tokens
+        setSelectedFromToken((prevState: any) => ({ ...prevState, name: selectedToToken.name, logoUrl: selectedToToken.logoUrl, symbol: selectedToToken.symbol }))
+        setSelectedToToken((prevState: any) => ({ ...prevState, name: selectedFromToken.name, logoUrl: selectedFromToken.logoUrl, symbol: selectedFromToken.symbol }))
+        setTokenInfo((prevState: any) => ({
+            ...prevState,
+            fromNetwork: selectedToNetwork.chain.name,
+            fromNetworkImg: selectedToNetwork.chain.logoURI,
+            toNetwork: selectedFromNetwork.chain.name,
+            toNetworkImg: selectedFromNetwork.chain.logoURI,
+            fromToken: selectedToToken.name,
+            fromTokenImg: selectedToToken.logoUrl,
+            toToken: selectedFromToken.name,
+            toTokenImg: selectedFromToken.logoUrl,
+        }))
     }
 
 
@@ -83,6 +152,7 @@ export default function Multichain() {
                 <title>Vefi DApps | Multichain Bridge</title>
             </Head>
             <div className="container relative mx-auto w-[95%] md:w-2/6 py-15">
+                <ToastContainer />
                 <div className="text-[rgba(255,255,255,0.7)] bg-[#1a1a1a] h-fit px-10 py-10 rounded-[20px] shadow-md">
                     <div className="flex justify-between items-center text-white">
                         <div>
@@ -90,7 +160,7 @@ export default function Multichain() {
                         </div>
                         <div className="flex gap-3">
                             <Image src="/images/wallet.png" alt="wallet" width={25} height={25} onClick={() => setShowDestinationAddress(!showDestinationAddress)} className="cursor-pointer" />
-                            <Image src="/images/setting.png" alt="wallet" width={25} height={25} className="cursor-pointer" />
+                            <Image src="/images/setting.png" alt="wallet" width={25} height={25} className="cursor-pointer" onClick={() => setIsSettingsModalVisible(true)} />
                         </div>
                     </div>
                     <div className="flex w-full flex-col relative">
@@ -121,14 +191,16 @@ export default function Multichain() {
                         </div>
                     </div>
                     <div className="flex justify-center items-center py-5">
-                        <Image src="/images/toggle.png" className='cursor-pointer' alt="toggle icon" width={20} height={20} />
+                        <Image src="/images/toggle.png" className='cursor-pointer' alt="toggle icon" width={20} height={20}
+                            onClick={() => handleSwitch()}
+                        />
                     </div>
                     <div className="flex w-full flex-col">
                         <span className="font-Syne text-sm">To</span>
                         <div className="flex justify-between gap-5 bg-[rgba(255,255,255,0.07)] w-full px-5 py-1 rounded-[10px] shadow-md">
                             <div className="">
                                 <div className="flex items-center gap-2 py-2 cursor-pointer"
-                                    onClick={() => setShowTokenModal(true)}>
+                                    onClick={() => setShowToTokenModal(true)}>
                                     <img src={tokenInfo.toTokenImg} alt="wallet" width={28} height={28} className={`${tokenInfo.toTokenImg !== "/images/wallet.png" ? "rounded-full" : ""}`} />
                                     <span className="text-sm font-Syne flex items-center gap-1">
                                         {tokenInfo.toToken} {showToTokenModal ? <FiChevronUp /> : <FiChevronDown />}
@@ -136,7 +208,8 @@ export default function Multichain() {
                                 </div>
                             </div>
                             <div className="">
-                                <div className="flex items-center gap-2 py-2">
+                                <div className="flex items-center gap-2 py-2 cursor-pointer"
+                                    onClick={() => setShowToNetworkModal(true)}>
                                     <img src={tokenInfo.toNetworkImg} alt="wallet" width={28} height={28} />
                                     <span className="text-sm font-Syne flex items-center gap-1">
                                         {tokenInfo.toNetwork} <FiChevronDown />
@@ -148,7 +221,7 @@ export default function Multichain() {
                     <div className="flex flex-col py-3 px-1">
                         <div className="flex justify-between py-2">
                             <span className="text-[12px]">Total Amount</span>
-                            <span className="text-[12px]">Balance: 0.00 VEF</span>
+                            <span className="text-[12px]">Balance: 0.00 {selectedToToken?.symbol ? selectedToToken.symbol : "VEF"}</span>
                         </div>
                         <div className="w-full border border-[rgba(255,255,255,0.5)] rounded-[10px] flex items-center p-2 mb-5">
                             <input type="number" name="" id="" className="w-full bg-transparent outline-none border-0 px-2" placeholder="0.0" />
@@ -185,29 +258,35 @@ export default function Multichain() {
                         <button className="bg-[#105DCF] text-white w-full rounded-[10px] btn capitalize border-0 outline-none">Continue</button>
                     </div>
                 </div>
+                <BridgeSelect
+                    isVisible={showFromNetworkModal}
+                    onClose={() => setShowFromNetworkModal(false)}
+                    selectedBrige={selectedFromNetwork}
+                    onBridgeSelect={(bridge: any) => handleFromNetworkSelect(bridge)}
+                />
+                <BridgeSelect
+                    isVisible={showToNetworkModal}
+                    onClose={() => setShowToNetworkModal(false)}
+                    selectedBrige={selectedToNetwork}
+                    onBridgeSelect={(bridge: any) => handleToNetworkSelect(bridge)}
+                />
                 <TokenSelect
                     chainId={chainId}
                     isVisible={showFromTokenModal}
                     onClose={() => setShowFromTokenModal(false)}
                     onTokenSelected={(token: any) => handleFromTokenSelect(token)}
                     selectedToken={selectedFromToken}
-                    tokenList={chainTokenList}
+                    tokenList={fromTokenList}
                 />
                 <TokenSelect
-                    chainId={chainId}
+                    chainId={selectedToNetwork.chainId}
                     isVisible={showToTokenModal}
-                    onClose={() => setShowTokenModal(false)}
+                    onClose={() => setShowToTokenModal(false)}
                     onTokenSelected={(token: any) => handleToTokenSelect(token)}
                     selectedToken={selectedToToken}
-                    tokenList={chainTokenList}
+                    tokenList={toTokenList}
                 />
-                <BridgeSelect
-                    isVisible={showFromNetworkModal}
-                    onClose={() => setShowFromNetworkModal(false)}
-                    selectedBrige={selectedFromNetwork}
-                    onBridgeSelect={(bridge: any) => handleFromNetworkSelect(bridge)}
-                    bridgeList={chainList}
-                />
+                <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
             </div>
         </>
     );
