@@ -36,7 +36,7 @@ const TokenSelect = (
                         </div>
                         <div className="flex items-center justify-center gap-3 w-full border rounded-[5px] p-3 bg-[#0c0c0c]">
                             <AiOutlineSearch size={25} />
-                            <input type="text" className='w-full  outline-none h-full bg-transparent' value={searchValue} placeholder='Search' onChange={(e) => setSearchValue(e.target.value)} />
+                            <input type="text" className='w-full  outline-none h-full bg-transparent' value={searchValue} placeholder='Search by token or contract address' onChange={(e) => setSearchValue(e.target.value)} />
                         </div>
                         <div className="flex flex-col justify-start w-full overflow-y-auto px-1">
                             {!isLoading ? (tokenList?.map((token: any, index: number) => {
