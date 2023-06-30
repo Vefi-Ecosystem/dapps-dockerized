@@ -314,6 +314,7 @@ export default function Swap() {
                     <input
                       type="number"
                       value={val1}
+                      min={0}
                       className="p-3 bg-transparent text-white w-1/2 border-0 outline-0 appearance-none font-[600] text-[1em] font-Poppins text-right"
                       onChange={(e) => setVal1(e.target.valueAsNumber || 0.0)}
                     />
@@ -371,6 +372,7 @@ export default function Swap() {
 
                     <input
                       type="number"
+                      min={0}
                       value={val2}
                       className="p-3 bg-transparent text-white w-1/2 border-0 outline-0 appearance-none font-[600] text-[1em] font-Poppins text-right"
                       onChange={(e) => setVal2(e.target.valueAsNumber || 0.0)}
