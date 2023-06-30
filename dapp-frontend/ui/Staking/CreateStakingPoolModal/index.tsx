@@ -19,6 +19,9 @@ import millify from 'millify';
 import { TailSpin } from 'react-loader-spinner';
 import { sanitizeInput } from '../../../utils';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 type CreateStakingPoolModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -267,9 +270,12 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                             {activeStep < 2 && (
                               <button
                                 onClick={() => {
-                                  if (activeStep < 2) setActiveStep((step) => step + 1);
+                                  if (!poolCreationData.rewardTokenAddress || !poolCreationData.stakeTokenAddress) {
+                                    toast('Please fill out the form first.');
+                                  } else {
+                                    if (activeStep < 2) setActiveStep((step) => step + 1);
+                                  }
                                 }}
-                                disabled={!poolCreationData.rewardTokenAddress || !poolCreationData.stakeTokenAddress}
                                 className="capitalize font-Inter font-[500] border border-[#105dcf] text-[0.5em] lg:text-[0.85em] bg-[#105dcf] text-[#fff] rounded-[8px] lg:px-4 px-1 lg:py-2 py-1 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)] disabled:cursor-not-allowed"
                               >
                                 next
@@ -435,6 +441,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                               placeholder="How Many Days Should This Pool Last?"
                               name="daysToLast"
                               min={1}
+                              value={1}
                               onChange={(e) => setDataValue('valueAsNumber', e, 365)}
                             />
                           </div>
@@ -531,6 +538,7 @@ export default function CreateStakingPoolModal({ isOpen, onClose }: CreateStakin
                       </div>
                     )}
                     <Toast message={toastMessage} toastType={toastType} duration={10} onHide={() => setShowToast(false)} show={showToast} />
+                    <ToastContainer />
                   </div>
                 </div>
               </Transition.Child>
