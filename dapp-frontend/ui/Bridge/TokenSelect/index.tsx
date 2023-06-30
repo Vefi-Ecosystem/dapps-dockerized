@@ -3,6 +3,8 @@ import { useGetBridgeTokenList } from "../../../hooks/api/bridge";
 import { Dialog, Transition } from '@headlessui/react';
 import { AiOutlineSearch, AiOutlineCloseCircle } from 'react-icons/ai';
 import { TailSpin } from 'react-loader-spinner';
+import { RotatingLines } from 'react-loader-spinner';
+import { useTokenBalance } from '../../../hooks/wallet';
 
 type TokenSelectProps = {
     chainId: number;
@@ -11,6 +13,30 @@ type TokenSelectProps = {
     onTokenSelected: (token: object) => void;
     selectedToken: object;
     tokenList: any[] | null;
+}
+
+type TokenPriceProps = {
+    address: string;
+    price: number
+}
+
+const TokenPrice = ({ address, price }: TokenPriceProps) => {
+    const { balance, isLoading: tokenBalanceLoading } = useTokenBalance(address, [false]);
+
+
+    function amount(price: number, tokenAmount: number) {
+        const dollarAmount = price * tokenAmount;
+        const roundedAmount = dollarAmount.toFixed(2);
+        // Return the dollar amount as a string
+        return roundedAmount.toString();
+    }
+
+    return (
+        <div className='flex flex-col items-end'>
+            {tokenBalanceLoading ? <RotatingLines strokeColor='#fff' width="10" /> : <p className="text-[15px] text-white font-Syne font-[700]">{balance}</p>}
+            {tokenBalanceLoading ? <RotatingLines strokeColor='#fff' width="10" /> : <p className="text-[15px] text-white font-Syne font-[700]">${amount(price, balance)}</p>}
+        </div>
+    )
 }
 
 const TokenSelect = (
@@ -43,20 +69,18 @@ const TokenSelect = (
                                 const isVisible = token?.name?.toLowerCase().startsWith(searchValue.toLowerCase()) || token?.address?.toLowerCase().startsWith(searchValue.toLowerCase());
 
                                 return (
-                                    <div className={`flex justify-between gap-5 w-full py-2 rounded-md shadow-md cursor-pointer hover:bg-[#404ebd] ${!isVisible ? 'hidden' : ''}`} key={index} 
+                                    <div className={`flex justify-between gap-5 w-full py-2 rounded-md shadow-md cursor-pointer hover:bg-[#404ebd] ${!isVisible ? 'hidden' : ''}`} key={index}
                                         onClick={() => onTokenSelected(token)}
                                     >
-                                        <div className='flex justify-between w-full gap-2 px-2'>
+                                        <div className='flex justify-between items-center w-full gap-2 px-2'>
                                             <div className='flex items-center w-full gap-2'>
                                                 <img src={token?.logoUrl} alt={token.name} width={30} height={30} className='h-[30px] w-[30px] bg-transparent rounded-full' />
                                                 <div>
-                                                    <p className="text-[15px] text-white font-Syne font-[700]">{token.name}</p>
-                                                    <p className="text-[12px] text-[#8e8e8e] font-Syne font-[400]">{token.symbol}</p>
+                                                    <p className="text-[15px] text-white font-Syne font-[700]">{token.symbol}</p>
+                                                    <p className="text-[12px] text-[#8e8e8e] font-Syne font-[400]">{token.name}</p>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <p className="text-[15px] text-white font-Syne font-[700]">${token.price}</p>
-                                            </div>
+                                            <TokenPrice address={token.address} price={token.price} />
                                         </div>
                                     </div>
                                 )
