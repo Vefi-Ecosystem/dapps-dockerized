@@ -13,6 +13,7 @@ import { DEXSettingsContextProvider } from '../contexts/dex/settings';
 import { Web3ContextProvider } from '../contexts/web3';
 import { GQLProvider } from '../contexts/graphql';
 import Script from 'next/script';
+import { MultiSigFormContextProvider } from '../contexts/multisig/multiSigForm';
 
 function getLibrary(provider: any) {
   return new Web3(provider);
@@ -36,10 +37,12 @@ export default function App({ Component, pageProps }: AppProps) {
         <Web3ContextProvider>
           <GQLProvider>
             <DEXSettingsContextProvider>
-              <AppContent>
-                <Component {...pageProps} />
-                <Script src="https://unpkg.com/@layerzerolabs/stargate-ui@latest/element.js" defer />
-              </AppContent>
+              <MultiSigFormContextProvider>
+                <AppContent>
+                  <Component {...pageProps} />
+                  <Script src="https://unpkg.com/@layerzerolabs/stargate-ui@latest/element.js" defer />
+                </AppContent>
+              </MultiSigFormContextProvider>
             </DEXSettingsContextProvider>
           </GQLProvider>
         </Web3ContextProvider>

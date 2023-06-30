@@ -1,12 +1,24 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-const MultiSigFormContext = createContext({});
+interface InputForm {
+  msName: string;
+  msDescription: string;
+  msOwners: string;
+  msThreshold: string;
+}
 
-export function MultiSigFormContextProvider({ children }: { children: ReactNode }) {
-  const [inputForm, setInputForm] = useState({
+interface MultiSigFormContextProps {
+  inputForm: InputForm;
+  setInputForm: React.Dispatch<React.SetStateAction<InputForm>>;
+}
+
+const MultiSigFormContext = createContext<MultiSigFormContextProps>({} as MultiSigFormContextProps);
+
+export function MultiSigFormContextProvider({ children }: { children: React.ReactNode }) {
+  const [inputForm, setInputForm] = useState<InputForm>({
     msName: '',
     msDescription: '',
-    msOwners: [],
+    msOwners: '',
     msThreshold: ''
   });
 

@@ -6,7 +6,8 @@ import { useMultiSigFormContext } from '../../contexts/multisig/multiSigForm';
 
 export default function MultiSig() {
   const [activeStep, setActiveStep] = useState<number>(0);
-  const { inputForm,setInputForm} = useMultiSigFormContext()
+  const { inputForm, setInputForm } = useMultiSigFormContext();
+
   return (
     <>
       <Head>
@@ -56,9 +57,14 @@ export default function MultiSig() {
                         <h2 className="text-[#AEAEAE] font-Syne font-[400]">MS Name</h2>
                         <input
                           type="text"
-                          name=""
-                          id=""
-                          value={inputForm}
+                          name="msName"
+                          value={inputForm.msName}
+                          onChange={(e) => {
+                            setInputForm({
+                              ...inputForm,
+                              [e.target.name]: e.target.value
+                            });
+                          }}
                           placeholder="Enter Name"
                           className="bg-[#191919] border-0 outline-none p-2 text-white font-Syne rounded"
                         />
@@ -67,8 +73,14 @@ export default function MultiSig() {
                         <h2 className="text-[#AEAEAE] font-Syne font-[400]">MS Description</h2>
                         <input
                           type="text"
-                          name=""
-                          id=""
+                          name="msDescription"
+                          value={inputForm.msDescription}
+                          onChange={(e) => {
+                            setInputForm({
+                              ...inputForm,
+                              [e.target.name]: e.target.value
+                            });
+                          }}
                           placeholder="Enter Description"
                           className="bg-[#191919] border-0 outline-none p-2 text-white font-Syne rounded"
                         />
@@ -87,8 +99,14 @@ export default function MultiSig() {
                         <h2 className="text-[#AEAEAE] font-Syne font-[400]">Add Initial Multising Owners</h2>
                         <input
                           type="text"
-                          name=""
-                          id=""
+                          name="msThreshold"
+                          value={inputForm.msThreshold}
+                          onChange={(e) => {
+                            setInputForm({
+                              ...inputForm,
+                              [e.target.name]: e.target.value
+                            });
+                          }}
                           placeholder="Enter Public Key"
                           className="bg-[#191919] border-0 outline-none p-2 text-white font-Syne rounded"
                         />
