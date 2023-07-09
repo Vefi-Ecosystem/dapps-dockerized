@@ -1,38 +1,38 @@
-import { useState, useEffect, useMemo } from "react";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import ToggleButton from "../ui/Button/ToggleButton";
-import { Stargate, Multichain } from "../routes/bridge";
+import { useState, useEffect, useMemo } from 'react';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import ToggleButton from '../ui/Button/ToggleButton';
+import { Stargate, Multichain } from '../routes/bridge';
 
 enum Route {
-    STARGATE = 'stargate',
-    MULTICHAIN = 'multichain'
+  STARGATE = 'stargate',
+  MULTICHAIN = 'multichain'
 }
 
 const useBridgeSubRoutes = (routes: Route) => {
-    const [component, setComponent] = useState(() => Stargate);
+  const [component, setComponent] = useState(() => Stargate);
 
-    useEffect(() => {
-        switch (routes) {
-            case Route.STARGATE:
-                setComponent(() => Stargate);
-                break;
-            case Route.MULTICHAIN:
-                setComponent(() => Multichain);
-                break;
-            default:
-                setComponent(() => Stargate);
-                break;
-        }
-    }, [routes])
+  useEffect(() => {
+    switch (routes) {
+      case Route.STARGATE:
+        setComponent(() => Stargate);
+        break;
+      case Route.MULTICHAIN:
+        setComponent(() => Multichain);
+        break;
+      default:
+        setComponent(() => Stargate);
+        break;
+    }
+  }, [routes]);
 
-    return component;
-}
+  return component;
+};
 
 const Bridge = () => {
-    const { query, push } = useRouter();
-    const RenderedChild = useBridgeSubRoutes(query.tab as Route);
-    const route = useMemo(() => (query.tab as Route) || Route.STARGATE, [query.tab]);
+  const { query, push } = useRouter();
+  const RenderedChild = useBridgeSubRoutes(query.tab as Route);
+  const route = useMemo(() => (query.tab as Route) || Route.STARGATE, [query.tab]);
 
     useEffect(() => {
         if (!query.tab) {
