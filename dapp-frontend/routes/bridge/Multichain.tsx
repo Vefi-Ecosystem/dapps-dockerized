@@ -10,7 +10,7 @@ import SwapSettingsModal from '../../ui/Dex/SwapSettingsModal';
 import { useCurrentChain } from '../../hooks/global';
 import { ToastContainer, toast } from 'react-toastify';
 import { hexValue } from '@ethersproject/bytes';
-
+import CountDown from '../../ui/Countdown';
 
 export default function Multichain() {
     const selectedChain = useCurrentChain();
@@ -221,7 +221,7 @@ export default function Multichain() {
                     <div className="flex flex-col py-3 px-1">
                         <div className="flex justify-between py-2">
                             <span className="text-[12px]">Total Amount</span>
-                            <span className="text-[12px]">Balance: 0.00 {selectedToToken?.symbol ? selectedToToken.symbol : "VEF"}</span>
+                            <span className="text-[12px]">Balance: 0.00 {selectedFromToken?.symbol ? selectedFromToken.symbol : "VEF"}</span>
                         </div>
                         <div className="w-full border border-[rgba(255,255,255,0.5)] rounded-[10px] flex items-center p-2 mb-5">
                             <input type="number" name="" id="" className="w-full bg-transparent outline-none border-0 px-2" placeholder="0.0" />
