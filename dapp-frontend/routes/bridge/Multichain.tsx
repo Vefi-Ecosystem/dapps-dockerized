@@ -11,8 +11,9 @@ import { useCurrentChain } from '../../hooks/global';
 import { ToastContainer, toast } from 'react-toastify';
 import { hexValue } from '@ethersproject/bytes';
 import CountDown from '../../ui/Countdown';
+import { isAfter } from 'date-fns';
 
-export default function Multichain() {
+function BridgeComponent() {
     const selectedChain = useCurrentChain();
     const { chainId, switchChain } = useWeb3Context();
     const [tokenInfo, setTokenInfo] = useState({
@@ -147,147 +148,172 @@ export default function Multichain() {
 
 
     return (
+        <div className="container relative mx-auto w-[95%] md:w-2/6 py-15">
+            <ToastContainer />
+            <div className="text-[rgba(255,255,255,0.7)] bg-[#1a1a1a] h-fit px-10 py-10 rounded-[20px] shadow-md">
+                <div className="flex justify-between items-center text-white">
+                    <div>
+                        <h1 className="text-[25px] text-white font-Syne font-[700]">Transfer</h1>
+                    </div>
+                    <div className="flex gap-3">
+                        <Image src="/images/wallet.png" alt="wallet" width={25} height={25} onClick={() => setShowDestinationAddress(!showDestinationAddress)} className="cursor-pointer" />
+                        <Image src="/images/setting.png" alt="wallet" width={25} height={25} className="cursor-pointer" onClick={() => setIsSettingsModalVisible(true)} />
+                    </div>
+                </div>
+                <div className="flex w-full flex-col relative">
+                    <span className="my-3 font-Syne text-sm">From</span>
+                    <div className="flex justify-between gap-5 bg-[rgba(255,255,255,0.07)] w-full px-5 py-1 rounded-[10px] shadow-md ">
+                        <div className="">
+                            <div
+                                className="flex items-center gap-2 py-2 cursor-pointer"
+                                onClick={() => setShowFromTokenModal(true)}
+                            >
+                                <img src={tokenInfo.fromTokenImg} alt="wallet" width={28} height={28} className={`${tokenInfo.fromTokenImg !== "/images/wallet.png" ? "rounded-full" : ""}`} />
+                                <span className="text-sm font-Syne flex items-center gap-1">
+                                    {tokenInfo.fromToken} {showFromTokenModal ? <FiChevronUp /> : <FiChevronDown />}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="">
+                            <div
+                                className="flex items-center gap-2 py-2 cursor-pointer"
+                                onClick={() => setShowFromNetworkModal(true)}
+                            >
+                                <img src={tokenInfo.fromNetworkImg} alt="wallet" width={28} height={28} />
+                                <span className="text-sm font-Syne flex items-center gap-1">
+                                    {tokenInfo.fromNetwork} <FiChevronDown />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex justify-center items-center py-5">
+                    <Image src="/images/toggle.png" className='cursor-pointer' alt="toggle icon" width={20} height={20}
+                        onClick={() => handleSwitch()}
+                    />
+                </div>
+                <div className="flex w-full flex-col">
+                    <span className="font-Syne text-sm">To</span>
+                    <div className="flex justify-between gap-5 bg-[rgba(255,255,255,0.07)] w-full px-5 py-1 rounded-[10px] shadow-md">
+                        <div className="">
+                            <div className="flex items-center gap-2 py-2 cursor-pointer"
+                                onClick={() => setShowToTokenModal(true)}>
+                                <img src={tokenInfo.toTokenImg} alt="wallet" width={28} height={28} className={`${tokenInfo.toTokenImg !== "/images/wallet.png" ? "rounded-full" : ""}`} />
+                                <span className="text-sm font-Syne flex items-center gap-1">
+                                    {tokenInfo.toToken} {showToTokenModal ? <FiChevronUp /> : <FiChevronDown />}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="">
+                            <div className="flex items-center gap-2 py-2 cursor-pointer"
+                                onClick={() => setShowToNetworkModal(true)}>
+                                <img src={tokenInfo.toNetworkImg} alt="wallet" width={28} height={28} />
+                                <span className="text-sm font-Syne flex items-center gap-1">
+                                    {tokenInfo.toNetwork} <FiChevronDown />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex flex-col py-3 px-1">
+                    <div className="flex justify-between py-2">
+                        <span className="text-[12px]">Total Amount</span>
+                        <span className="text-[12px]">Balance: 0.00 {selectedFromToken?.symbol ? selectedFromToken.symbol : "VEF"}</span>
+                    </div>
+                    <div className="w-full border border-[rgba(255,255,255,0.5)] rounded-[10px] flex items-center p-2 mb-5">
+                        <input type="number" name="" id="" className="w-full bg-transparent outline-none border-0 px-2" placeholder="0.0" />
+                        <button className="btn bg-transparent border-[rgba(255,255,255,0.2)] border p-2 text-[10px] min-h-0 h-fit">MAX</button>
+                    </div>
+                    {showDestinationAddress && (
+                        <div className="w-full border border-[rgba(255,255,255,0.5)] rounded-[10px] flex items-center p-2 mb-5">
+                            <input type="text" name="" id="" className="w-full bg-transparent outline-none border-0 px-2" placeholder="Destination address" value={destinationAddress} onChange={(e) => setDestinationAddress(e.target.value)} />
+                        </div>)
+                    }
+                    <div tabIndex={0} className="collapse collapse-arrow border border-[rgba(255,255,255,0.5)] rounded-[10px] mb-5">
+                        <div className="collapse-title text-sm cursor-pointer">You will receive</div>
+                        <div className="collapse-content">
+                            <div className="text-sm">
+                                <div className="flex justify-between py-1">
+                                    <span>Slippage</span>
+                                    <span>0.5%</span>
+                                </div>
+                                <div className="flex justify-between py-1">
+                                    <span>Gas on destination</span>
+                                    <span>-</span>
+                                </div>
+                                <div className="flex justify-between py-1">
+                                    <span>Fee</span>
+                                    <span>-</span>
+                                </div>
+                                <div className="flex justify-between py-1">
+                                    <span>Gas cost</span>
+                                    <span>-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button className="bg-[#105DCF] text-white w-full rounded-[10px] btn capitalize border-0 outline-none">Continue</button>
+                </div>
+            </div>
+            <BridgeSelect
+                isVisible={showFromNetworkModal}
+                onClose={() => setShowFromNetworkModal(false)}
+                selectedBrige={selectedFromNetwork}
+                onBridgeSelect={(bridge: any) => handleFromNetworkSelect(bridge)}
+            />
+            <BridgeSelect
+                isVisible={showToNetworkModal}
+                onClose={() => setShowToNetworkModal(false)}
+                selectedBrige={selectedToNetwork}
+                onBridgeSelect={(bridge: any) => handleToNetworkSelect(bridge)}
+            />
+            <TokenSelect
+                chainId={chainId}
+                isVisible={showFromTokenModal}
+                onClose={() => setShowFromTokenModal(false)}
+                onTokenSelected={(token: any) => handleFromTokenSelect(token)}
+                selectedToken={selectedFromToken}
+                tokenList={fromTokenList}
+            />
+            <TokenSelect
+                chainId={selectedToNetwork.chainId}
+                isVisible={showToTokenModal}
+                onClose={() => setShowToTokenModal(false)}
+                onTokenSelected={(token: any) => handleToTokenSelect(token)}
+                selectedToken={selectedToToken}
+                tokenList={toTokenList}
+            />
+            <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
+        </div>
+    )
+}
+
+function Render() {
+    const today = new Date()
+    const launchDate = "2023-7-21"
+    const dateForm = new Date(launchDate);
+
+    if (isAfter(today, dateForm)) {
+        return <BridgeComponent />
+    }
+
+    return (
+        <div className='mb-[5rem]'>
+            <p className='text-center text-3xl'>Multichain Bridge is Coming Soon</p>
+            <CountDown date={launchDate} />
+        </div>
+    )
+}
+
+
+export default function Multichain() {
+
+    return (
         <>
             <Head>
                 <title>Vefi DApps | Multichain Bridge</title>
             </Head>
-            <div className="container relative mx-auto w-[95%] md:w-2/6 py-15">
-                <ToastContainer />
-                <div className="text-[rgba(255,255,255,0.7)] bg-[#1a1a1a] h-fit px-10 py-10 rounded-[20px] shadow-md">
-                    <div className="flex justify-between items-center text-white">
-                        <div>
-                            <h1 className="text-[25px] text-white font-Syne font-[700]">Transfer</h1>
-                        </div>
-                        <div className="flex gap-3">
-                            <Image src="/images/wallet.png" alt="wallet" width={25} height={25} onClick={() => setShowDestinationAddress(!showDestinationAddress)} className="cursor-pointer" />
-                            <Image src="/images/setting.png" alt="wallet" width={25} height={25} className="cursor-pointer" onClick={() => setIsSettingsModalVisible(true)} />
-                        </div>
-                    </div>
-                    <div className="flex w-full flex-col relative">
-                        <span className="my-3 font-Syne text-sm">From</span>
-                        <div className="flex justify-between gap-5 bg-[rgba(255,255,255,0.07)] w-full px-5 py-1 rounded-[10px] shadow-md ">
-                            <div className="">
-                                <div
-                                    className="flex items-center gap-2 py-2 cursor-pointer"
-                                    onClick={() => setShowFromTokenModal(true)}
-                                >
-                                    <img src={tokenInfo.fromTokenImg} alt="wallet" width={28} height={28} className={`${tokenInfo.fromTokenImg !== "/images/wallet.png" ? "rounded-full" : ""}`} />
-                                    <span className="text-sm font-Syne flex items-center gap-1">
-                                        {tokenInfo.fromToken} {showFromTokenModal ? <FiChevronUp /> : <FiChevronDown />}
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="">
-                                <div
-                                    className="flex items-center gap-2 py-2 cursor-pointer"
-                                    onClick={() => setShowFromNetworkModal(true)}
-                                >
-                                    <img src={tokenInfo.fromNetworkImg} alt="wallet" width={28} height={28} />
-                                    <span className="text-sm font-Syne flex items-center gap-1">
-                                        {tokenInfo.fromNetwork} <FiChevronDown />
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex justify-center items-center py-5">
-                        <Image src="/images/toggle.png" className='cursor-pointer' alt="toggle icon" width={20} height={20}
-                            onClick={() => handleSwitch()}
-                        />
-                    </div>
-                    <div className="flex w-full flex-col">
-                        <span className="font-Syne text-sm">To</span>
-                        <div className="flex justify-between gap-5 bg-[rgba(255,255,255,0.07)] w-full px-5 py-1 rounded-[10px] shadow-md">
-                            <div className="">
-                                <div className="flex items-center gap-2 py-2 cursor-pointer"
-                                    onClick={() => setShowToTokenModal(true)}>
-                                    <img src={tokenInfo.toTokenImg} alt="wallet" width={28} height={28} className={`${tokenInfo.toTokenImg !== "/images/wallet.png" ? "rounded-full" : ""}`} />
-                                    <span className="text-sm font-Syne flex items-center gap-1">
-                                        {tokenInfo.toToken} {showToTokenModal ? <FiChevronUp /> : <FiChevronDown />}
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="">
-                                <div className="flex items-center gap-2 py-2 cursor-pointer"
-                                    onClick={() => setShowToNetworkModal(true)}>
-                                    <img src={tokenInfo.toNetworkImg} alt="wallet" width={28} height={28} />
-                                    <span className="text-sm font-Syne flex items-center gap-1">
-                                        {tokenInfo.toNetwork} <FiChevronDown />
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col py-3 px-1">
-                        <div className="flex justify-between py-2">
-                            <span className="text-[12px]">Total Amount</span>
-                            <span className="text-[12px]">Balance: 0.00 {selectedFromToken?.symbol ? selectedFromToken.symbol : "VEF"}</span>
-                        </div>
-                        <div className="w-full border border-[rgba(255,255,255,0.5)] rounded-[10px] flex items-center p-2 mb-5">
-                            <input type="number" name="" id="" className="w-full bg-transparent outline-none border-0 px-2" placeholder="0.0" />
-                            <button className="btn bg-transparent border-[rgba(255,255,255,0.2)] border p-2 text-[10px] min-h-0 h-fit">MAX</button>
-                        </div>
-                        {showDestinationAddress && (
-                            <div className="w-full border border-[rgba(255,255,255,0.5)] rounded-[10px] flex items-center p-2 mb-5">
-                                <input type="text" name="" id="" className="w-full bg-transparent outline-none border-0 px-2" placeholder="Destination address" value={destinationAddress} onChange={(e) => setDestinationAddress(e.target.value)} />
-                            </div>)
-                        }
-                        <div tabIndex={0} className="collapse collapse-arrow border border-[rgba(255,255,255,0.5)] rounded-[10px] mb-5">
-                            <div className="collapse-title text-sm cursor-pointer">You will receive</div>
-                            <div className="collapse-content">
-                                <div className="text-sm">
-                                    <div className="flex justify-between py-1">
-                                        <span>Slippage</span>
-                                        <span>0.5%</span>
-                                    </div>
-                                    <div className="flex justify-between py-1">
-                                        <span>Gas on destination</span>
-                                        <span>-</span>
-                                    </div>
-                                    <div className="flex justify-between py-1">
-                                        <span>Fee</span>
-                                        <span>-</span>
-                                    </div>
-                                    <div className="flex justify-between py-1">
-                                        <span>Gas cost</span>
-                                        <span>-</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button className="bg-[#105DCF] text-white w-full rounded-[10px] btn capitalize border-0 outline-none">Continue</button>
-                    </div>
-                </div>
-                <BridgeSelect
-                    isVisible={showFromNetworkModal}
-                    onClose={() => setShowFromNetworkModal(false)}
-                    selectedBrige={selectedFromNetwork}
-                    onBridgeSelect={(bridge: any) => handleFromNetworkSelect(bridge)}
-                />
-                <BridgeSelect
-                    isVisible={showToNetworkModal}
-                    onClose={() => setShowToNetworkModal(false)}
-                    selectedBrige={selectedToNetwork}
-                    onBridgeSelect={(bridge: any) => handleToNetworkSelect(bridge)}
-                />
-                <TokenSelect
-                    chainId={chainId}
-                    isVisible={showFromTokenModal}
-                    onClose={() => setShowFromTokenModal(false)}
-                    onTokenSelected={(token: any) => handleFromTokenSelect(token)}
-                    selectedToken={selectedFromToken}
-                    tokenList={fromTokenList}
-                />
-                <TokenSelect
-                    chainId={selectedToNetwork.chainId}
-                    isVisible={showToTokenModal}
-                    onClose={() => setShowToTokenModal(false)}
-                    onTokenSelected={(token: any) => handleToTokenSelect(token)}
-                    selectedToken={selectedToToken}
-                    tokenList={toTokenList}
-                />
-                <SwapSettingsModal isOpen={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
-            </div>
+            <Render />
         </>
     );
 }
