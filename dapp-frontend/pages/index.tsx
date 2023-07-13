@@ -46,7 +46,7 @@ export default function Index() {
         </section>
         <section className="flex justify-center items-center gap-4 w-full overflow-auto p-4 lg:p-5 hidden-scrollbar capitalize">
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.pairCount || 0)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData?.pairCount || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">total liquidity pools</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
@@ -54,11 +54,11 @@ export default function Index() {
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">staking pools created</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.txCount || 0)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData?.txCount || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">transactions made</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">&#36;{millify(dexFactoryData.totalLiquidityUSD || 0)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">&#36;{millify(dexFactoryData?.totalLiquidityUSD || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">total liquidity raised</span>
           </div>
         </section>
