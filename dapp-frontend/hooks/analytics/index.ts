@@ -725,12 +725,13 @@ export const useQuasarFactoriesStats = () => {
         setIsLoading(true);
         const req: any = await dexGQLClient?.request(QUASAR_FACTORIES_STATS_QUERY);
         const d = head(req.quasarFactories) as any;
-        setData({
+        setData((data) => ({
+          ...data,
           pairCount: d.pairCount,
           txCount: parseInt(d.txCount),
           totalLiquidityUSD: parseFloat(d.totalLiquidityUSD),
           totalVolumeUSD: parseFloat(d.totalVolumeUSD)
-        });
+        }));
         setIsLoading(false);
       } catch (error: any) {
         setError(new Error('Could not fetch'));
