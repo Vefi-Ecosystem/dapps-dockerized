@@ -25,7 +25,7 @@ export default function Launchpad() {
 
   function Render(){
     const today = new Date();
-    const launchDate = "2023-7-14"
+    const launchDate = "2023-7-17"
     const dateForm = new Date(launchDate);
 
     if(isAfter(today,dateForm)){
