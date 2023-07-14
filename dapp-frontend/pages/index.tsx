@@ -34,11 +34,11 @@ export default function Index() {
           <span className="text-white font-Syne capitalize text-[2.5em] lg:text-[3.5em] text-center lg:max-w-[70rem]">
             enjoy fast transactions, security, and total ownership of your assets.
           </span>
-          <p className="text-[#a49999] font-Poppins text-[1em] text-center">
+          <p className="text-[#a49999] font-Poppins text-[1.3em] text-center">
             Lightning-Fast transactions, secure smart contracts, and complete asset control.
           </p>
           <Link href="/dex">
-            <button className="flex justify-center items-center bg-[#105dcf] py-[9px] px-[10px] text-[1em] text-white gap-2 rounded-[8px] font-Syne">
+            <button className="flex justify-center items-center bg-[#105dcf] py-[1rem] px-[1.5rem] text-[1.4rem] text-white gap-2 rounded-[8px] font-Syne">
               <MdSwapHoriz />
               Start Trading
             </button>
