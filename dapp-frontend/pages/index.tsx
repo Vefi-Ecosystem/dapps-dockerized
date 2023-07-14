@@ -116,7 +116,7 @@ export default function Index() {
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       In-depth periodical market data and token information (with charts) gotten from all trades that have occured on our DEX.
                     </p>
-                    <img src="/images/charts.png" alt="chart" className="w-full max-h-[18rem]" />
+                    <img src="/images/charts.png" alt="chart" className="w-full max-h-[18rem] object-contain" />
                   </div>
                 </a>
               </Link>
@@ -127,7 +127,7 @@ export default function Index() {
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Exchange assets or earn LP tokens through liquidity provision on our DEX.
                     </p>
-                    <img src="/images/trade.png" alt="trade" className="w-full max-h-[18rem]" />
+                    <img src="/images/trade.png" alt="trade" className="w-full max-h-[18rem] object-contain" />
                   </div>
                 </a>
               </Link>
@@ -138,7 +138,7 @@ export default function Index() {
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Stake tokens to earn other tokens as rewards. Maximize profit with this scheme.
                     </p>
-                    <img src="/images/piggyvest.png" alt="piggyvest" className="w-full max-h-[18rem]" />
+                    <img src="/images/piggyvest.png" alt="piggyvest" className="w-full max-h-[18rem] object-contain" />
                   </div>
                 </a>
               </Link>
@@ -214,7 +214,7 @@ export default function Index() {
               </div>
             </div>
           </div>
-          <img className="h-[352px] lg:h-[428px] w-full lg:w-1/3" src="/images/notif-bell.png" alt="notif-bell" />
+          <img className="h-[352px] lg:h-[428px] w-full lg:w-1/3 object-contain" src="/images/notif-bell.png" alt="notif-bell" />
         </section>
       </div>
     </>
