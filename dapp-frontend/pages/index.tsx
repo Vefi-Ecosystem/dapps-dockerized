@@ -38,7 +38,7 @@ export default function Index() {
             Lightning-Fast transactions, secure smart contracts, and complete asset control.
           </p>
           <Link href="/dex">
-            <button className="flex justify-center items-center bg-[#105dcf] py-[1rem] px-[1.5rem] text-[1.4rem] text-white gap-2 rounded-[8px] font-Syne">
+            <button className="flex justify-center items-center bg-[#105dcf] py-[0.7rem] px-[1.3rem] text-[1.2rem] text-white gap-2 rounded-[8px] font-Syne">
               <MdSwapHoriz />
               Start Trading
             </button>
