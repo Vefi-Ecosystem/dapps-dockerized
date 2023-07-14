@@ -14,8 +14,7 @@ export default function Footer() {
               <Image src="/images/vefi.svg" alt="vefi_logo" width={80} height={40} />
             </Link>
             <p className="text-[#b2b2b2] capitalize font-Syne text-[0.85em] w-full lg:w-[19rem]">
-              the DApps is an amalgam of traditionally decentralized apps and is an independent product of the vefi ecosystem and should be used with
-              utmost discretion.
+              Our collection of Decentralized Applications allow you to securely swap crypto-assets, bridge across chains, launch your tokens and earn yield via staking all while in control of your crypto-assets.
             </p>
           </div>
           <div className="flex flex-col lg:flex-row justify-center items-start gap-5 lg:gap-16">

@@ -34,11 +34,11 @@ export default function Index() {
           <span className="text-white font-Syne capitalize text-[2.5em] lg:text-[3.5em] text-center lg:max-w-[70rem]">
             enjoy fast transactions, security, and total ownership of your assets.
           </span>
-          <p className="text-[#a49999] font-Poppins text-[1em] text-center">
+          <p className="text-[#a49999] font-Poppins text-[1.3em] text-center">
             Lightning-Fast transactions, secure smart contracts, and complete asset control.
           </p>
           <Link href="/dex">
-            <button className="flex justify-center items-center bg-[#105dcf] py-[9px] px-[10px] text-[1em] text-white gap-2 rounded-[8px] font-Syne">
+            <button className="flex justify-center items-center bg-[#105dcf] py-[0.7rem] px-[1.3rem] text-[1.2rem] text-white gap-2 rounded-[8px] font-Syne">
               <MdSwapHoriz />
               Start Trading
             </button>
@@ -46,7 +46,7 @@ export default function Index() {
         </section>
         <section className="flex justify-center items-center gap-4 w-full overflow-auto p-4 lg:p-5 hidden-scrollbar capitalize">
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.pairCount || 0)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData?.pairCount || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">total liquidity pools</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
@@ -54,11 +54,11 @@ export default function Index() {
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">staking pools created</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData.txCount || 0)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">{millify(dexFactoryData?.txCount || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">transactions made</span>
           </div>
           <div className="flex w-1/4 flex-col justify-center items-center gap-3 px-4 py-4">
-            <span className="font-[700] font-Syne text-[2em] text-[#fff]">&#36;{millify(dexFactoryData.totalLiquidityUSD || 0)}</span>
+            <span className="font-[700] font-Syne text-[2em] text-[#fff]">&#36;{millify(dexFactoryData?.totalLiquidityUSD || 0)}</span>
             <span className="font-[400] font-Poppins text-[0.9em] text-[#a49999]">total liquidity raised</span>
           </div>
         </section>
@@ -116,7 +116,7 @@ export default function Index() {
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       In-depth periodical market data and token information (with charts) gotten from all trades that have occured on our DEX.
                     </p>
-                    <img src="/images/charts.png" alt="chart" className="w-full max-h-[18rem]" />
+                    <img src="/images/charts.png" alt="chart" className="w-full max-h-[18rem] object-contain" />
                   </div>
                 </a>
               </Link>
@@ -127,7 +127,7 @@ export default function Index() {
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Exchange assets or earn LP tokens through liquidity provision on our DEX.
                     </p>
-                    <img src="/images/trade.png" alt="trade" className="w-full max-h-[18rem]" />
+                    <img src="/images/trade.png" alt="trade" className="w-full max-h-[18rem] object-contain" />
                   </div>
                 </a>
               </Link>
@@ -138,7 +138,7 @@ export default function Index() {
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Stake tokens to earn other tokens as rewards. Maximize profit with this scheme.
                     </p>
-                    <img src="/images/piggyvest.png" alt="piggyvest" className="w-full max-h-[18rem]" />
+                    <img src="/images/piggyvest.png" alt="piggyvest" className="w-full max-h-[18rem] object-contain" />
                   </div>
                 </a>
               </Link>
@@ -214,7 +214,7 @@ export default function Index() {
               </div>
             </div>
           </div>
-          <img className="h-[352px] lg:h-[428px] w-full lg:w-1/3" src="/images/notif-bell.png" alt="notif-bell" />
+          <img className="h-[352px] lg:h-[428px] w-full lg:w-1/3 object-contain" src="/images/notif-bell.png" alt="notif-bell" />
         </section>
       </div>
     </>
