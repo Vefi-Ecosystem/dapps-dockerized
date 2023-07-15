@@ -1,4 +1,5 @@
 const runtimeCaching = require('next-pwa/cache');
+const withTM = require('next-transpile-modules')(['@0xsquid/widget']);
 
 const withPWA = require('next-pwa')({
   dest: 'public',
@@ -9,20 +10,22 @@ const withPWA = require('next-pwa')({
 });
 
 /** @type {import('next').NextConfig} */
-module.exports = withPWA({
-  reactStrictMode: true,
+module.exports = withTM(
+  withPWA({
+    reactStrictMode: true,
 
-  webpack(config, options) {
-    config.module.rules.push({
-      test: /\.mp3$/,
-      use: {
-        loader: 'url-loader'
-      }
-    });
-    return config;
-  },
-  target: 'serverless',
-  images: {
-    domains: ["*"]
-  }
-});
+    webpack(config, options) {
+      config.module.rules.push({
+        test: /\.mp3$/,
+        use: {
+          loader: 'url-loader'
+        }
+      });
+      return config;
+    },
+    target: 'serverless',
+    images: {
+      domains: ['*']
+    }
+  })
+);
