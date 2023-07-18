@@ -23,22 +23,22 @@ export default function Launchpad() {
     )
   }
 
-  function Render(){
-    const today = new Date();
-    const launchDate = "2023-7-17"
-    const dateForm = new Date(launchDate);
+  // function Render(){
+  //   const today = new Date();
+  //   const launchDate = "2023-7-17"
+  //   const dateForm = new Date(launchDate);
 
-    if(isAfter(today,dateForm)){
-      return <Project />
-    }
+  //   if(isAfter(today,dateForm)){
+  //     return <Project />
+  //   }
 
-    return (
-      <div className='my-[3rem]'>
-        <p className="text-3xl">Coming Soon</p>
-        <CountDown date={launchDate} />
-      </div>
-    )
-  }
+  //   return (
+  //     <div className='my-[3rem]'>
+  //       <p className="text-3xl">Coming Soon</p>
+  //       <CountDown date={launchDate} />
+  //     </div>
+  //   )
+  // }
 
 
   return (
@@ -46,9 +46,9 @@ export default function Launchpad() {
       <Head>
         <title>Vefi Dapps | Launchpad</title>
       </Head>
-      <div className="container mx-auto">
+      <div className="container mx-auto p-3">
         <section className="flex items-center h-[80vh] w-full relative">
-          <div className="flex flex-col max-w-[550px]">
+          <div className="flex flex-col max-w-[550px] p-3">
             <div className="mb-5">
               <h1 className="font-Syne text-[48px] text-white font-[700] leading-[58px]">Launch a successful IDO with ease-all in one place.</h1>
             </div>
@@ -61,7 +61,7 @@ export default function Launchpad() {
         </section>
         <section className="flex flex-col w-full container h-fit mx-auto pb-14">
           <h1 className="text-white font-Kinn font-[700] leading-[27px] pb-10 text-[24px]">What we offer</h1>
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid sm:grid-cols-3 grid-rows-3 gap-5">
             <div className="flex flex-col text-center justify-center rounded-[10px] shadow p-8 bg-lightBlue min-h-[200px] ">
               <h1 className="font-Kinn font-[700] text-[16px] leading-[16px] text-white">Secure Assets</h1>
               <p className="py-5 text-[#D8D8D8] font-Poppins text-[12px]">
@@ -94,7 +94,7 @@ export default function Launchpad() {
         <section className="flex flex-col h-fit my-10 ">
           <div className="container mx-auto text-center">
             <h1 className="max-w-[450px] text-white font-Syne font-[700] text-[32px] py-8 mx-auto">Explore live IDO projects on our launchpad</h1>
-            <Render />
+            <Project />
           </div>
         </section>
       </div>

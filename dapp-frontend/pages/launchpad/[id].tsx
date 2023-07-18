@@ -1,10 +1,14 @@
 import Head from 'next/head';
+import { useState } from 'react';
 import Image from 'next/image';
 import { FiExternalLink, FiSend } from 'react-icons/fi';
 import LaunchpadCardInfo from '../../ui/Launchpad/LaunchpadCardInfo';
 import Link from 'next/link';
 
+
 export default function Index() {
+  const [buyAmount, setAmount] = useState();
+
   return (
     <>
       <Head>
@@ -84,8 +88,11 @@ export default function Index() {
                   <div className="flex w-full gap-2 pt-1">
                     <input
                       type="number"
-                      name=""
-                      id=""
+                      name="buyAmount"
+                      id="buyAmount"
+                      value={buyAmount}
+                      min={0}
+                      onChange={(e: any) => setAmount(e.target.value)}
                       className="w-full bg-[rgba(255,251,251,0.08)] h-5 border-[rgba(255,255,255,0.3)] outline-none p-5 border rounded"
                     />
                     <button className="text-sm capitalize cursor-pointer bg-black px-3 rounded-md font-Kinn font-[400]">Buy</button>
