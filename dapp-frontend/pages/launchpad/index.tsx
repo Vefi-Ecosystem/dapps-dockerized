@@ -1,31 +1,31 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import React from 'react';
-import LaunchPadCard from '../../ui/Launchpad/LaunchpadCard';
+// import LaunchPadCard from '../../ui/Launchpad/LaunchpadCard';
 import CountDown from '../../ui/Countdown';
-import { isAfter } from 'date-fns';
+// import { isAfter } from 'date-fns';
 
 
 export default function Launchpad() {
+  const launchDate = "2023-07-24T14:00:00"
 
-  function Project(){
-    return (
-      <>
-        <div className="grid grid0cols-1 md:grid-cols-3 gap-3">
-          <LaunchPadCard />
-          <LaunchPadCard />
-          <LaunchPadCard />
-        </div>
-        <button type="button" className="btn my-5 normal-case font-Syne bg-[#105DCF] text-white rounded-[15px] text-[12px] px-5 border-none">
-          View more
-        </button>
-      </>
-    )
-  }
+  // function Project(){
+  //   return (
+  //     <>
+  //       <div className="grid grid0cols-1 md:grid-cols-3 gap-3">
+  //         <LaunchPadCard />
+  //         <LaunchPadCard />
+  //         <LaunchPadCard />
+  //       </div>
+  //       <button type="button" className="btn my-5 normal-case font-Syne bg-[#105DCF] text-white rounded-[15px] text-[12px] px-5 border-none">
+  //         View more
+  //       </button>
+  //     </>
+  //   )
+  // }
 
   // function Render(){
   //   const today = new Date();
-  //   const launchDate = "2023-7-17"
   //   const dateForm = new Date(launchDate);
 
   //   if(isAfter(today,dateForm)){
@@ -33,10 +33,7 @@ export default function Launchpad() {
   //   }
 
   //   return (
-  //     <div className='my-[3rem]'>
-  //       <p className="text-3xl">Coming Soon</p>
-  //       <CountDown date={launchDate} />
-  //     </div>
+      
   //   )
   // }
 
@@ -94,7 +91,7 @@ export default function Launchpad() {
         <section className="flex flex-col h-fit my-10 ">
           <div className="container mx-auto text-center">
             <h1 className="max-w-[450px] text-white font-Syne font-[700] text-[32px] py-8 mx-auto">Explore live IDO projects on our launchpad</h1>
-            <Project />
+            <CountDown date={launchDate} />
           </div>
         </section>
       </div>
