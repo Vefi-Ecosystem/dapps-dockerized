@@ -20,7 +20,7 @@ export default class CustomDocument extends Document {
           />
           <link rel="icon" href="/images/logo.ico" />
           <link rel="manifest" href="/manifest.json" />
-          <meta name="description" content="The Vefi DApps is a product of the Vefi Ecosystem that houses commonly used decentralized platforms." />
+          <meta name="description" content="Multi-chain DeFi ecosystem with Swap, Bridge and Launchpad. Trade, Bridge, Earn and Launch on CORE, Bitgert (Brise), Binance smart chain (BSC), XDC, XoDex, Dogechain, Doken, and Fuse" />
           <meta name="robots" content="index, follow" />
           <meta
             name="keywords"
