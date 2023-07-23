@@ -4,10 +4,29 @@ import Image from 'next/image';
 import { FiExternalLink, FiSend } from 'react-icons/fi';
 import LaunchpadCardInfo from '../../ui/Launchpad/LaunchpadCardInfo';
 import Link from 'next/link';
-
+import { useRouter } from 'next/router';
+import { SalesEnd } from '../../ui/Countdown/SalesEnd';
+import { useGetIDOTokenInfo } from '../../hooks/launchpad';
+import { ProgressBar } from '../../ui/Progress';
 
 export default function Index() {
   const [buyAmount, setAmount] = useState();
+  const { query } = useRouter();
+  const { idoInfo: IDO } = useGetIDOTokenInfo(query.id as string);
+
+
+
+  function handlePurchase(e: any) {
+    e.preventDefault();
+
+  }
+
+  function amountInDollar(price: number, tokenAmount: number) {
+    const dollarAmount = price * tokenAmount;
+    const roundedAmount = dollarAmount.toFixed(2);
+    // Return the dollar amount as a string
+    return roundedAmount.toString();
+  }
 
   return (
     <>
@@ -56,27 +75,10 @@ export default function Index() {
           <div className="w-full md:w-1/2  justify-start">
             <div className="flex flex-col w-[93%] mx-auto md:mx-0 md:w-[400px] h-fit">
               <div className="rounded-[10px] bg-[rgba(63,132,234,0.2)]  h-fit  text-white border-[rgba(255,255,255,0.7)] border mt-5 w-full px-4 py-7">
-                <div className="flex justify-between gap-2">
-                  <div className="text-white">
-                    <span className="text-[rgba(63,132,234,1)] font-Poppins font-[700] text-[10px]">Sale end in</span>
-                    <div className="flex font-Kinn gap-1 text-[24px]">
-                      <div className="border-b-2">00</div>
-                      <div>:</div>
-                      <div className="border-b-2">12</div>
-                      <div>:</div>
-                      <div className="border-b-2">28</div>
-                      <div>:</div>
-                      <div className="border-b-2">04</div>
-                    </div>
-                  </div>
-                  <span>Live</span>
-                </div>
+                <SalesEnd />
                 <div className="flex w-full">
                   <div className="flex flex-col w-full py-4">
-                    <span className="pb-2 font-Kinn text-white">Progress(65%)</span>
-                    <span className="flex items-center w-full bg-[#909090] rounded">
-                      <span className="w-[65%] bg-white rounded h-2"></span>
-                    </span>
+                    <ProgressBar progress={40} />
                     <div className="flex justify-between items-center text-[rgba(63,132,234,1)] font-Poppins font-[700] text-[10px]">
                       <span className="pt-1">23.365096308565307375 $SAP</span>
                       <span>40$SAP</span>
@@ -85,18 +87,19 @@ export default function Index() {
                 </div>
                 <div className="flex w-full flex-col">
                   <span className="font-Kinn">Buy</span>
-                  <div className="flex w-full gap-2 pt-1">
+                  <form className="flex w-full gap-2 pt-1" onSubmit={handlePurchase}>
                     <input
                       type="number"
                       name="buyAmount"
                       id="buyAmount"
                       value={buyAmount}
-                      min={0}
+                      min={IDO?.softCap ? IDO.softCap : 0}
+                      max={IDO?.hardCap ? IDO.hardCap : 0}
                       onChange={(e: any) => setAmount(e.target.value)}
                       className="w-full bg-[rgba(255,251,251,0.08)] h-5 border-[rgba(255,255,255,0.3)] outline-none p-5 border rounded"
                     />
                     <button className="text-sm capitalize cursor-pointer bg-black px-3 rounded-md font-Kinn font-[400]">Buy</button>
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>

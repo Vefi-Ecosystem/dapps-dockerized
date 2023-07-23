@@ -33,3 +33,13 @@ export function sanitizeInput(e: any) {
   const result = e?.target?.value.replace(/[^a-z0-9]/gi, '');
   return result;
 }
+
+export function getDates(startTime: number, endTime: number) {
+  const startDate = new Date(startTime * 1000);
+  const endDate = new Date(endTime * 1000);
+
+  return {
+    startDate,
+    endDate,
+  }
+}
