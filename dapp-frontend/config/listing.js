@@ -7,6 +7,13 @@ const bitgert = [
     logoURI: 'https://assets.coingecko.com/coins/images/17388/thumb/bitgert.png?1660272192'
   },
   {
+    name: 'BEFE',
+    address: '0xa874eD06C6Cf8311FAF296Ec658639A45e70AbB9',
+    symbol: 'BEFE',
+    decimals: 18,
+    logoURI: '/images/befe.jpg'
+  },
+  {
     name: 'Tether USD',
     address: '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
     symbol: 'USDT',
