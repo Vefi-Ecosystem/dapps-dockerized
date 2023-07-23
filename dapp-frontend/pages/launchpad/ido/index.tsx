@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import React from 'react';
-import LaunchPadCard from '../../../ui/Launchpad/LaunchpadCard';
+// import LaunchPadCard from '../../../ui/Launchpad/LaunchpadCard';
 
 export default function IDO() {
   return (
@@ -26,9 +26,9 @@ export default function IDO() {
             </div>
             <section className="flex flex-col h-fit my-10 ">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {/* <LaunchPadCard />
                 <LaunchPadCard />
-                <LaunchPadCard />
-                <LaunchPadCard />
+                <LaunchPadCard /> */}
               </div>
             </section>
           </div>
