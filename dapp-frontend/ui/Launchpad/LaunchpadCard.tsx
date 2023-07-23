@@ -1,8 +1,29 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FiArrowUpRight } from 'react-icons/fi';
+import { LaunchPadTimer } from '../Countdown/Launchpad';
+import { getDates } from '../../utils';
+import { isAfter } from 'date-fns';
 
-export default function LaunchPadCard() {
+
+type LaunchPadCardProps = {
+  tokenName?: string;
+  tokenSymbol?: string;
+  tokenDecimals?: number;
+  tokenTotalSupply?: number;
+  startTime: number;
+  endTime: number;
+  tokenPrice?: number;
+  softCap?: number;
+  hardCap?: number;
+  purchaserCount?: number;
+  daysDifference?: number;
+}
+
+export default function LaunchPadCard({ tokenName, tokenSymbol, tokenDecimals, tokenTotalSupply, startTime, endTime, tokenPrice, softCap, hardCap, purchaserCount, daysDifference }: LaunchPadCardProps) {
+
+  const liveStatus = isAfter(new Date(), new Date(startTime * 1000)) && isAfter(new Date(endTime * 1000), new Date());
+
   return (
     <>
       <div className="flex flex-col bg-lightBlue p-5 rounded-[20px] shadow w-full min-h-fit">
@@ -10,25 +31,22 @@ export default function LaunchPadCard() {
           <span>
             <Image src="/images/token_ring.png" width={25} height={25} alt="token" className="object-contain" />
           </span>
-          <span className="bg-lightGreen text-[green] font-Kinn font-[700] rounded text-[10px] px-3 py-[1px]">Live</span>
+          <span className={`bg-lightGreen ${liveStatus ? "text-[green]" : "text-[red]"} font-Kinn font-[700] rounded text-[10px] px-3 py-[1px]`}>{liveStatus ? "Live" : "Closed"}</span>
         </div>
-        <div className="my-3">
-          <h1 className="font-Syne text-white font-[700] text-[20px] leading-5">Freight Coin Binance Smart Chain</h1>
+        <div className="my-3 text-left">
+          <h1 className="font-Syne text-white font-[700] text-[25px] leading-5">{tokenName ? tokenName : "Freight Coin"} Binance Smart Chain</h1>
           <p className="font-Poppins text-[12px] text-[#C8BFBF] ">Native IDO tokens of the IDO Launchpad platform</p>
         </div>
         <div className="my-3">
           <div className="flex justify-between items-center">
             <span className="flex items-center text-white font-Poppins font-[600]">
-              <Image src="/images/ethereum.webp" width={25} height={25} alt="eth" className="object-fit" />
-              ETH
+              <Image src="/images/binance.webp" width={25} height={25} alt={tokenSymbol} className="object-fit" />
+              BNB
             </span>
-            <span>
-              <p className="text-[#9A999C] font-Poppins font-[700] text-[12px] leading-[5px]">Sale end in:</p>
-              <h1 className="font-Syne text-white text-[16px] font-[700]">00:12:28:04</h1>
-            </span>
+            <LaunchPadTimer />
           </div>
           <div className="my-3">
-            <h1 className="font-Syne font-[700] text-[16px] text-white">Progress (65%)</h1>
+            <h1 className="font-Syne text-left font-[700] text-[16px] text-white">Progress (65%)</h1>
             <span className="flex items-center w-full bg-[#909090] rounded">
               <span className="w-[65%] bg-white rounded h-2"></span>
             </span>
@@ -83,7 +101,7 @@ export default function LaunchPadCard() {
                 <h1>Lockup time</h1>
               </span>
               <span className="text-[#3F84EA]">
-                <h1>30 days</h1>
+                <h1>{daysDifference ? daysDifference : 30} {daysDifference ? daysDifference > 1 ? "days" : "day" : 'days'}</h1>
               </span>
             </div>
             <div className="w-1/2 text-right">
