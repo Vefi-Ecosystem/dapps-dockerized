@@ -8,7 +8,7 @@ const bitgert = [
   },
   {
     name: 'BEFE',
-    address: '0xa874eD06C6Cf8311FAF296Ec658639A45e70AbB9',
+    address: '0x5e5a344508fE828557B15a7146336f6795116F96',
     symbol: 'BEFE',
     decimals: 18,
     logoURI: '/images/befe.jpg'
@@ -82,20 +82,6 @@ const bitgert = [
     symbol: 'ELTG',
     decimals: 9,
     logoURI: 'https://assets.coingecko.com/coins/images/25433/thumb/vjEBg-rD_400x400.jpg?1651739540'
-  },
-  {
-    name: 'Vefi Ecosystem Token',
-    address: '0xd6447d2fa919811c41a064bdbdab1e281f8de9b2',
-    symbol: 'VEF',
-    decimals: 18,
-    logoURI: 'https://assets.coingecko.com/coins/images/25434/thumb/LOGO-08.png?1651739718'
-  },
-  {
-    name: 'The Vefi Token',
-    address: '0x927eFa8c553bC6bc7a4c65719Fa415fD3d17E6cE',
-    symbol: 'VEF',
-    decimals: 18,
-    logoURI: 'https://assets.coingecko.com/coins/images/25434/thumb/LOGO-08.png?1651739718'
   },
   {
     name: 'Evo.Finance',
