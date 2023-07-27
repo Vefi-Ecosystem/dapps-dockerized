@@ -30,6 +30,13 @@ export default function Index() {
 
   }
 
+  function amountInDollar(price: number, tokenAmount: number) {
+    const dollarAmount = price * tokenAmount;
+    const roundedAmount = dollarAmount.toFixed(2);
+    // Return the dollar amount as a string
+    return roundedAmount.toString();
+  }
+
   function RenderComponent() {
     if (isLoading) {
       return <Loading />
