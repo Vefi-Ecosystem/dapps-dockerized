@@ -40,7 +40,7 @@ export default function Index() {
       return (
         <div className='flex items-center justify-center w-full h-full mt-20 flex-col'>
           <RiErrorWarningLine className='text-9xl text-[#FFD549]' />
-          <p className='text-4xl'>Uhhh We couldn't find this Project 🤔</p>
+          <p className='text-4xl'>Uhhh We couldn't find this Project</p>
         </div>
       )
     }
