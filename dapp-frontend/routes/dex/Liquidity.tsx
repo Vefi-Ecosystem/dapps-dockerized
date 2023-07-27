@@ -164,8 +164,10 @@ const AddLiquidityRoute = () => {
         const firstDecimals = await firstTokenContract.decimals();
         const secondDecimals = await secondTokenContract.decimals();
 
-        amount1Hex = parseUnits(toString(val1), firstDecimals).toHexString();
-        amount2Hex = parseUnits(toString(val2), secondDecimals).toHexString();
+        amount1Hex = parseUnits(toString(val1), firstDecimals).toString();
+        amount2Hex = parseUnits(toString(val2), secondDecimals).toString();
+
+        console.log(amount1Hex, amount2Hex)
 
         const firstApprovalTx = await firstTokenContract.approve(routerContract?.address, amount1Hex);
         await firstApprovalTx.wait();
@@ -186,7 +188,7 @@ const AddLiquidityRoute = () => {
           amount2Hex,
           account,
           hexValue(currentTime + multiply(txDeadlineInMins, 60)),
-          { gasPrice: parseUnits(toString(gasPrice), 'gwei').toHexString() }
+          { gasPrice: parseInt(parseUnits(toString(gasPrice), 'gwei').toString()) }
         );
         liquidityTx = await routerContract?.addLiquidity(
           firstTokenContract.address,
@@ -197,26 +199,30 @@ const AddLiquidityRoute = () => {
           amount2Hex,
           account,
           hexValue(currentTime + multiply(txDeadlineInMins, 60)),
-          { gasPrice: parseUnits(toString(gasPrice), 'gwei').toHexString(), gasLimit: gas?.toHexString() }
+          { gasPrice: parseInt(parseUnits(toString(gasPrice), 'gwei').toString()), gasLimit: gas?.toString() }
         );
       } else {
         const paths = firstTokenContract === null ? [AddressZero, secondTokenContract?.address] : [AddressZero, firstTokenContract.address];
-        let amount1 = '0x0';
-        let amount2 = '0x0';
+        let amount1;
+        let amount2;
 
         if (firstTokenContract) {
           const decimals = await firstTokenContract.decimals();
-          amount1 = parseUnits(toString(val1), decimals).toHexString();
+          amount1 = parseInt(parseUnits(toString(val1), decimals).toString())
         } else {
-          amount1 = parseEther(toString(val1)).toHexString();
+          amount1 = parseEther(toString(val1)).toString();
         }
 
+        const symbol = await secondTokenContract?.symbol();
         if (secondTokenContract) {
           const decimals = await secondTokenContract.decimals();
-          amount2 = parseUnits(toString(val2), decimals).toHexString();
+          amount2 = parseUnits(toString(val2), decimals).toString()
         } else {
-          amount2 = parseEther(toString(val2)).toHexString();
+          console.log(symbol)
+          amount2 = parseEther(toString(val2)).toString();
         }
+
+        console.log(amount1, amount2)
         const currentTime = floor(Date.now() / 1000);
 
         const gas = await routerContract?.estimateGas.addLiquidityETH(
@@ -226,7 +232,7 @@ const AddLiquidityRoute = () => {
           amount1,
           account,
           hexValue(currentTime + multiply(txDeadlineInMins, 60)),
-          { value: amount1, gasPrice: parseUnits(toString(gasPrice), 'gwei').toHexString() }
+          { value: amount1, gasPrice: parseInt(parseUnits(toString(gasPrice), 'gwei').toString()) }
         );
         liquidityTx = await routerContract?.addLiquidityETH(
           paths[1],
@@ -235,7 +241,7 @@ const AddLiquidityRoute = () => {
           amount1,
           account,
           hexValue(currentTime + multiply(txDeadlineInMins, 60)),
-          { value: amount1, gasLimit: gas?.toHexString(), gasPrice: parseUnits(toString(gasPrice), 'gwei').toHexString() }
+          { value: amount1, gasLimit: gas?.toString(), gasPrice: parseInt(parseUnits(toString(gasPrice), 'gwei').toString()) }
         );
       }
 
@@ -248,6 +254,7 @@ const AddLiquidityRoute = () => {
       setIsLoading(false);
       if (playSounds) playError();
       displayToast('an error occurred', 'error');
+      console.error(error)
     }
   }, [
     account,
@@ -411,8 +418,8 @@ const AddLiquidityRoute = () => {
                     {!active
                       ? 'Wallet not connected'
                       : val1 > balance1
-                      ? `Insufficient ${firstSelectedTokenDetails?.symbol} balance`
-                      : 'Add Liquidity'}
+                        ? `Insufficient ${firstSelectedTokenDetails?.symbol} balance`
+                        : 'Add Liquidity'}
                   </span>
                   <TailSpin color="#dcdcdc" visible={isLoading} width={20} height={20} />
                 </button>
@@ -528,7 +535,7 @@ const FindOtherLPRoute = () => {
                 ) : (
                   <button
                     disabled={isImportLoading || map(positions, (lp) => lp.pair.id).includes(pair)}
-                    onClick={() => {}}
+                    onClick={() => { }}
                     className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                   >
                     <span className="font-Syne capitalize">import</span>

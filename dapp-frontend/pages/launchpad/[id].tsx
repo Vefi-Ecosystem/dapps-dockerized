@@ -8,31 +8,44 @@ import { useRouter } from 'next/router';
 import { SalesEnd } from '../../ui/Countdown/SalesEnd';
 import { useGetIDOTokenInfo } from '../../hooks/launchpad';
 import { ProgressBar } from '../../ui/Progress';
+import { TailSpin } from 'react-loader-spinner';
+import { RiErrorWarningLine } from 'react-icons/ri'
+
+function Loading() {
+  return (
+    <div className='flex w-full h-full items-center justify-center '>
+      <TailSpin color='#fff' height={80} width={80} />
+    </div>
+  )
+}
+
 
 export default function Index() {
   const [buyAmount, setAmount] = useState();
   const { query } = useRouter();
-  const { idoInfo: IDO } = useGetIDOTokenInfo(query.id as string);
-
-
+  const { idoInfo: IDO, isLoading } = useGetIDOTokenInfo(query.id as string);
 
   function handlePurchase(e: any) {
     e.preventDefault();
 
   }
 
-  function amountInDollar(price: number, tokenAmount: number) {
-    const dollarAmount = price * tokenAmount;
-    const roundedAmount = dollarAmount.toFixed(2);
-    // Return the dollar amount as a string
-    return roundedAmount.toString();
-  }
 
-  return (
-    <>
-      <Head>
-        <title>Vefi DApps | Info Page</title>
-      </Head>
+  function RenderComponent() {
+    if (isLoading) {
+      return <Loading />
+    }
+
+    if (!IDO) {
+      return (
+        <div className='flex items-center justify-center w-full h-full mt-20 flex-col'>
+          <RiErrorWarningLine className='text-9xl text-[#FFD549]' />
+          <p className='text-4xl'>Uhhh We couldn&apos;t find this Project 🤔</p>
+        </div>
+      )
+    }
+
+    return (
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row w-full py-10">
           <div className="w-full px-5 md:w-2/3 pb-5 md:pb-0">
@@ -127,6 +140,16 @@ export default function Index() {
           </div>
         </div>
       </div>
+    )
+
+  }
+
+  return (
+    <>
+      <Head>
+        <title>Vefi DApps | Info Page</title>
+      </Head>
+      <RenderComponent />
     </>
   );
 }

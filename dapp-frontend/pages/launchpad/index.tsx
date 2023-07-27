@@ -4,10 +4,10 @@ import React from 'react';
 // import LaunchPadCard from '../../ui/Launchpad/LaunchpadCard';
 import CountDown from '../../ui/Countdown';
 // import { isAfter } from 'date-fns';
-
+import Link from 'next/link';
 
 export default function Launchpad() {
-  const launchDate = "2023-07-24T14:00:00"
+  const launchDate = "2023-07-31T14:00:00"
 
   // function Project(){
   //   return (
@@ -33,7 +33,7 @@ export default function Launchpad() {
   //   }
 
   //   return (
-      
+
   //   )
   // }
 
@@ -49,11 +49,13 @@ export default function Launchpad() {
             <div className="mb-5">
               <h1 className="font-Syne text-[48px] text-white font-[700] leading-[58px]">Launch a successful IDO with ease-all in one place.</h1>
             </div>
-            <div>
-              <button type="button" className="btn my-5 normal-case font-Syne bg-[#105DCF] text-white rounded-[15px] text-[12px] px-5 border-none">
-                Apply for IDO
-              </button>
-            </div>
+            <Link href="/launchpad/deploy">
+              <div>
+                <button type="button" className="btn my-5 normal-case font-Syne bg-[#105DCF] text-white rounded-[15px] text-[12px] px-5 border-none">
+                  Deploy IDO
+                </button>
+              </div>
+            </Link>
           </div>
         </section>
         <section className="flex flex-col w-full container h-fit mx-auto pb-14">
