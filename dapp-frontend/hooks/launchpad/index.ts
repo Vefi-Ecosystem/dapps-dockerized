@@ -1,8 +1,8 @@
 import { useContract } from "../global";
 import { useState, useEffect } from "react";
 import { abi as erc20Abi } from "quasar-v1-core/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json";
-import launchpadContract from "../../abis/PresaleFactory.sol/PresaleFactory.json"
-const factoryAddress = "0x140d700bD8876DaAEDf5F2683d7E411B58156598"
+import launchpadContract from "../../abis/launchpad/PresaleFactory.json"
+import presaleFactories from "../../assets/presaleFactories.json";
 import { getDates } from "../../utils";
 import { differenceInDays } from 'date-fns';
 
@@ -10,7 +10,7 @@ export const useGetIDOTokenInfo = (contractAddress: string) => {
     const [idoInfo, setIdoInfo] = useState<any>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const tokenInfo = useContract(contractAddress, erc20Abi, false);
-    const factory = useContract(factoryAddress, launchpadContract, false);
+    const factory = useContract(presaleFactories, launchpadContract, false);
     const presaleABI = factory?.presaleABIs(contractAddress);
     const tokenIDOInfo = useContract(contractAddress, presaleABI, false);
 
