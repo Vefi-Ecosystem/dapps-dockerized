@@ -7,8 +7,8 @@ const bitgert = [
     logoURI: 'https://assets.coingecko.com/coins/images/17388/thumb/bitgert.png?1660272192'
   },
   {
-    name: 'BEFE',
-    address: '0x5e5a344508fE828557B15a7146336f6795116F96',
+    name: 'BEFE (BEFE COIN)',
+    address: '0xf4DE6D97eC948feeCC62A2343BF21323386F7659',
     symbol: 'BEFE',
     decimals: 18,
     logoURI: '/images/befe.jpg'
