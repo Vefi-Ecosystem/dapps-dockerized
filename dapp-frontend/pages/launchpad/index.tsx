@@ -7,7 +7,7 @@ import CountDown from '../../ui/Countdown';
 import Link from 'next/link';
 
 export default function Launchpad() {
-  const launchDate = "2023-07-31T14:00:00"
+  const launchDate = "2023-08-11T14:00:00"
 
   // function Project(){
   //   return (
