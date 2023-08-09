@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWeb3Context } from '../../contexts/web3';
 import { concat, forEach, toLower } from 'lodash';
+import dexListing from '../../config/listing';
 
 interface ListingModel {
   name: string;
@@ -11,9 +11,15 @@ interface ListingModel {
   logoURI: string;
 }
 
-const apiRoot = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_DAPPS_API || '/api/'
-});
+type DexListing = {
+  [key: number]: {
+    name: string;
+    address: string;
+    symbol: string;
+    decimals: number;
+    logoURI: string;
+  }[];
+};
 
 const IMPORTED_TOKENS_KEY = 'imported_tokens';
 
@@ -22,11 +28,16 @@ export const useListing = () => {
   const [data, setData] = useState<ListingModel[]>([]);
   const { chainId } = useWeb3Context();
 
+  function getListing(chainId: number) {
+    const result = (dexListing as DexListing)[chainId]?.sort((a, b) => (a.symbol < b.symbol ? -1 : a.symbol > b.symbol ? 1 : 0));
+    return result
+  }
+
   useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
-        const listing = (await apiRoot.get<{ result: ListingModel[] }>(`/dex/listing/${chainId}`)).data.result;
+        const listing = getListing(chainId)
         setData(listing);
         setIsLoading(false);
       } catch (error) {
