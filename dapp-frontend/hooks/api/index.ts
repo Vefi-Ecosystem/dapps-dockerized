@@ -71,7 +71,7 @@ export const useTokenDetailsFromListing = (id: string) => {
 export const useTokenImageURI = (id: string) => {
   const listingDictionary = useListingAsDictionary();
   return useMemo(() => {
-    return listingDictionary[toLower(id)]?.logoURI ?? '/images/placeholder_image.svg';
+    return listingDictionary[toLower(id)]?.logoURI ?? 'https://i.gifer.com/ZKZg.gif';
   }, [id, listingDictionary]);
 };
 
