@@ -10,7 +10,7 @@ export default function ToggleButton({ isActive, onClick, children }: IToggleBut
   return (
     <button
       className={`${
-        isActive ? 'bg-[#a6b2ec] rounded-[30px] text-[#21242f]' : 'bg-transparent text-[#cdcccc]'
+        isActive ? 'bg-[#FBAA19]/90 rounded-[30px] text-[#21242f]' : 'bg-transparent text-[#cdcccc]'
       } py-2 px-4 flex justify-center text-[1em] font-Syne font-[400]`}
       onClick={onClick}
     >
