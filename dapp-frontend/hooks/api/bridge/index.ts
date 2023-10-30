@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { useWeb3Context } from '../../../contexts/web3';
 
-export const useGetBridgeTokenList = (chainId: number) => {
+export const useGetBridgeTokenList = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [chainTokenList, setChainTokenList] = useState<any[] | null>([{}]);
+    const { chainId } = useWeb3Context()
+
 
     useEffect(() => {
         (async () => {

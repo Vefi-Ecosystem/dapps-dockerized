@@ -31,13 +31,12 @@ export default function Toast({ show, duration = 5, message, onHide, toastType =
     <>
       {shown && (
         <div
-          className={`absolute top-[12%] lg:top-80 lg:right-10 px-3 py-2 min-w-[200px] text-[0.8em] gap-4 flex justify-between items-center border-t-[3px] bg-[#11261b] ${
-            toastType === 'success'
-              ? 'border-[#9afec8] text-[#02c35b]'
-              : toastType === 'error'
+          className={`absolute top-[12%] lg:top-80 lg:right-10 px-3 py-2 min-w-[200px] text-[0.8em] gap-4 flex justify-between items-center border-t-[3px] bg-[#11261b] ${toastType === 'success'
+            ? 'border-[#9afec8] text-[#02c35b]'
+            : toastType === 'error'
               ? 'text-[#e32345] border-red-400'
-              : 'text-[#105dcf] border-blue-400'
-          } shadow-[0px_2px_12px_rgba(60,_64,_73,_0.2)] rounded-[0px_0px_10px_10px] capitalize`}
+              : 'text-[#FBAA19] border-blue-400'
+            } shadow-[0px_2px_12px_rgba(60,_64,_73,_0.2)] rounded-[0px_0px_10px_10px] capitalize`}
         >
           {toastType === 'success' ? <FiCheckCircle /> : toastType === 'error' ? <MdDangerous /> : <FiInfo />}
           {message}

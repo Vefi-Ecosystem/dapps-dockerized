@@ -53,7 +53,7 @@ export default function Staking() {
           </div>
           <button
             onClick={() => setShowCreatePoolModal(true)}
-            className="capitalize font-Inter font-[500] border border-[#105dcf] text-[0.72em] lg:text-[0.85em] bg-[#105dcf] text-[#fff] rounded-[8px] lg:px-4 px-1 lg:py-2 py-1 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)]"
+            className="capitalize font-Inter font-[500] border border-[#FBAA19] text-[0.72em] lg:text-[0.85em] bg-[#FBAA19] text-[#fff] rounded-[8px] lg:px-4 px-1 lg:py-2 py-1 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)]"
           >
             create new pool
           </button>

@@ -19,13 +19,13 @@ export default class CustomDocument extends Document {
             rel="stylesheet"
           />
           <meta property="og:image" content="/images/vefi_meta.png" />
-          <link rel="icon" href="/images/logo.ico" />
+          <link rel="icon" href="/icon.svg" />
           <link rel="manifest" href="/manifest.json" />
           <meta name="description" content="Multi-chain DeFi ecosystem with Swap, Bridge and Launchpad. Trade, Bridge, Earn and Launch on CORE, Bitgert (Brise), Binance smart chain (BSC), XDC, XoDex, Dogechain, Doken, and Fuse" />
           <meta name="robots" content="index, follow" />
           <meta
             name="keywords"
-            content="dapps, vefi, dex, launchpad, multisig, staking pools, stake, bitgert, binance, brise, bsc, omax, gatechain, multichain"
+            content="dapps, VefDefi, dex, launchpad, multisig, staking pools, stake, bitgert, binance, brise, bsc, omax, gatechain, multichain"
           />
         </Head>
         <body>

@@ -265,8 +265,8 @@ export default function Swap() {
       );
     }
   }, [query.outputToken, tokensListing]);
-  
-  const clearFields = () =>{
+
+  const clearFields = () => {
     setVal1(0.0);
     setVal2(0.0);
   }
@@ -402,7 +402,7 @@ export default function Swap() {
                 <button
                   onClick={swapTokens}
                   disabled={pair === AddressZero || isSwapLoading || val1 <= 0 || val1 > balance1 || !active}
-                  className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
+                  className="flex justify-center items-center bg-[#FBAA19] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                 >
                   <span className="font-Syne">
                     {!active ? 'Wallet not connected' : val1 > balance1 ? `Insufficient ${firstSelectedTokenDetails?.symbol} balance` : 'Swap'}

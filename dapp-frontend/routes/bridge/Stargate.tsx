@@ -9,7 +9,7 @@ const Bridge: NextPage = () => {
       <Head>
         <title>VeFi DApps | Bridge</title>
       </Head>
-      <div className="container mx-auto w-[95%] md:w-2/6   ">
+      <div className="container mx-auto w-[95%] md:w-2/6 ">
         <StargateWidget />
       </div>
     </>

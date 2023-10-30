@@ -14,10 +14,10 @@ export default function Index() {
   return (
     <>
       <Head>
-        <title>Vefi DApps | Homepage</title>
+        <title>VefDefi DApps | Homepage</title>
       </Head>
       <div className="flex flex-col justify-center items-center gap-60 w-full">
-        <div className="hidden lg:block absolute top-[0%] -left-8 w-[499px] h-[499px] bg-[#105dcf]/[.38] rounded-full blur-[125px]"></div>
+        <div className="hidden lg:block absolute top-[0%] -left-8 w-[499px] h-[499px] bg-[#FBAA19]/[.38] rounded-full blur-[125px]"></div>
         <div className="hidden lg:block absolute top-64 -right-8 w-80 h-80 bg-[#74fff7]/[.52] rounded-full blur-[125px]"></div>
         <div className="hidden lg:block absolute top-[1088px] -left-8 w-[499px] h-[499px] bg-[#6093df]/[.38] rounded-full blur-[125px]"></div>
         <div className="hidden lg:block absolute top-[1800px] -right-8 w-80 h-80 bg-[#535976] rounded-full blur-[125px]"></div>
@@ -38,7 +38,7 @@ export default function Index() {
             Lightning-Fast transactions, secure smart contracts, and complete asset control.
           </p>
           <Link href="/dex">
-            <button className="flex justify-center items-center bg-[#105dcf] py-[0.7rem] px-[1.3rem] text-[1.2rem] text-white gap-2 rounded-[8px] font-Syne">
+            <button className="flex justify-center items-center bg-[#FBAA19] py-[0.7rem] px-[1.3rem] text-[1.2rem] text-white gap-2 rounded-[8px] font-Syne">
               <MdSwapHoriz />
               Start Trading
             </button>
@@ -69,7 +69,7 @@ export default function Index() {
                 Fully decentralized. completely secure
               </span>
               <p className="text-[#a49999] font-Poppins text-[1em] lg:max-w-[38rem]">
-                Vefi aims to connect all isolated blockchains and establish a cross-chain assets exchange, providing underlying support for the
+                VefDefi aims to connect all isolated blockchains and establish a cross-chain assets exchange, providing underlying support for the
                 ecosystem. Experience lightning-fast transactions, unparalleled security, and complete ownership of your assets.
               </p>
             </div>
@@ -133,7 +133,7 @@ export default function Index() {
               </Link>
               <Link href="/staking">
                 <a className="w-full lg:w-1/3 lg:h-full">
-                  <div className="bg-[#105dcf] w-full h-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
+                  <div className="bg-[#FBAA19] w-full h-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
                     <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Staking Pools</span>
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Stake tokens to earn other tokens as rewards. Maximize profit with this scheme.
@@ -192,7 +192,7 @@ export default function Index() {
           <div className="flex flex-col justify-start items-center lg:items-start gap-4 w-full lg:w-1/3">
             <span className="capitalize font-Syne text-[#fff] font-[700] text-[1.5em] lg:text-[2em]">don&apos;t miss out on what&apos;s next</span>
             <span className="font-[400] font-Poppins text-[#d8d8d8] text-[0.82em] lg:text-[1em] text-center lg:text-justify">
-              Sign up for our newsletter and keep up to date with the latest news from Vefi. Be the first to hear about exclusive events.
+              Sign up for our newsletter and keep up to date with the latest news from VefDefi. Be the first to hear about exclusive events.
             </span>
             <div className="flex flex-col justify-start items-start gap-3">
               <div className="flex flex-col lg:flex-row justify-start lg:items-start items-center w-full gap-4 px-2 lg:px-0 py-2">
@@ -200,7 +200,7 @@ export default function Index() {
                   className="border border-[#b3b3b3] bg-[#fff]/[.09] rounded-[8px] outline-0 px-1 py-3 font-Poppins text-[#858181] w-full lg:w-3/4"
                   placeholder="you@example.com"
                 />
-                <button className="capitalize bg-[#105dcf] font-Syne font-[400] text-[0.82em] lg:text-[1em] px-4 py-3 text-[#fff] rounded-[8px] lg:w-1/4">
+                <button className="capitalize bg-[#FBAA19] font-Syne font-[400] text-[0.82em] lg:text-[1em] px-4 py-3 text-[#fff] rounded-[8px] lg:w-1/4">
                   subscribe
                 </button>
               </div>
@@ -208,7 +208,7 @@ export default function Index() {
                 <label className="label cursor-pointer gap-2">
                   <input type="checkbox" className="checkbox checkbox-sm checkbox-accent" />
                   <span className="label-text font-Poppins text-[#d8d8d8]">
-                    I consent to the processing of personal data by Vefi for marketing purposes and I accept the terms of service
+                    I consent to the processing of personal data by VefDefi for marketing purposes and I accept the terms of service
                   </span>
                 </label>
               </div>

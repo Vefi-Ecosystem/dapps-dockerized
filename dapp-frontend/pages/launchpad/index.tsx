@@ -17,7 +17,7 @@ export default function Launchpad() {
   //         <LaunchPadCard />
   //         <LaunchPadCard />
   //       </div>
-  //       <button type="button" className="btn my-5 normal-case font-Syne bg-[#105DCF] text-white rounded-[15px] text-[12px] px-5 border-none">
+  //       <button type="button" className="btn my-5 normal-case font-Syne bg-[#FBAA19] text-white rounded-[15px] text-[12px] px-5 border-none">
   //         View more
   //       </button>
   //     </>
@@ -51,7 +51,7 @@ export default function Launchpad() {
             </div>
             <Link href="/launchpad/deploy">
               <div>
-                <button type="button" className="btn my-5 normal-case font-Syne bg-[#105DCF] text-white rounded-[15px] text-[12px] px-5 border-none">
+                <button type="button" className="btn my-5 normal-case font-Syne bg-[#FBAA19] text-white rounded-[15px] text-[12px] px-5 border-none">
                   Deploy IDO
                 </button>
               </div>

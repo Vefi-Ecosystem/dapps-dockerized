@@ -58,15 +58,14 @@ export default function SwapSettingsModal({ isOpen = false, onClose }: SwapSetti
                       <div className="flex flex-row items-center w-full justify-start py-2 text-sm text-slate-300 gap-1">
                         <span className="font-[700] font-Syne">Default Transaction Speed (GWEI)</span>
                         <div className="tooltip tooltip-bottom" data-tip="How fast do you want this transaction?">
-                          <FaQuestionCircle className="text-[1em] text-[#105dcf]" />
+                          <FaQuestionCircle className="text-[1em] text-[#FBAA19]" />
                         </div>
                       </div>
                       <div className="flex flex-row flex-wrap items-center justify-start gap-1 w-full ">
                         <button
                           type="button"
-                          className={`h-7 mr-1 rounded-[10px] border border-[#555555] p-2 flex items-center justify-center outline-0 text-[0.87em] ${
-                            gasPrice === 100 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
-                          } hover:bg-[#a6b2ec]`}
+                          className={`h-7 mr-1 rounded-[10px] border border-[#555555] p-2 flex items-center justify-center outline-0 text-[0.87em] ${gasPrice === 100 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
+                            } hover:bg-[#a6b2ec]`}
                           onClick={() => changeGasPrice(100)}
                         >
                           Standard (100)
@@ -74,18 +73,16 @@ export default function SwapSettingsModal({ isOpen = false, onClose }: SwapSetti
 
                         <button
                           type="button"
-                          className={`h-7 mr-1 rounded-[10px] border border-[#555555] p-2 flex items-center justify-center outline-0 text-[0.87em] ${
-                            gasPrice === 150 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
-                          } hover:bg-[#a6b2ec]`}
+                          className={`h-7 mr-1 rounded-[10px] border border-[#555555] p-2 flex items-center justify-center outline-0 text-[0.87em] ${gasPrice === 150 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
+                            } hover:bg-[#a6b2ec]`}
                           onClick={() => changeGasPrice(150)}
                         >
                           Fast (150)
                         </button>
                         <button
                           type="button"
-                          className={`h-7 mr-1 rounded-[10px] border border-[#555555] p-2 flex items-center justify-center outline-0 text-[0.87em] ${
-                            gasPrice === 250 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
-                          } hover:bg-[#a6b2ec]`}
+                          className={`h-7 mr-1 rounded-[10px] border border-[#555555] p-2 flex items-center justify-center outline-0 text-[0.87em] ${gasPrice === 250 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
+                            } hover:bg-[#a6b2ec]`}
                           onClick={() => changeGasPrice(250)}
                         >
                           Super-Fast (250)
@@ -97,34 +94,31 @@ export default function SwapSettingsModal({ isOpen = false, onClose }: SwapSetti
                       <div className="flex flex-row items-center w-full justify-start text-sm gap-1 py-1">
                         <span className="capitalize text-2l font-semibold">Slippage Tolerance</span>
                         <div className="tooltip tooltip-bottom" data-tip="How much price change you're willing to permit during transaction.">
-                          <FaQuestionCircle className="text-[1em] text-[#105dcf]" />
+                          <FaQuestionCircle className="text-[1em] text-[#FBAA19]" />
                         </div>
                       </div>
                       <div className="flex flex-row flex-wrap items-center justify-start gap-1 w-full ">
                         <button
                           type="button"
                           onClick={() => changeSlippage(0.1)}
-                          className={`w-1/5 rounded-[10px] p-1 border border-[#555555] flex items-center justify-center text-[0.87em] outline-0 ${
-                            slippageTolerance === 0.1 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
-                          } hover:bg-[#a6b2ec]`}
+                          className={`w-1/5 rounded-[10px] p-1 border border-[#555555] flex items-center justify-center text-[0.87em] outline-0 ${slippageTolerance === 0.1 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
+                            } hover:bg-[#a6b2ec]`}
                         >
                           0.1%
                         </button>
                         <button
                           type="button"
                           onClick={() => changeSlippage(0.5)}
-                          className={`w-1/5 rounded-[10px] p-1 border border-[#555555] flex items-center justify-center outline-0 text-[0.87em] ${
-                            slippageTolerance === 0.5 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
-                          } hover:bg-[#a6b2ec]`}
+                          className={`w-1/5 rounded-[10px] p-1 border border-[#555555] flex items-center justify-center outline-0 text-[0.87em] ${slippageTolerance === 0.5 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
+                            } hover:bg-[#a6b2ec]`}
                         >
                           0.5%
                         </button>
                         <button
                           type="button"
                           onClick={() => changeSlippage(1)}
-                          className={`w-1/5 rounded-[10px] p-1 border border-[#555555] flex items-center justify-center outline-0 text-[0.87em] ${
-                            slippageTolerance === 1 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
-                          } hover:bg-[#a6b2ec]`}
+                          className={`w-1/5 rounded-[10px] p-1 border border-[#555555] flex items-center justify-center outline-0 text-[0.87em] ${slippageTolerance === 1 ? 'bg-[#a6b2ec] text-[#373b4f]' : 'bg-[#333333] text-[#a6b2ec]'
+                            } hover:bg-[#a6b2ec]`}
                         >
                           1.0%
                         </button>
@@ -145,7 +139,7 @@ export default function SwapSettingsModal({ isOpen = false, onClose }: SwapSetti
                             className="tooltip tooltip-bottom"
                             data-tip="How long to wait after execution before a transaction is considered failed."
                           >
-                            <FaQuestionCircle className="text-[1em] text-[#105dcf]" />
+                            <FaQuestionCircle className="text-[1em] text-[#FBAA19]" />
                           </div>
                         </div>
                         <input
@@ -200,20 +194,19 @@ export default function SwapSettingsModal({ isOpen = false, onClose }: SwapSetti
                         <div className="flex flex-row items-center w-full justify-start text-sm gap-1 py-1">
                           <span className="capitalize text-2l font-semibold">Play Sounds</span>
                           <div className="tooltip tooltip-bottom" data-tip="Sound FX for distinct transaction states.">
-                            <FaQuestionCircle className="text-[1em] text-[#105dcf]" />
+                            <FaQuestionCircle className="text-[1em] text-[#FBAA19]" />
                           </div>
                         </div>
 
                         <Switch
                           checked={playSounds}
                           onClick={switchSoundsMode}
-                          className={`${playSounds ? 'bg-[#105dcf]' : 'bg-[#333333]'} flex h-6 w-11 items-center rounded-full`}
+                          className={`${playSounds ? 'bg-[#FBAA19]' : 'bg-[#333333]'} flex h-6 w-11 items-center rounded-full`}
                         >
                           <span className="sr-only">Enable notifications</span>
                           <span
-                            className={`${
-                              playSounds ? 'translate-x-6 bg-[#fff]' : 'translate-x-1 bg-[#000]'
-                            } inline-block h-4 w-4 transform rounded-full transition`}
+                            className={`${playSounds ? 'translate-x-6 bg-[#fff]' : 'translate-x-1 bg-[#000]'
+                              } inline-block h-4 w-4 transform rounded-full transition`}
                           />
                         </Switch>
                       </div>

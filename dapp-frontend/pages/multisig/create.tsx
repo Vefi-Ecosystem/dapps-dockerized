@@ -181,7 +181,7 @@ export default function MultiSig() {
                 )}
 
                 {activeStep === 2 ? (
-                  <button className="capitalize font-Inter font-[500] border border-[#105dcf] text-[0.5em] lg:text-[0.85em] bg-[#105dcf] text-[#fff] rounded-[8px] lg:px-4 px-2 lg:py-2 py-2 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)] flex justify-center items-center gap-2">
+                  <button className="capitalize font-Inter font-[500] border border-[#FBAA19] text-[0.5em] lg:text-[0.85em] bg-[#FBAA19] text-[#fff] rounded-[8px] lg:px-4 px-2 lg:py-2 py-2 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)] flex justify-center items-center gap-2">
                     Confirm
                   </button>
                 ) : (
@@ -191,7 +191,7 @@ export default function MultiSig() {
                         onClick={() => {
                           if (activeStep < 2) setActiveStep((step) => step + 1);
                         }}
-                        className="capitalize font-Inter font-[500] border border-[#105dcf] text-[0.5em] lg:text-[0.85em] bg-[#105dcf] text-[#fff] rounded-[8px] lg:px-4 px-4 lg:py-2 py-2 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)] disabled:cursor-not-allowed"
+                        className="capitalize font-Inter font-[500] border border-[#FBAA19] text-[0.5em] lg:text-[0.85em] bg-[#FBAA19] text-[#fff] rounded-[8px] lg:px-4 px-4 lg:py-2 py-2 shadow-[0_1px_2px_rgba(16,_24,_40,_0.05)] disabled:cursor-not-allowed"
                       >
                         next
                       </button>
