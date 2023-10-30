@@ -42,7 +42,7 @@ const TokenPrice = ({ address, price }: TokenPriceProps) => {
 const TokenSelect = (
     { chainId, onClose, isVisible, tokenList, onTokenSelected }: TokenSelectProps
 ) => {
-    const { isLoading } = useGetBridgeTokenList(chainId);
+    const { isLoading } = useGetBridgeTokenList();
 
     const [searchValue, setSearchValue] = useState<string>('');
 
