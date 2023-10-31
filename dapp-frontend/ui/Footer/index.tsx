@@ -32,19 +32,19 @@ export default function Footer() {
             <div className="flex flex-col justify-center items-start gap-3 font-Syne capitalize">
               <span className="text-[#b2b2b2] font-[400] text-[0.97em]">links & community</span>
               <div className="text-[#fff] flex flex-col justify-center items-start gap-2 text-[0.82em]">
-                <a href="https://vefinetwork.org" rel="noreferrer" target="_blank">
+                <a href="https://vefdefi.netlify.app" rel="noreferrer" target="_blank">
                   website
                 </a>
-                <a href="https://twitter.com/vefi_official?s=20&t=Nyz3yLS_sKZ0asOgOl3NGw" rel="noreferrer" target="_blank">
+                <a href="https://x.com/vefdefi?t=tJZF3rr5Btl_gZrWRnNB2g&s=09" rel="noreferrer" target="_blank">
                   twitter
                 </a>
-                <a href="https://t.me/vefi_official" rel="noreferrer" target="_blank">
+                <a href="https://t.me/VefDefi" rel="noreferrer" target="_blank">
                   telegram
                 </a>
-                <a href="https://medium.com/@vefi.official" rel="noreferrer" target="_blank">
+                <a href="https://medium.com/@VefDefi/vefi-is-re-inventing-itself-d4f5bb1f3d06" rel="noreferrer" target="_blank">
                   medium
                 </a>
-                <a href="https://www.youtube.com/channel/UCXMsXe5AvNSPL32Yna8MKdQ" rel="noreferrer" target="_blank">
+                <a href="#" rel="noreferrer" target="_blank">
                   youtube
                 </a>
                 <a href="https://instagram.com/vefi.official" rel="noreferrer" target="_blank">
@@ -58,27 +58,27 @@ export default function Footer() {
       <div className="flex flex-col lg:flex-row justify-center lg:justify-between items-start lg:items-center w-full border-t border-[#797979] px-4 py-4 gap-3">
         <span className="font-Poppins text-[#aeaeae] text-[0.85em] capitalize">copyright &copy; 2023. all rights reserved.</span>
         <div className="flex justify-start items-center gap-2 text-[#fff]">
-          <a href="https://vefinetwork.org" rel="noreferrer" target="_blank">
+          <a href="https://vefdefi.netlify.app" rel="noreferrer" target="_blank">
             <button className="rounded-full px-3 py-3">
               <FiGlobe />
             </button>
           </a>
-          <a href="https://twitter.com/vefi_official?s=20&t=Nyz3yLS_sKZ0asOgOl3NGw" rel="noreferrer" target="_blank">
+          <a href="https://x.com/vefdefi?t=tJZF3rr5Btl_gZrWRnNB2g&s=09" rel="noreferrer" target="_blank">
             <button className="rounded-full px-3 py-3">
               <FiTwitter />
             </button>
           </a>
-          <a href="https://t.me/vefi_official" rel="noreferrer" target="_blank">
+          <a href="https://t.me/VefDefi" rel="noreferrer" target="_blank">
             <button className="rounded-full px-3 py-3">
               <FaTelegram />
             </button>
           </a>
-          <a href="https://medium.com/@vefi.official" rel="noreferrer" target="_blank">
+          <a href="https://medium.com/@VefDefi/vefi-is-re-inventing-itself-d4f5bb1f3d06" rel="noreferrer" target="_blank">
             <button className="rounded-full px-3 py-3">
               <FaMedium />
             </button>
           </a>
-          <a href="https://www.youtube.com/channel/UCXMsXe5AvNSPL32Yna8MKdQ" rel="noreferrer" target="_blank">
+          <a href="#" rel="noreferrer" target="_blank">
             <button className="rounded-full px-3 py-3">
               <FiYoutube />
             </button>
