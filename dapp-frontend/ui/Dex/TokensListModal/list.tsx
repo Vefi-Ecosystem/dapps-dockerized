@@ -26,7 +26,7 @@ export default function TokensListItem({ onClick, disabled, token }: TokensListI
       </div>
       <div className="flex justify-center items-center gap-2">
         {isLoading ? <RotatingLines width="10" strokeColor="#fff" /> : <span className="text-[0.85em]">{balance}</span>}
-        {disabled && <FiCheckCircle className="text-[0.85em] text-[#105dcf]" />}
+        {disabled && <FiCheckCircle className="text-[0.85em] text-[#FBAA19]" />}
       </div>
     </button>
   );

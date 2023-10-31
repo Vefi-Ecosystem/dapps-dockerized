@@ -83,7 +83,7 @@ const LPRoute = () => {
                 </button>
                 <button
                   onClick={() => push(`/dex?tab=liquidity&child_tab=${Route.ADD_LIQUIDITY}`)}
-                  className="flex justify-center items-center bg-[#105dcf] py-[13px] px-[17px] rounded-[8px] gap-2 text-[0.89em] text-white w-full"
+                  className="flex justify-center items-center bg-[#FBAA19] py-[13px] px-[17px] rounded-[8px] gap-2 text-[0.89em] text-white w-full"
                 >
                   <FiPlus /> <span className="font-Syne capitalize">add liquidity</span>
                 </button>
@@ -93,7 +93,7 @@ const LPRoute = () => {
                 <span className="text-[#fff] font-Poppins font-[400] capitalize">connect wallet to view your liquidity</span>
                 <button
                   onClick={() => setIsProviderSelectModalVisible(true)}
-                  className="flex justify-center items-center bg-[#105dcf] py-4 px-2 rounded-[8px] gap-2 text-[0.89em] text-white w-full"
+                  className="flex justify-center items-center bg-[#FBAA19] py-4 px-2 rounded-[8px] gap-2 text-[0.89em] text-white w-full"
                 >
                   <FaWallet /> <span className="font-Syne capitalize">connect wallet</span>
                 </button>
@@ -412,7 +412,7 @@ const AddLiquidityRoute = () => {
                 <button
                   onClick={addLiquidity}
                   disabled={isLoading || !active}
-                  className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
+                  className="flex justify-center items-center bg-[#FBAA19] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                 >
                   <span className="font-Syne">
                     {!active
@@ -536,7 +536,7 @@ const FindOtherLPRoute = () => {
                   <button
                     disabled={isImportLoading || map(positions, (lp) => lp.pair.id).includes(pair)}
                     onClick={() => { }}
-                    className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
+                    className="flex justify-center items-center bg-[#FBAA19] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                   >
                     <span className="font-Syne capitalize">import</span>
                     <TailSpin color="#dcdcdc" visible={isImportLoading} width={20} height={20} />

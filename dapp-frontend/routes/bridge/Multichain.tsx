@@ -61,8 +61,8 @@ function BridgeComponent() {
 
 
     // Getting Bridge Token List
-    const { chainTokenList: fromTokenList } = useGetBridgeTokenList(chainId);
-    const { chainTokenList: toTokenList } = useGetBridgeTokenList(selectedToNetwork.chainId);
+    const { chainTokenList: fromTokenList } = useGetBridgeTokenList();
+    const { chainTokenList: toTokenList } = useGetBridgeTokenList();
 
     const handleFromTokenSelect = (token: any) => {
         setSelectedFromToken(token)
@@ -252,7 +252,7 @@ function BridgeComponent() {
                             </div>
                         </div>
                     </div>
-                    <button className="bg-[#105DCF] text-white w-full rounded-[10px] btn capitalize border-0 outline-none">Continue</button>
+                    <button className="bg-[#FBAA19] text-white w-full rounded-[10px] btn capitalize border-0 outline-none">Continue</button>
                 </div>
             </div>
             <BridgeSelect

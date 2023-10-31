@@ -135,7 +135,7 @@ export default function Index() {
                 placeholder="Input E-mail"
                 className="w-full bg-[rgba(255,251,251,0.08)] h-5 border-[rgba(255,255,255,0.3)] outline-none p-5 border rounded mb-2"
               />
-              <button className="justify-start w-fit bg-[#105DCF] rounded-[4px] text-white font-Kinn py-3 px-5 text-sm">Remind me</button>
+              <button className="justify-start w-fit bg-[#FBAA19] rounded-[4px] text-white font-Kinn py-3 px-5 text-sm">Remind me</button>
             </div>
           </div>
         </div>

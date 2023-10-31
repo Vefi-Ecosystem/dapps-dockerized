@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row justify-center items-start gap-3 lg:justify-between lg:items-center w-full px-12">
           <div className="flex flex-col justify-center items-start gap-3">
             <Link href="/">
-              <Image src="/images/vefi.svg" alt="vefi_logo" width={80} height={40} />
+              <Image src="/images/logo/vefdefi_logo.svg" alt="vefdefi_logo" width={80} height={40} />
             </Link>
             <p className="text-[#b2b2b2] capitalize font-Syne text-[0.85em] w-full lg:w-[19rem]">
               Our collection of Decentralized Applications allow you to securely swap crypto-assets, bridge across chains, launch your tokens and earn yield via staking all while in control of your crypto-assets.

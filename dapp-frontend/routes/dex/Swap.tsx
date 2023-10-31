@@ -265,8 +265,8 @@ export default function Swap() {
       );
     }
   }, [query.outputToken, tokensListing]);
-  
-  const clearFields = () =>{
+
+  const clearFields = () => {
     setVal1(0.0);
     setVal2(0.0);
   }
@@ -283,10 +283,10 @@ export default function Swap() {
                   <p className="font-[400] font-Poppins text-[0.9em] text-[#9d9d9d]">Trade tokens in an instant</p>
                 </div>
                 <div className="flex justify-center gap-3 items-center">
-                  <button onClick={reload} className="bg-transparent text-[#a6b2ec] text-[1.8em] cursor-pointer">
+                  <button onClick={reload} className="bg-transparent text-[#FBAA19]/80 text-[1.8em] cursor-pointer">
                     <IoMdRefreshCircle />
                   </button>
-                  <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-[#a6b2ec] text-[1.8em]">
+                  <button onClick={() => setIsSettingsModalVisible(true)} className="bg-transparent text-[#FBAA19]/80 text-[1.8em]">
                     <FiSettings />
                   </button>
                 </div>
@@ -322,25 +322,25 @@ export default function Swap() {
                   <div className="flex justify-end items-center w-full gap-1">
                     <button
                       onClick={() => setVal1(multiply(1 / 4, balance1))}
-                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                      className="border border-[#FBAA19] rounded-[8px] px-2 py-1 font-Syne text-[#FBAA19] capitalize font-[400] text-[0.75em]"
                     >
                       25%
                     </button>
                     <button
                       onClick={() => setVal1(multiply(2 / 4, balance1))}
-                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                      className="border border-[#FBAA19] rounded-[8px] px-2 py-1 font-Syne text-[#FBAA19] capitalize font-[400] text-[0.75em]"
                     >
                       50%
                     </button>
                     <button
                       onClick={() => setVal1(multiply(3 / 4, balance1))}
-                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                      className="border border-[#FBAA19] rounded-[8px] px-2 py-1 font-Syne text-[#FBAA19] capitalize font-[400] text-[0.75em]"
                     >
                       75%
                     </button>
                     <button
                       onClick={() => setVal1(balance1)}
-                      className="border border-[#3f84ea] rounded-[8px] px-2 py-1 font-Syne text-[#3f84ea] capitalize font-[400] text-[0.75em]"
+                      className="border border-[#FBAA19] rounded-[8px] px-2 py-1 font-Syne text-[#FBAA19] capitalize font-[400] text-[0.75em]"
                     >
                       100%
                     </button>
@@ -402,7 +402,7 @@ export default function Swap() {
                 <button
                   onClick={swapTokens}
                   disabled={pair === AddressZero || isSwapLoading || val1 <= 0 || val1 > balance1 || !active}
-                  className="flex justify-center items-center bg-[#105dcf] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
+                  className="flex justify-center items-center bg-[#FBAA19] py-4 px-3 text-[0.95em] text-white w-full rounded-[8px] gap-3"
                 >
                   <span className="font-Syne">
                     {!active ? 'Wallet not connected' : val1 > balance1 ? `Insufficient ${firstSelectedTokenDetails?.symbol} balance` : 'Swap'}
