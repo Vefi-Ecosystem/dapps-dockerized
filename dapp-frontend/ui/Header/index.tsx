@@ -76,13 +76,13 @@ export default function Header() {
           </div>
           <div className="md:flex flex-row justify-center items-center hidden w-auto gap-3">
             <div className="px-[23px] cursor-pointer">
-              <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/dex">
-                <span className="text-white text-[1em] font-[400]">Trade</span>
+              <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/analytics">
+                <span className="text-white text-[1em] font-[400]">Analytics</span>
               </ActiveLink>
             </div>
             <div className="px-[23px] cursor-pointer">
-              <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/analytics">
-                <span className="text-white text-[1em] font-[400]">Analytics</span>
+              <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/dex">
+                <span className="text-white text-[1em] font-[400]">Trade</span>
               </ActiveLink>
             </div>
             <div className="px-[23px] cursor-pointer">
@@ -103,6 +103,11 @@ export default function Header() {
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/bridge">
                 <span className="text-white text-[1em] font-[400]">Bridge</span>
+              </ActiveLink>
+            </div>
+            <div className="px-[23px] cursor-pointer">
+              <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="https://3swapdex.vefdefi.org/">
+                <span className="text-white text-[1em] font-[400]">3swap</span>
               </ActiveLink>
             </div>
           </div>
@@ -199,28 +204,33 @@ export default function Header() {
           onClick={() => setShowMobileSidebar(false)}
         >
           <li>
-            <ActiveLink activeClassName="active" href="/dex">
-              <span className="capitalize">trade</span>
+            <ActiveLink activeClassName="active" href="/analytics">
+              <span className="capitalize">Analytics</span>
             </ActiveLink>
           </li>
           <li>
-            <ActiveLink activeClassName="active" href="/analytics">
-              <span className="capitalize">analytics</span>
+            <ActiveLink activeClassName="active" href="/dex">
+              <span className="capitalize">Trade</span>
             </ActiveLink>
           </li>
           <li>
             <ActiveLink activeClassName="active" href="/staking">
-              <span className="capitalize">staking pools</span>
+              <span className="capitalize">Staking pools</span>
             </ActiveLink>
           </li>
           <li>
             <ActiveLink activeClassName="active" href="/launchpad">
-              <span className="capitalize">Lauchpad</span>
+              <span className="capitalize">Launchpad</span>
             </ActiveLink>
           </li>
           <li>
             <ActiveLink activeClassName="active" href="/bridge">
               <span className="capitalize">Bridge</span>
+            </ActiveLink>
+          </li>
+          <li>
+            <ActiveLink activeClassName="active" href="https://3swapdex.vefdefi.org/">
+              <span className="capitalize">3swap</span>
             </ActiveLink>
           </li>
         </ul>

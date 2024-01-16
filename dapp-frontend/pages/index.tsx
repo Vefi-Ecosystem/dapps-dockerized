@@ -143,7 +143,7 @@ export default function Index() {
                 </a>
               </Link>
             </div>
-            {/* <div className="flex flex-col lg:flex-row w-full justify-center items-center gap-3">
+            <div className="flex flex-col lg:flex-row w-full justify-center items-center gap-3">
               <Link href="/multisig">
                 <a className="w-full lg:w-1/3">
                   <div className="bg-[#0b0039] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
@@ -166,7 +166,7 @@ export default function Index() {
                   </div>
                 </a>
               </Link>
-            </div> */}
+            </div>
           </div>
         </section>
         <section className="w-full flex flex-col justify-center items-center gap-6">
