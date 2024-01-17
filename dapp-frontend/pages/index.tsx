@@ -127,7 +127,7 @@ export default function Index() {
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Exchange assets or earn LP tokens through liquidity provision on our DEX.
                     </p>
-                    <img src="/images/trade.png" alt="trade" className="w-full max-h-[18rem] object-contain" />
+                    <img src="/images/trade.png" alt="trade" className="w-full h-[17rem]" />
                   </div>
                 </a>
               </Link>
@@ -138,7 +138,7 @@ export default function Index() {
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Stake tokens to earn other tokens as rewards. Maximize profit with this scheme.
                     </p>
-                    <img src="/images/piggyvest.png" alt="piggyvest" className="w-full max-h-[18rem] object-contain" />
+                    <img src="/images/piggyvest.png" alt="piggyvest" className="w-full max-h-[18rem]" />
                   </div>
                 </a>
               </Link>
@@ -146,7 +146,7 @@ export default function Index() {
             <div className="flex flex-col lg:flex-row w-full justify-center items-center gap-3">
               <Link href="/multisig">
                 <a className="w-full lg:w-1/3">
-                  <div className="bg-[#0b0039] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
+                  <div className="bg-[#194D33] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
                     <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Multisignature</span>
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Wallets with more than one custodian. Ideal for firms that control blockchain assets.
@@ -157,12 +157,23 @@ export default function Index() {
               </Link>
               <Link href="/bridge">
                 <a className="w-full lg:w-1/3">
-                  <div className="bg-[#39000e] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
+                  <div className="bg-[#4D2019] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
                     <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Bridge</span>
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Move assets across chains without much hassle and the alteration of value.
                     </p>
                     <img src="/images/bridge.png" alt="bridge" className="w-full max-h-[18rem]" />
+                  </div>
+                </a>
+              </Link>
+              <Link href="https://3swapdex.vefdefi.org/">
+                <a className="w-full lg:w-1/3">
+                  <div className="bg-[#514617] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
+                    <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Bridge</span>
+                    <p className="text-[#fff] font-Poppins text-[1em] text-center">
+                      Swap asset across chains with the choosing a best rate with dex accelerator.
+                    </p>
+                    <img src="https://3swapdex.vefdefi.org/3swap.svg" alt="3swap" className="w-full h-[16rem]"  />
                   </div>
                 </a>
               </Link>
