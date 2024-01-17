@@ -57,6 +57,7 @@ export default function Header() {
   const { active, account, error: web3Error, disconnectWallet } = useWeb3Context();
   const selectedChain = useCurrentChain();
   const [showChainSwitchModal, setShowChainSwitchModal] = useState<boolean>(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   return (
     <>
       {web3Error && (
@@ -75,10 +76,10 @@ export default function Header() {
             </Link>
           </div>
           <div className="md:flex flex-row justify-center items-center hidden w-auto gap-3">
-            <div className="px-[23px] cursor-pointer">
-              <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/analytics">
-                <span className="text-white text-[1em] font-[400]">Analytics</span>
-              </ActiveLink>
+            <div className="px-[23px] cursor-pointer !important">
+              <Link className="font-[800] border-b-2 border-[#FBAA19]" href="/analytics">
+                <span className="text-white text-[1em] font-[400] ">Analytics</span>
+              </Link>
             </div>
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/dex">
@@ -99,7 +100,7 @@ export default function Header() {
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/multisig">
                 <span className="text-white text-[1em] font-[400]">Multi-Signature</span>
               </ActiveLink>
-            </div>*/}
+            </div>
             <div className="px-[23px] cursor-pointer">
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/bridge">
                 <span className="text-white text-[1em] font-[400]">Bridge</span>
@@ -109,7 +110,33 @@ export default function Header() {
               <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="https://3swapdex.vefdefi.org/">
                 <span className="text-white text-[1em] font-[400]">3swap</span>
               </ActiveLink>
+            </div>*/}
+        <div
+          className="relative"
+          onMouseEnter={() => setShowDropdown(true)}
+          onMouseLeave={() => setShowDropdown(false)}
+        >
+          <div className="px-[23px] cursor-pointer">
+            <div className="font-[800] border-b-2 border-[#FBAA19]">
+              <span className="text-white text-[1em] font-[400]">More</span>
             </div>
+          </div>
+          
+          {showDropdown && (
+            <div className="absolute top-full bg-[#0f0f10]/[.08] p-2">
+              <div className="px-[23px] cursor-pointer">
+               <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/bridge">
+                 <span className="text-white text-[1em] font-[400]">Bridge</span>
+               </ActiveLink>
+              </div>
+              <div className="px-[23px] cursor-pointer">
+               <Link className="font-[800] border-b-2 border-[#FBAA19]" href="https://3swapdex.vefdefi.org">
+                 <span className="text-white text-[1em] font-[400]">3swap</span>
+               </Link>
+              </div>
+            </div>
+          )}
+        </div>
           </div>
           <div className="flex justify-center items-center gap-2">
             <div className="flex justify-center items-center gap-2 flex-1">

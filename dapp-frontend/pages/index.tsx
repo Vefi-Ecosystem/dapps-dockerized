@@ -143,8 +143,8 @@ export default function Index() {
                 </a>
               </Link>
             </div>
-            <div className="flex flex-col lg:flex-row w-full justify-center items-center gap-3">
-              <Link href="/multisig">
+             <div className="flex flex-col lg:flex-row w-full justify-center items-center gap-3">
+            {/*  <Link href="/multisig">
                 <a className="w-full lg:w-1/3">
                   <div className="bg-[#194D33] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
                     <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Multisignature</span>
@@ -154,7 +154,7 @@ export default function Index() {
                     <img src="/images/scroll.png" alt="scroll" className="w-full max-h-[18rem]" />
                   </div>
                 </a>
-              </Link>
+              </Link>*/}
               <Link href="/bridge">
                 <a className="w-full lg:w-1/3">
                   <div className="bg-[#4D2019] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
