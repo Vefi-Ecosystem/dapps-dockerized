@@ -123,7 +123,7 @@ export default function Header() {
           </div>
           
           {showDropdown && (
-            <div className="absolute top-full bg-[#0f0f10]/[.08] p-2">
+            <div className="absolute top-full w-max bg-[#0f0f10]/[.08] p-2">
               <div className="px-[23px] cursor-pointer">
                <ActiveLink activeClassName="font-[800] border-b-2 border-[#FBAA19]" href="/bridge">
                  <span className="text-white text-[1em] font-[400]">Bridge</span>
@@ -131,7 +131,7 @@ export default function Header() {
               </div>
               <div className="px-[23px] cursor-pointer">
                <Link className="font-[800] border-b-2 border-[#FBAA19]" href="https://3swapdex.vefdefi.org">
-                 <span className="text-white text-[1em] font-[400]">3swap</span>
+                 <span className="text-white text-[1em] font-[400]">Cross Chain</span>
                </Link>
               </div>
             </div>

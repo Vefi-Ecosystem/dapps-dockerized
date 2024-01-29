@@ -169,7 +169,7 @@ export default function Index() {
               <Link href="https://3swapdex.vefdefi.org/">
                 <a className="w-full lg:w-1/3">
                   <div className="bg-[#514617] w-full rounded-[20px] flex flex-col justify-center items-center gap-6 px-7 py-4">
-                    <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Bridge</span>
+                    <span className="text-white font-Syne capitalize text-[1.5em] text-center lg:max-w-[70rem] font-[700]">Cross Chain</span>
                     <p className="text-[#fff] font-Poppins text-[1em] text-center">
                       Swap asset across chains with the choosing a best rate with dex accelerator.
                     </p>
